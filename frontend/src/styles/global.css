@@ -1881,6 +1881,49 @@ img { max-width: 100%; }
 .decision.clarify { background: var(--amber-soft); color: #9a5b00; }
 .decision.refuse { background: var(--red-soft); color: var(--red); }
 
+.chat-extras-toggle {
+  flex: 0 0 auto;
+  margin-left: auto;
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+.chat-extras-toggle.on,
+.chat-extras-toggle:hover {
+  color: var(--ink, #0a1b2e);
+  border-color: rgba(10, 27, 46, 0.25);
+  background: rgba(10, 27, 46, 0.04);
+}
+.chat-view-bar-focus {
+  margin-top: 0.35rem;
+}
+.chat-meta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+.chip-mini {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.16rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(10, 27, 46, 0.06);
+  color: var(--muted);
+}
+.chip-mini.answer { background: var(--green-soft); color: var(--green); }
+.chip-mini.clarify { background: var(--amber-soft); color: #9a5b00; }
+.chip-mini.refuse { background: var(--red-soft); color: var(--red); }
+.chip-mini.muted { opacity: 0.9; }
+
 .trail {
   margin-top: 0.85rem;
   padding: 0.8rem 0.9rem;

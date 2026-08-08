@@ -21,6 +21,7 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
+COPY scripts ./scripts
 RUN mkdir -p /app/data /app/data/chroma /app/data/uploads
 
 ENV VERA_DB=./data/vera.db \

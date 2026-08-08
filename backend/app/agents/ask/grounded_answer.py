@@ -22,11 +22,14 @@ Formatting (required — make answers easy to scan, like a good Copilot reply):
 - Prefer bullets for lists of features, constraints, differences, or requirements.
 - Prefer numbered lists for processes / sequences.
 - Bold **key terms** on first use (product names, levels, acronyms).
-- Optional callout for a plain-language takeaway:
+- For a plain-language takeaway, ALWAYS use a Markdown blockquote (required > prefix)
+  so the UI shows the green callout:
   > **In simple terms:** …
+  Do not write "In simple terms" as a normal paragraph.
 - Keep answers tight: usually 1 short intro + 1 heading + 3–6 bullets, or
   a comparison table-style bullet list. Expand only when the question needs depth.
 - Do NOT wrap the whole answer in a code fence.
+- Never end with References / Sources / Citations lists or [n] markers.
 """.strip()
 
 
@@ -53,9 +56,9 @@ async def gpt_answer_from_quotes(
             "coverage": 0.0,
         }
 
+    # Avoid "[1]" labels — models copy them into "References: [1], [2]…" prose
     pack = "\n\n".join(
-        f"[{i + 1}] Document: {q.document_title}\nLocator: {q.locator or 'n/a'}\n"
-        f"Quote: {q.quote}"
+        f"Evidence {i + 1}\nLocator: {q.locator or 'n/a'}\nQuote: {q.quote}"
         for i, q in enumerate(quotes[:10])
     )
     trail_line = f"\nTrust Trail: {trail_summary}\n" if trail_summary else "\n"
@@ -94,9 +97,10 @@ async def gpt_answer_from_quotes(
                         "5) Set sufficient=false ONLY when quotes are clearly unrelated "
                         "(wrong topic) or empty of answerable content.\n"
                         "6) Never invent facts from general world knowledge.\n"
-                        "7) Do NOT mention document names, filenames, PDF titles, or "
-                        "parenthetical source lists in the answer. Sources are shown "
-                        "separately as citations.\n"
+                        "7) Do NOT mention document names, filenames, PDF titles, "
+                        "parenthetical source lists, or a References / Sources section. "
+                        "Do NOT add citation markers like [1], [2], or 'References: …'. "
+                        "The UI shows citations separately — answer prose only.\n"
                         f"\n{_FORMAT_GUIDE}\n"
                         "Return JSON {sufficient: boolean, answer: string, reason: string}. "
                         "The answer field MUST contain Markdown (with real newlines), "
@@ -118,6 +122,7 @@ async def gpt_answer_from_quotes(
         parsed = json.loads(raw)
         sufficient = bool(parsed.get("sufficient"))
         answer = _strip_doc_mentions((parsed.get("answer") or "").strip(), quotes)
+        answer = _strip_reference_noise(answer)
         answer = _normalize_answer_markdown(answer)
         reason = (parsed.get("reason") or "").strip()
 
@@ -166,6 +171,47 @@ async def gpt_answer_from_quotes(
         }
 
 
+def _strip_reference_noise(answer: str) -> str:
+    """Remove leaked citation / References footers the model sometimes appends."""
+    text = (answer or "").strip()
+    if not text:
+        return text
+
+    # Drop trailing "## References" / "References:" / "Sources:" blocks
+    text = re.split(
+        r"\n(?:#{1,3}\s*)?(?:references|sources|citations)\s*:?\s*\n",
+        text,
+        maxsplit=1,
+        flags=re.I,
+    )[0].rstrip()
+
+    # Inline "References: [1], [2], [3]" (or Sources:) on its own line
+    text = re.sub(
+        r"(?im)^\s*(?:references|sources|citations)\s*:\s*(?:\[\d+\]\s*,?\s*)+\s*$",
+        "",
+        text,
+    )
+    # Same pattern anywhere near the end
+    text = re.sub(
+        r"(?i)\n*\s*(?:references|sources|citations)\s*:\s*(?:\[\d+\](?:\s*,\s*)?)+\s*$",
+        "",
+        text,
+    )
+    # Trailing bare [1][2][3] or [1], [2], [8]
+    text = re.sub(r"(?i)(?:\s*\[\d+\]\s*,?)+\s*$", "", text)
+    # Whole line of only citation markers: [1] [2] [3]
+    text = re.sub(r"(?im)^\s*(?:\[\d+\]\s*)+\s*$", "", text)
+    # Mid-sentence citation crumbs: "… rules. [1][2]" → drop trailing markers per line
+    lines = []
+    for line in text.split("\n"):
+        cleaned = re.sub(r"(?:\s*\[\d+\])+\s*$", "", line)
+        cleaned = re.sub(r"\s*\[\d+\](?=\s|,|$)", "", cleaned)
+        lines.append(cleaned)
+    text = "\n".join(lines)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
 def _normalize_answer_markdown(answer: str) -> str:
     """Unescape literal \\n from JSON models and tidy markdown spacing."""
     text = (answer or "").strip()
@@ -175,6 +221,12 @@ def _normalize_answer_markdown(answer: str) -> str:
     if "\\n" in text and "\n" not in text:
         text = text.replace("\\n", "\n")
     text = text.replace("\\t", "  ")
+    # Promote plain "In simple terms:" into a green-callout blockquote
+    text = re.sub(
+        r"(?im)^(?!\s*>)(\s*)(?:\*\*)?In simple terms:?\**\s*",
+        r"\1> **In simple terms:** ",
+        text,
+    )
     # Collapse 3+ blank lines
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()

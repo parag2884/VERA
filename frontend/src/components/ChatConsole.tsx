@@ -40,6 +40,7 @@ export default function ChatConsole({
   const [busy, setBusy] = useState(false);
   const [thinkStep, setThinkStep] = useState(0);
   const [showScoreFor, setShowScoreFor] = useState<number | null>(null);
+  const [showExtras, setShowExtras] = useState(false);
 
   const domainProfile = (currentAgent?.settings?.domainProfile || null) as
     | { label?: string; focus?: string; entityTypes?: string[] }
@@ -123,40 +124,55 @@ export default function ChatConsole({
           ) : (
             <div className="agent-chat-name">{settings.agentName}</div>
           )}
-          <div className="muted agent-chat-sub">
-            Tone · {settings.tone} · {settings.verbosity}
-            {currentAgent?.counts?.documents != null
-              ? ` · ${currentAgent.counts.documents} docs`
-              : ""}
-          </div>
+          {!focusMode && (
+            <div className="muted agent-chat-sub">
+              Tone · {settings.tone} · {settings.verbosity}
+              {currentAgent?.counts?.documents != null
+                ? ` · ${currentAgent.counts.documents} docs`
+                : ""}
+            </div>
+          )}
         </div>
+        {focusMode && (
+          <button
+            type="button"
+            className={`chat-extras-toggle ${showExtras ? "on" : ""}`}
+            aria-expanded={showExtras}
+            aria-label="Answer display options"
+            onClick={() => setShowExtras((v) => !v)}
+          >
+            Options
+          </button>
+        )}
       </div>
 
-      <div className="chat-view-bar">
-        <span className="chat-view-label">Show in answers</span>
-        <div className="chat-view-seg" role="group" aria-label="Show in answers">
-          {(
-            [
-              ["showCitations", "Citations", settings.showCitations],
-              ["showTrustTrail", "Trail", settings.showTrustTrail],
-              ["showTrustScore", "Score", settings.showTrustScore],
-            ] as const
-          ).map(([key, label, on]) => (
-            <button
-              key={key}
-              type="button"
-              className={`chat-seg-btn ${on ? "on" : "off"}`}
-              aria-pressed={on}
-              onClick={() => updateAgentSettings({ [key]: !on })}
-            >
-              <span className="chat-seg-mark" aria-hidden>
-                {on ? "✓" : ""}
-              </span>
-              {label}
-            </button>
-          ))}
+      {(!focusMode || showExtras) && (
+        <div className={`chat-view-bar${focusMode ? " chat-view-bar-focus" : ""}`}>
+          <span className="chat-view-label">Show in answers</span>
+          <div className="chat-view-seg" role="group" aria-label="Show in answers">
+            {(
+              [
+                ["showCitations", "Citations", settings.showCitations],
+                ["showTrustTrail", "Trail", settings.showTrustTrail],
+                ["showTrustScore", "Score", settings.showTrustScore],
+              ] as const
+            ).map(([key, label, on]) => (
+              <button
+                key={key}
+                type="button"
+                className={`chat-seg-btn ${on ? "on" : "off"}`}
+                aria-pressed={on}
+                onClick={() => updateAgentSettings({ [key]: !on })}
+              >
+                <span className="chat-seg-mark" aria-hidden>
+                  {on ? "✓" : ""}
+                </span>
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="chat-log">
         {msgs.length === 0 && !busy && (
@@ -164,11 +180,26 @@ export default function ChatConsole({
         )}
         {msgs.map((m, i) => (
           <div key={i} className={`bubble ${m.role}`}>
-            {m.data && <span className={`decision ${m.data.decision}`}>{m.data.decision}</span>}
+            {m.data && !focusMode && (
+              <span className={`decision ${m.data.decision}`}>{m.data.decision}</span>
+            )}
             {m.role === "assistant" ? (
               <AnswerMarkdown text={m.text} />
             ) : (
               <div style={{ whiteSpace: "pre-wrap" }}>{m.text}</div>
+            )}
+            {m.data && focusMode && (
+              <div className="chat-meta-chips">
+                <span className={`chip-mini ${m.data.decision}`}>{m.data.decision}</span>
+                {settings.showTrustScore && m.data.trust_score ? (
+                  <span className="chip-mini muted">
+                    trust {m.data.trust_score.overall.toFixed(2)}
+                  </span>
+                ) : null}
+                {m.data.retrieval_mode ? (
+                  <span className="chip-mini muted">{m.data.retrieval_mode}</span>
+                ) : null}
+              </div>
             )}
 
             {settings.showTrustTrail && m.data?.trust_trail?.length ? (
@@ -205,7 +236,10 @@ export default function ChatConsole({
               </div>
             ) : null}
 
-            {settings.showTrustScore && m.data?.trust_score && m.data.decision === "answer" && (
+            {!focusMode &&
+              settings.showTrustScore &&
+              m.data?.trust_score &&
+              m.data.decision === "answer" && (
               <div style={{ marginTop: "0.85rem" }}>
                 <button
                   className="chip"

@@ -1,0 +1,145 @@
+/** Lightweight markdown renderer for VERA answers (no extra dependency). */
+
+import type { ReactNode } from "react";
+
+type Props = {
+  text: string;
+  className?: string;
+};
+
+function inlineFormat(text: string): ReactNode[] {
+  // Split on **bold**, *italic*, `code` — order matters
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+  return parts.filter(Boolean).map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("`") && part.endsWith("`") && part.length > 2) {
+      return <code key={i}>{part.slice(1, -1)}</code>;
+    }
+    if (part.startsWith("*") && part.endsWith("*") && part.length > 2 && !part.startsWith("**")) {
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
+function isBullet(line: string): boolean {
+  return /^\s*[-*•]\s+/.test(line);
+}
+
+function isNumbered(line: string): boolean {
+  return /^\s*\d+[.)]\s+/.test(line);
+}
+
+function stripBullet(line: string): string {
+  return line.replace(/^\s*[-*•]\s+/, "");
+}
+
+function stripNumbered(line: string): string {
+  return line.replace(/^\s*\d+[.)]\s+/, "");
+}
+
+export function AnswerMarkdown({ text, className }: Props) {
+  const raw = (text || "").replace(/\r\n/g, "\n").trim();
+  if (!raw) return null;
+
+  const lines = raw.split("\n");
+  const blocks: ReactNode[] = [];
+  let i = 0;
+  let key = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (!line.trim()) {
+      i += 1;
+      continue;
+    }
+
+    // Headings
+    const h = /^(#{1,3})\s+(.+)$/.exec(line.trim());
+    if (h) {
+      const level = h[1].length;
+      const content = inlineFormat(h[2].trim());
+      if (level === 1) blocks.push(<h3 key={key++} className="ans-h">{content}</h3>);
+      else if (level === 2) blocks.push(<h3 key={key++} className="ans-h">{content}</h3>);
+      else blocks.push(<h4 key={key++} className="ans-h">{content}</h4>);
+      i += 1;
+      continue;
+    }
+
+    // Blockquote / callout
+    if (/^\s*>\s?/.test(line)) {
+      const quoteLines: string[] = [];
+      while (i < lines.length && /^\s*>\s?/.test(lines[i])) {
+        quoteLines.push(lines[i].replace(/^\s*>\s?/, ""));
+        i += 1;
+      }
+      blocks.push(
+        <blockquote key={key++} className="ans-callout">
+          {quoteLines.map((ql, qi) => (
+            <p key={qi}>{inlineFormat(ql)}</p>
+          ))}
+        </blockquote>
+      );
+      continue;
+    }
+
+    // Bullet list
+    if (isBullet(line)) {
+      const items: string[] = [];
+      while (i < lines.length && isBullet(lines[i])) {
+        items.push(stripBullet(lines[i]));
+        i += 1;
+      }
+      blocks.push(
+        <ul key={key++} className="ans-list">
+          {items.map((item, ii) => (
+            <li key={ii}>{inlineFormat(item)}</li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+
+    // Numbered list
+    if (isNumbered(line)) {
+      const items: string[] = [];
+      while (i < lines.length && isNumbered(lines[i])) {
+        items.push(stripNumbered(lines[i]));
+        i += 1;
+      }
+      blocks.push(
+        <ol key={key++} className="ans-list ans-ol">
+          {items.map((item, ii) => (
+            <li key={ii}>{inlineFormat(item)}</li>
+          ))}
+        </ol>
+      );
+      continue;
+    }
+
+    // Paragraph (consume until blank or special)
+    const para: string[] = [line];
+    i += 1;
+    while (
+      i < lines.length &&
+      lines[i].trim() &&
+      !/^(#{1,3})\s+/.test(lines[i].trim()) &&
+      !/^\s*>\s?/.test(lines[i]) &&
+      !isBullet(lines[i]) &&
+      !isNumbered(lines[i])
+    ) {
+      para.push(lines[i]);
+      i += 1;
+    }
+    blocks.push(
+      <p key={key++} className="ans-p">
+        {inlineFormat(para.join(" "))}
+      </p>
+    );
+  }
+
+  return <div className={`answer-md ${className || ""}`.trim()}>{blocks}</div>;
+}

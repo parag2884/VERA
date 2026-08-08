@@ -44,6 +44,8 @@ class Settings(BaseSettings):
     vera_embed_price_per_1m_tokens: float = 0.02
     vera_cors_origins: str = "http://localhost:5173,http://localhost:8080"
     vera_widget_public_origin: str = "http://localhost:8080"
+    vera_public_require_origin: bool = False
+    vera_public_rate_limit_per_min: int = 60
     vera_mock_llm: bool = False
     vera_log_level: str = "INFO"
 
@@ -60,7 +62,7 @@ class Settings(BaseSettings):
         ]
     )
 
-    @field_validator("vera_mock_llm", mode="before")
+    @field_validator("vera_mock_llm", "vera_public_require_origin", mode="before")
     @classmethod
     def _coerce_bool(cls, value: object) -> bool:
         if isinstance(value, str):

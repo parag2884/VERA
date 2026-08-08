@@ -3,6 +3,7 @@
 | Document | Audience |
 |----------|----------|
 | [KNOWLEDGE-GRAPH.md](KNOWLEDGE-GRAPH.md) | Product & eng — KG model vs vector DB, benefits now & later |
+| [SCORECARD.md](SCORECARD.md) | Living product scores + how to raise them |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Engineers — pipelines, graph, Ask modes |
 | [CONFIGURATION.md](CONFIGURATION.md) | Anyone deploying — env vars |
 | [PUBLIC-API.md](PUBLIC-API.md) | Integrators — public chat / agent config |

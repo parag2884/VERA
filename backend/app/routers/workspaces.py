@@ -29,6 +29,17 @@ async def get_workspace(workspace_id: str) -> WorkspaceOut:
     return WorkspaceOut(id=ws["id"], name=ws["name"], created_at=ws["created_at"])
 
 
+@router.post("/{workspace_id}/hygiene")
+async def hygiene_workspace_knowledge(workspace_id: str) -> dict:
+    """Prune over-aliases and retype junk Person nodes (non-destructive)."""
+    async with WorkspaceStore() as store:
+        ws = await store.get_workspace(workspace_id)
+        if not ws:
+            raise HTTPException(404, "Workspace not found")
+        report = await store.hygiene_knowledge(workspace_id)
+    return {"workspace_id": workspace_id, **report}
+
+
 @router.post("/{workspace_id}/purge")
 async def purge_workspace_knowledge(workspace_id: str) -> dict:
     """Wipe knowledge graph, documents, chunks, vectors, and chat for this workspace."""

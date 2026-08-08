@@ -4,18 +4,10 @@ from fastapi import APIRouter, HTTPException, Request
 
 from app.schemas import ChatResponse, PublicAgentConfig, PublicChatRequest
 from app.services.ask_chat import run_ask_chat, settings_from_agent
+from app.services.public_guard import origin_ok, rate_limit_ok
 from app.stores.sql import WorkspaceStore
 
 router = APIRouter(prefix="/api/public", tags=["public"])
-
-
-def _origin_allowed(allowed: str, origin: str | None) -> bool:
-    if not allowed or allowed.strip() == "*":
-        return True
-    if not origin:
-        return True
-    allowed_set = {o.strip() for o in allowed.split(",") if o.strip()}
-    return origin.rstrip("/") in {a.rstrip("/") for a in allowed_set}
 
 
 @router.get("/agents/{embed_key}", response_model=PublicAgentConfig)
@@ -27,7 +19,7 @@ async def public_agent_config(embed_key: str, request: Request) -> PublicAgentCo
         if not agent.get("published"):
             raise HTTPException(403, "Agent is not published")
         origin = request.headers.get("origin")
-        if not _origin_allowed(agent.get("allowed_origins") or "*", origin):
+        if not origin_ok(agent.get("allowed_origins") or "*", origin):
             raise HTTPException(403, "Origin not allowed for this agent")
         s = settings_from_agent(agent)
         return PublicAgentConfig(
@@ -50,8 +42,11 @@ async def public_chat(body: PublicChatRequest, request: Request) -> ChatResponse
         if not agent.get("published"):
             raise HTTPException(403, "Agent is not published")
         origin = request.headers.get("origin")
-        if not _origin_allowed(agent.get("allowed_origins") or "*", origin):
+        if not origin_ok(agent.get("allowed_origins") or "*", origin):
             raise HTTPException(403, "Origin not allowed for this agent")
+        client = request.client.host if request.client else "unknown"
+        if not rate_limit_ok(f"{body.embed_key}:{client}"):
+            raise HTTPException(429, "Rate limit exceeded for this embed key")
 
         s = settings_from_agent(agent)
         return await run_ask_chat(

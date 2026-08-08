@@ -900,13 +900,26 @@ def _evidence_span(text: str, quote: str, *needles: str) -> tuple[int, int] | No
 
 
 async def _upsert_entity(store: Any, workspace_id: str, name: str, typ: str) -> str:
-    """Merge entities by normalized_name / fuzzy alias so Trust Trails stay connected."""
+    """Merge entities by normalized_name / careful fuzzy so Trust Trails stay connected."""
     norm = _norm(name)
     preferred = typ or "Concept"
     # Prefer an existing node with this normalized name (any entity type)
     existing = await store.resolve_entity(workspace_id, name)
-    if not existing and hasattr(store, "resolve_entity_fuzzy"):
-        existing = await store.resolve_entity_fuzzy(workspace_id, name, limit=3)
+    # Fuzzy only when names are long enough — short codes must not absorb Products
+    if (
+        not existing
+        and hasattr(store, "resolve_entity_fuzzy")
+        and len(norm) >= 6
+        and not re.fullmatch(r"[a-z]{1,8}\d{2,}", _alnum_key(norm))
+    ):
+        fuzzy = await store.resolve_entity_fuzzy(workspace_id, name, limit=3)
+        # Keep only same-type or clearly related names
+        existing = [
+            r
+            for r in fuzzy
+            if r.get("type") == preferred
+            or _names_related(norm, str(r.get("normalized_name") or ""))
+        ]
     if not existing:
         # resolve uses shared normalize — also try direct
         cur = await store.conn.execute(
@@ -926,9 +939,17 @@ async def _upsert_entity(store: Any, workspace_id: str, name: str, typ: str) -> 
                 nid = row["id"]
                 await store.insert_alias(workspace_id, name, norm, nid)
                 return nid
-        nid = existing[0]["id"]
-        await store.insert_alias(workspace_id, name, norm, nid)
-        return nid
+        # Do not merge onto a different type unless names clearly relate
+        related = [
+            r
+            for r in existing
+            if _names_related(norm, str(r.get("normalized_name") or ""))
+        ]
+        if related:
+            nid = related[0]["id"]
+            await store.insert_alias(workspace_id, name, norm, nid)
+            return nid
+        # Fall through to create a new node instead of over-merging
     nid = await store.upsert_node(
         workspace_id,
         type=preferred,
@@ -937,6 +958,19 @@ async def _upsert_entity(store: Any, workspace_id: str, name: str, typ: str) -> 
     )
     await store.insert_alias(workspace_id, name, norm, nid)
     return nid
+
+
+def _names_related(a: str, b: str) -> bool:
+    aa = _alnum_key(a)
+    bb = _alnum_key(b)
+    if not aa or not bb:
+        return False
+    if aa == bb:
+        return True
+    shorter, longer = (aa, bb) if len(aa) <= len(bb) else (bb, aa)
+    if len(shorter) < 5:
+        return False
+    return shorter in longer and len(longer) <= len(shorter) * 2.2
 
 
 async def _edge_exists(
@@ -1130,7 +1164,8 @@ async def _link_similar_entity(
     store: Any, workspace_id: str, norm: str
 ) -> list[dict[str, Any]]:
     """Soft entity linking: prefix / containment / alphanumeric fold match."""
-    if len(norm) < 4:
+    # Soft-link needs enough signal — short stems over-merge (e.g. brand → …)
+    if len(norm) < 6:
         return []
     alnum = _alnum_key(norm)
     cur = await store.conn.execute(
@@ -1141,8 +1176,8 @@ async def _link_similar_entity(
              normalized_name = ?
              OR normalized_name LIKE ?
              OR ? LIKE normalized_name || '%'
-             OR (length(normalized_name) >= 5 AND instr(?, normalized_name) > 0)
-             OR (length(?) >= 5 AND instr(normalized_name, ?) > 0)
+             OR (length(normalized_name) >= 8 AND instr(?, normalized_name) > 0)
+             OR (length(?) >= 8 AND instr(normalized_name, ?) > 0)
            )
            LIMIT 24""",
         (workspace_id, norm, f"{norm}%", norm, norm, norm, norm),

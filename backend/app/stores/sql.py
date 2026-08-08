@@ -566,10 +566,39 @@ class WorkspaceStore:
     async def insert_alias(
         self, workspace_id: str, alias: str, normalized_alias: str, node_id: str
     ) -> None:
+        """Insert alias only when it relates to the node and is not a duplicate."""
+        alias_s = (alias or "").strip()
+        norm_a = (normalized_alias or "").strip()
+        if not alias_s or not norm_a or not node_id:
+            return
+        cur = await self.conn.execute(
+            """SELECT name, normalized_name, type FROM kg_nodes
+               WHERE id = ? AND workspace_id = ? LIMIT 1""",
+            (node_id, workspace_id),
+        )
+        node = await cur.fetchone()
+        if not node:
+            return
+        if not _alias_fits_node(
+            alias=alias_s,
+            alias_norm=norm_a,
+            node_name=str(node["name"] or ""),
+            node_norm=str(node["normalized_name"] or ""),
+            node_type=str(node["type"] or ""),
+        ):
+            return
+        exists = await self.conn.execute(
+            """SELECT 1 FROM entity_aliases
+               WHERE workspace_id = ? AND node_id = ? AND normalized_alias = ?
+               LIMIT 1""",
+            (workspace_id, node_id, norm_a),
+        )
+        if await exists.fetchone():
+            return
         await self.conn.execute(
             """INSERT INTO entity_aliases (id, workspace_id, alias, normalized_alias, node_id)
                VALUES (?, ?, ?, ?, ?)""",
-            (_jid(), workspace_id, alias, normalized_alias, node_id),
+            (_jid(), workspace_id, alias_s, norm_a, node_id),
         )
 
     async def _domain_aliases(self, workspace_id: str) -> dict[str, str]:
@@ -1002,6 +1031,128 @@ class WorkspaceStore:
         await self.commit()
         after = await self.counts(workspace_id)
         return {"before": before, "after": after}
+
+    async def hygiene_knowledge(self, workspace_id: str) -> dict[str, Any]:
+        """Prune bad aliases, retype junk Person nodes, report graph health."""
+        aliases_removed = await self._prune_bad_aliases(workspace_id)
+        persons_fixed = await self._retype_junk_persons(workspace_id)
+        await self.commit()
+        cur = await self.conn.execute(
+            """SELECT COUNT(*) AS c FROM entity_aliases WHERE workspace_id = ?""",
+            (workspace_id,),
+        )
+        alias_count = int((await cur.fetchone())["c"])
+        cur = await self.conn.execute(
+            """SELECT COUNT(*) AS c FROM kg_nodes
+               WHERE workspace_id = ? AND type NOT IN ('Document','Chunk','Section')""",
+            (workspace_id,),
+        )
+        entity_count = int((await cur.fetchone())["c"])
+        cur = await self.conn.execute(
+            """SELECT COUNT(*) AS c FROM kg_nodes
+               WHERE workspace_id = ?
+               AND type NOT IN ('Document','Chunk','Section')
+               AND (
+                 name GLOB '[A-Za-z][A-Za-z]*[0-9][0-9]*'
+                 OR lower(name) LIKE '%security level%'
+               )""",
+            (workspace_id,),
+        )
+        code_nodes = int((await cur.fetchone())["c"])
+        return {
+            "aliases_removed": aliases_removed,
+            "junk_persons_retyped": persons_fixed,
+            "alias_count": alias_count,
+            "entity_count": entity_count,
+            "code_or_level_nodes": code_nodes,
+        }
+
+    async def _prune_bad_aliases(self, workspace_id: str) -> int:
+        cur = await self.conn.execute(
+            """SELECT a.id, a.alias, a.normalized_alias, n.name, n.normalized_name, n.type
+               FROM entity_aliases a
+               JOIN kg_nodes n ON n.id = a.node_id
+               WHERE a.workspace_id = ?""",
+            (workspace_id,),
+        )
+        rows = [dict(r) for r in await cur.fetchall()]
+        removed = 0
+        for r in rows:
+            if _alias_fits_node(
+                alias=str(r.get("alias") or ""),
+                alias_norm=str(r.get("normalized_alias") or ""),
+                node_name=str(r.get("name") or ""),
+                node_norm=str(r.get("normalized_name") or ""),
+                node_type=str(r.get("type") or ""),
+            ):
+                continue
+            await self.conn.execute(
+                "DELETE FROM entity_aliases WHERE id = ?", (r["id"],)
+            )
+            removed += 1
+        return removed
+
+    async def _retype_junk_persons(self, workspace_id: str) -> int:
+        """Single-token 'Person' nodes without email are usually weave noise."""
+        cur = await self.conn.execute(
+            """SELECT id, name FROM kg_nodes
+               WHERE workspace_id = ? AND type = 'Person'""",
+            (workspace_id,),
+        )
+        fixed = 0
+        for r in await cur.fetchall():
+            name = str(r["name"] or "").strip()
+            if "@" in name:
+                continue
+            tokens = name.split()
+            # Keep plausible people: First Last
+            if len(tokens) >= 2 and all(t[:1].isupper() for t in tokens if t.isalpha()):
+                continue
+            # Retype junk: Android, Brand, Standard, Certificate, …
+            await self.conn.execute(
+                "UPDATE kg_nodes SET type = 'Concept' WHERE id = ?",
+                (r["id"],),
+            )
+            fixed += 1
+        return fixed
+
+
+def _alias_fits_node(
+    *,
+    alias: str,
+    alias_norm: str,
+    node_name: str,
+    node_norm: str,
+    node_type: str,
+) -> bool:
+    """True when an alias is a reasonable alternate label for the node."""
+    a = (alias_norm or alias or "").strip().lower()
+    n = (node_norm or node_name or "").strip().lower()
+    if not a or not n:
+        return False
+    if a == n:
+        return True
+    a_alnum = re.sub(r"[^a-z0-9]", "", a)
+    n_alnum = re.sub(r"[^a-z0-9]", "", n)
+    if not a_alnum or not n_alnum:
+        return False
+    # Product codes / short nodes: alias must contain node key
+    if len(n_alnum) <= 12:
+        return n_alnum in a_alnum and len(a_alnum) <= max(len(n_alnum) * 3, 24)
+    # Longer names: require substantial overlap (node key inside alias or vice versa)
+    if n_alnum in a_alnum:
+        return len(a_alnum) <= len(n_alnum) * 2.5
+    if a_alnum in n_alnum and len(a_alnum) >= 6:
+        return True
+    # Token overlap (at least one meaningful shared token ≥5 chars)
+    a_toks = {t for t in re.findall(r"[a-z0-9]{5,}", a)}
+    n_toks = {t for t in re.findall(r"[a-z0-9]{5,}", n)}
+    if a_toks & n_toks:
+        return True
+    # Never attach long English phrases to Product unless they contain the product name
+    if node_type == "Product" and len(a.split()) >= 3 and n_alnum not in a_alnum:
+        return False
+    return False
 
 
 def _normalize(name: str) -> str:

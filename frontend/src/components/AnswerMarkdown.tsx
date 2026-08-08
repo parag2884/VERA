@@ -40,6 +40,11 @@ function stripNumbered(line: string): string {
   return line.replace(/^\s*\d+[.)]\s+/, "");
 }
 
+/** Plain "In simple terms:" (with or without >) → green callout */
+function isSimpleTermsLine(line: string): boolean {
+  return /^\s*(?:>\s*)?(?:\*\*)?In simple terms:?\**/i.test(line.trim());
+}
+
 export function AnswerMarkdown({ text, className }: Props) {
   const raw = (text || "").replace(/\r\n/g, "\n").trim();
   if (!raw) return null;
@@ -69,12 +74,29 @@ export function AnswerMarkdown({ text, className }: Props) {
       continue;
     }
 
-    // Blockquote / callout
-    if (/^\s*>\s?/.test(line)) {
+    // Green callout: markdown > … OR plain "In simple terms:" paragraphs
+    if (/^\s*>\s?/.test(line) || isSimpleTermsLine(line)) {
       const quoteLines: string[] = [];
-      while (i < lines.length && /^\s*>\s?/.test(lines[i])) {
-        quoteLines.push(lines[i].replace(/^\s*>\s?/, ""));
+      if (/^\s*>\s?/.test(line)) {
+        while (i < lines.length && /^\s*>\s?/.test(lines[i])) {
+          quoteLines.push(lines[i].replace(/^\s*>\s?/, ""));
+          i += 1;
+        }
+      } else {
+        quoteLines.push(line.trim());
         i += 1;
+        while (
+          i < lines.length &&
+          lines[i].trim() &&
+          !isBullet(lines[i]) &&
+          !isNumbered(lines[i]) &&
+          !/^(#{1,3})\s+/.test(lines[i].trim()) &&
+          !/^\s*>\s?/.test(lines[i]) &&
+          !isSimpleTermsLine(lines[i])
+        ) {
+          quoteLines[0] = `${quoteLines[0]} ${lines[i].trim()}`;
+          i += 1;
+        }
       }
       blocks.push(
         <blockquote key={key++} className="ans-callout">

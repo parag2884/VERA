@@ -71,12 +71,9 @@ Studio: http://localhost:5173
 
 ---
 
-## Architecture (short)
+## Architecture & flow diagrams
 
-```
-Ingest:  Connect → Fingerprint → Parse → CleanStack → Chunk → Weaver → Embed
-Ask:     Guard → Route → Resolve → Graph Retrieve → Quote Fill → Evidence Judge
-```
+**Invariant:** no evidence-bearing edge ⇒ no answer-bearing edge.
 
 | Layer | Location |
 |-------|----------|
@@ -87,7 +84,121 @@ Ask:     Guard → Route → Resolve → Graph Retrieve → Quote Fill → Evide
 | Ask agents | `backend/app/agents/ask/` |
 | Public embed API | `backend/app/routers/public.py` |
 
-Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/KNOWLEDGE-GRAPH.md](docs/KNOWLEDGE-GRAPH.md)
+
+### System overview
+
+```mermaid
+flowchart LR
+  subgraph Clients
+    Studio["Studio UI<br/>:5173"]
+    Embed["Embed / Widget"]
+    Chatbot["Public chatbot<br/>:5500"]
+  end
+
+  subgraph VERA["VERA API :8080"]
+    Ingest["Ingest DAG"]
+    Ask["Ask DAG"]
+    Public["Public API<br/>embed_key"]
+  end
+
+  subgraph Store
+    SQLite[(SQLite KG<br/>nodes · edges · evidence)]
+    Chroma[(Chroma<br/>chunk vectors)]
+  end
+
+  Studio --> Ingest
+  Studio --> Ask
+  Embed --> Public
+  Chatbot --> Public
+  Public --> Ask
+  Ingest --> SQLite
+  Ingest --> Chroma
+  Ask --> SQLite
+  Ask --> Chroma
+```
+
+### Ingest pipeline (build the graph)
+
+```mermaid
+flowchart TD
+  A[Connect sources<br/>upload · URL · sample KB · SharePoint] --> B[Fingerprint]
+  B --> C[Parse<br/>text + structure]
+  C --> D[CleanStack<br/>exact / near-dupe]
+  D --> E[Chunk<br/>with provenance]
+  E --> F[Weaver<br/>entities · relations · evidence spans]
+  F --> G[Embed chunks<br/>Chroma]
+  G --> H[Knowledge Health]
+
+  F --> N[(kg_nodes)]
+  F --> Ed[(kg_edges + evidence)]
+  E --> Ch[(chunks)]
+  G --> V[(vectors)]
+
+  subgraph Weaver details
+    F1[Rule NER + product codes] --> F2[LLM asserted facts]
+    F2 --> F3[Documentary MENTIONS / DEFINED_IN]
+    F3 --> F4[Soft entity link<br/>type-safe · version guards]
+    F4 --> F5[Alias hygiene]
+  end
+  F --- F1
+```
+
+One-liner: `Connect → Fingerprint → Parse → CleanStack → Chunk → Weaver → Embed`
+
+### Ask pipeline (answer with proof)
+
+```mermaid
+flowchart TD
+  Q[User question] --> G[Policy / secret Guard]
+  G -->|blocked| R0[Refuse]
+  G --> Rt[Route<br/>structural · fuzzy · comparison]
+  Rt --> ER[Entity Resolve<br/>codes · compare sides · no glue-word traps]
+  ER -->|ambiguous non-compare| C[Clarify]
+  ER --> GR[Graph Retrieve<br/>multi-hop Trust Trail]
+  GR --> QF[Quote Fill<br/>graph quotes + hybrid KB pack]
+  QF --> J[Evidence Judge + grounded answer]
+  J -->|enough evidence| Ans[Answer<br/>Markdown · green callout]
+  J -->|thin / ambiguous| C
+  J -->|unsupported| R1[Refuse]
+
+  subgraph Retrieval modes
+    M1[graph_primary]
+    M2[hybrid_graph_kb]
+    M3[hybrid_kb]
+  end
+  J -.-> M1
+  J -.-> M2
+  J -.-> M3
+```
+
+One-liner: `Guard → Route → Resolve → Graph Retrieve → Quote Fill → Evidence Judge`
+
+| Mode chip | Meaning |
+|-----------|---------|
+| `graph_primary` | Evidence-bound trail led the answer |
+| `hybrid_graph_kb` | Trail + document gap-fill |
+| `hybrid_kb` | Lexical / vector pack (overview / thin trail) |
+| `clarify` / `refuse` | Integrity over fluency |
+
+### Publish → public chat
+
+```mermaid
+flowchart LR
+  Studio[Studio · Agents] -->|POST /publish| Key[embed_key]
+  Key --> Surfaces
+
+  subgraph Surfaces
+    Page["/embed/key"]
+    Widget["widget.js"]
+    API["POST /api/public/chat"]
+  end
+
+  API --> Pipeline[Ask DAG<br/>agent workspace only]
+  Pipeline --> Out[answer · clarify · refuse<br/>+ trust · retrieval_mode]
+```
+
+Published agents are workspace-isolated. Public routes require `published` + origin checks (+ rate limit).
 
 ---
 

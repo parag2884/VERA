@@ -22,7 +22,7 @@ export function defaultSamplesForAgent(
       `Give a short overview of this ${label || "knowledge"} base`,
       `How are the main ${typeHint} related?`,
       focus
-        ? `What should I verify about: ${focus.length > 80 ? `${focus.slice(0, 77)}…` : focus}`
+        ? `What should I verify about: ${focus.length > 48 ? `${focus.slice(0, 45)}…` : focus}`
         : "Ask something that needs a Trust Trail to prove",
     ];
   }

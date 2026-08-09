@@ -46,14 +46,31 @@ Docker maps named volume `vera_data` → `/app/data`.
 
 ---
 
+## Knowledge connectors (`app/knowledge/`)
+
+VERA’s **AI that works** model: each connector acquires files into a shared ingest pipeline; Ask only answers from that knowledge (or refuses). Connectors are isolated so changing crawl code cannot break PDF parse, and Ask never imports connectors.
+
+| Package | Owns |
+|---------|------|
+| `knowledge/sources/documents` | PDF / Word / txt / Office / zip / sample |
+| `knowledge/sources/web` | Public URL crawl + HTML extract |
+| `knowledge/sources/sharepoint` | Microsoft Graph / demo library |
+| `knowledge/sources/blob` | Azure Blob (needs connection string) |
+| `knowledge/sources/planned` | Roadmap slots: Outlook, OneDrive, Teams, OneLake, SQL, Confluence, Drive + assistant tools |
+| `knowledge/pipeline` | Shared fingerprint → parse → weave → embed |
+| `knowledge/signals` | Passage signals shared by ingest + Ask |
+
+See [`backend/app/knowledge/ROADMAP.md`](../backend/app/knowledge/ROADMAP.md) for Microsoft mail / personal-assistant provisioning.
+
 ## Uploads & URL crawl
 
 | Variable | Default |
 |----------|---------|
 | `VERA_MAX_UPLOAD_FILES` | `100` |
 | `VERA_MAX_FILE_MB` | `100` |
-| `VERA_URL_MAX_PAGES` | `20` |
-| `VERA_URL_MAX_DEPTH` | `1` |
+| `VERA_URL_MAX_PAGES` | `500` |
+| `VERA_URL_MAX_DEPTH` | `4` |
+| `VERA_URL_HARD_MAX_PAGES` | `2000` |
 
 ---
 
@@ -66,6 +83,20 @@ Docker maps named volume `vera_data` → `/app/data`.
 | `VERA_MS_CLIENT_SECRET` | Secret — keep out of git |
 
 Needs Graph permissions: `Sites.Read.All`, `Files.Read.All` (app or delegated as implemented).
+
+---
+
+## Azure Blob (optional)
+
+| Variable | Notes |
+|----------|-------|
+| `VERA_AZURE_BLOB_CONNECTION_STRING` | Preferred — full connection string |
+| `VERA_AZURE_STORAGE_ACCOUNT` | Alternative with key |
+| `VERA_AZURE_STORAGE_KEY` | Pair with storage account |
+
+Without these, `GET /api/sources/connectors` shows `blob.state: needs_config` and `POST /api/sources/blob` returns `501 BLOB_NOT_CONFIGURED`. See `backend/app/knowledge/sources/blob/README.md`.
+
+After ingest, Ask readiness (`ask_readiness` on health) is the gate that the agent “works” for grounded Q&A.
 
 ---
 

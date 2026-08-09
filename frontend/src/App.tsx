@@ -1,6 +1,5 @@
 import { NavLink, Route, Routes, useLocation } from "react-router-dom";
 import { BRAND } from "./brand";
-import EditableText from "./components/EditableText";
 import { WorkspaceProvider, useWorkspace } from "./state";
 import Home from "./pages/Home";
 import Connect from "./pages/Connect";
@@ -10,9 +9,11 @@ import Insights from "./pages/Insights";
 import AgentBuilder from "./pages/AgentBuilder";
 import Deploy from "./pages/Deploy";
 import Embed from "./pages/Embed";
+import Fleet from "./pages/Fleet";
 
 const NAV = [
   { to: "/", label: "Home", end: true },
+  { to: "/fleet", label: "Fleet", end: false },
   { to: "/agent", label: "Agents", end: false },
   { to: "/deploy", label: "Deploy", end: false },
   { to: "/connect", label: "Connect", end: false },
@@ -23,6 +24,7 @@ const NAV = [
 
 const TITLES: Record<string, { title: string; sub: string }> = {
   "/": { title: "Studio", sub: "Your agent fleet" },
+  "/fleet": { title: "Fleet", sub: "Active · Disable · Delete" },
   "/agent": { title: "Agents", sub: "Identity · voice · publish" },
   "/deploy": { title: "Deploy", sub: "Endpoints · pricing · embeds" },
   "/connect": { title: "Connect", sub: "Feed the active agent’s knowledge" },
@@ -32,7 +34,7 @@ const TITLES: Record<string, { title: string; sub: string }> = {
 };
 
 function Shell() {
-  const { demoMode, currentAgent, agents, agentId, selectAgent, renameAgent } = useWorkspace();
+  const { demoMode, currentAgent, agents, agentId, selectAgent } = useWorkspace();
   const loc = useLocation();
   const meta = TITLES[loc.pathname] || TITLES["/"];
 
@@ -64,39 +66,51 @@ function Shell() {
         </div>
 
         <div className="sidebar-fleet">
-          <div className="nav-label">Agents</div>
-          <div className="sidebar-fleet-list">
-            {agents.map((a) => (
-              <button
-                key={a.id}
-                type="button"
-                className={`sidebar-fleet-item ${a.id === agentId ? "active" : ""}`}
-                onClick={() => void selectAgent(a.id)}
+          <div className="sidebar-fleet-head">
+            <div className="nav-label">Active agent</div>
+            {agents.length > 0 && (
+              <span className="sidebar-fleet-count">{agents.length}</span>
+            )}
+          </div>
+          {currentAgent ? (
+            <div className="sidebar-active-card">
+              <strong title={currentAgent.name}>{currentAgent.name}</strong>
+              <span>
+                {currentAgent.counts?.documents ?? 0} docs ·{" "}
+                {currentAgent.disabled
+                  ? "disabled"
+                  : currentAgent.published
+                    ? "live"
+                    : (currentAgent.counts?.documents ?? 0) > 0
+                      ? "ready"
+                      : "draft"}
+              </span>
+            </div>
+          ) : (
+            <p className="sidebar-fleet-empty">No agent selected</p>
+          )}
+          {agents.length > 1 && (
+            <label className="sidebar-switch">
+              <span>Switch</span>
+              <select
+                value={agentId || ""}
+                onChange={(e) => {
+                  if (e.target.value) void selectAgent(e.target.value);
+                }}
               >
-                <span className="sidebar-fleet-name">{a.name}</span>
-                <span className="sidebar-fleet-meta">
-                  {a.counts?.nodes ?? 0}n · {a.published ? "live" : a.counts?.documents ? "ready" : "draft"}
-                </span>
-              </button>
-            ))}
-            {!agents.length && <p className="muted" style={{ fontSize: "0.78rem", padding: "0 0.5rem" }}>No agents yet</p>}
-          </div>
+                {agents.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                    {a.published ? " · live" : a.disabled ? " · off" : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          <NavLink className="sidebar-fleet-link" to="/fleet">
+            {agents.length > 1 ? "Manage all agents" : "Open fleet"}
+          </NavLink>
         </div>
-
-        {currentAgent && (
-          <div className="sidebar-agent">
-            <div className="nav-label">Rename active</div>
-            <EditableText
-              as="strong"
-              value={currentAgent.name}
-              className="sidebar-agent-name"
-              onSave={(name) => renameAgent(currentAgent.id, name)}
-            />
-            <span className="muted">
-              {currentAgent.counts?.documents ?? 0} docs · {currentAgent.counts?.nodes ?? 0} nodes
-            </span>
-          </div>
-        )}
 
         <div className="sidebar-foot">
           <strong>Trust invariant</strong>
@@ -130,13 +144,6 @@ function Shell() {
                     ))}
                   </select>
                 </label>
-                {currentAgent && (
-                  <EditableText
-                    value={currentAgent.name}
-                    className="topbar-rename"
-                    onSave={(name) => renameAgent(currentAgent.id, name)}
-                  />
-                )}
               </>
             )}
             {askFocus && (
@@ -165,6 +172,7 @@ function Shell() {
           )}
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/fleet" element={<Fleet />} />
             <Route path="/agent" element={<AgentBuilder />} />
             <Route path="/deploy" element={<Deploy />} />
             <Route path="/connect" element={<Connect />} />

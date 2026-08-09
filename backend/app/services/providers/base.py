@@ -12,6 +12,7 @@ class LLMProvider(Protocol):
         *,
         temperature: float = 0.1,
         response_format: dict[str, Any] | None = None,
+        max_tokens: int | None = None,
     ) -> str: ...
 
     async def embed(self, texts: list[str]) -> list[list[float]]: ...

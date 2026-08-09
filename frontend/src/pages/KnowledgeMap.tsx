@@ -52,6 +52,26 @@ function linkEnds(l: GraphLink): [string, string] {
   return [s, t];
 }
 
+/** Readable map labels — strip crawl filename noise. */
+function displayName(name: string, type: string): string {
+  let s = (name || "").trim();
+  if (!s) return type || "node";
+  if (type === "Document" || /\.md$/i.test(s) || /^www\./i.test(s)) {
+    s = s
+      .replace(/^www\.[^_/]+[_/]/i, "")
+      .replace(/\.md$/i, "")
+      .replace(/[_-]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+  if (!s) s = name;
+  return s;
+}
+
+function isEntityType(type: string): boolean {
+  return !["Document", "Chunk", "Source", "File"].includes(type);
+}
+
 export default function KnowledgeMap() {
   const {
     workspaceId,
@@ -247,6 +267,25 @@ export default function KnowledgeMap() {
     return ids;
   }, [selected, baseData.links]);
   neighborIdsRef.current = neighborIds;
+
+  /** Always-label hubs so zoom-to-fit graphs aren't nameless dots. */
+  const hubIds = useMemo(() => {
+    const ranked = [...baseData.nodes].sort((a, b) => (b.degree || 0) - (a.degree || 0));
+    const ids = new Set<string>();
+    const hubBudget = Math.min(80, Math.max(24, Math.floor(ranked.length * 0.04)));
+    for (const n of ranked) {
+      if (ids.size >= hubBudget) break;
+      // Prefer entities; still include top Documents if they dominate degree
+      if (isEntityType(n.type) || (n.degree || 0) >= 6) ids.add(n.id);
+    }
+    // Ensure top degree nodes are included even if Documents
+    for (const n of ranked.slice(0, Math.min(40, ranked.length))) {
+      ids.add(n.id);
+    }
+    return ids;
+  }, [baseData.nodes]);
+  const hubIdsRef = useRef(hubIds);
+  hubIdsRef.current = hubIds;
 
   const data = useMemo(() => {
     const visibleIds = new Set(
@@ -515,7 +554,9 @@ export default function KnowledgeMap() {
               minZoom={0.2}
               maxZoom={5}
               nodeLabel={(n: GraphNode) =>
-                `${n.name} (${n.type}${typeof n.degree === "number" ? ` · ${n.degree} links` : ""})`
+                `${displayName(n.name, n.type)} (${n.type}${
+                  typeof n.degree === "number" ? ` · ${n.degree} links` : ""
+                })`
               }
               linkLabel={(l: GraphLink) => l.rel || ""}
               onNodeClick={(n: GraphNode) => focusNode(n)}
@@ -527,9 +568,10 @@ export default function KnowledgeMap() {
                 if (fittedRef.current) return;
                 try {
                   const fg = fgRef.current;
-                  fg?.zoomToFit?.(400, 28);
+                  fg?.zoomToFit?.(400, 36);
                   const z = fg?.zoom?.() ?? 1;
-                  fg?.zoom?.(z * 1.1, 200);
+                  // Keep a readable floor so hub labels paint after fit
+                  fg?.zoom?.(Math.max(z * 1.25, 0.42), 220);
                   fittedRef.current = true;
                 } catch {
                   /* ignore */
@@ -542,23 +584,29 @@ export default function KnowledgeMap() {
               d3VelocityDecay={0.35}
               enableNodeDrag
               nodeCanvasObject={(node: GraphNode, ctx, globalScale) => {
-                const label = node.name || "";
+                const rawName = node.name || "";
+                const label = displayName(rawName, node.type);
                 const isSel = selectedIdRef.current === node.id;
                 const qq = queryRef.current;
-                const match = Boolean(qq && label.toLowerCase().includes(qq));
+                const match = Boolean(
+                  qq &&
+                    (rawName.toLowerCase().includes(qq) || label.toLowerCase().includes(qq))
+                );
                 const emphasize = isSel || match;
                 const hasFocus = Boolean(selectedIdRef.current);
                 const inNeighborhood = !hasFocus || neighborIdsRef.current.has(node.id);
                 const sizePx = paintRadius(node, globalScale, emphasize);
                 const color = typeColor(node.type);
                 const deg = node.degree || 0;
-                const boldLabel = emphasize || deg >= 10;
+                const entity = isEntityType(node.type);
+                const isHub = hubIdsRef.current.has(node.id);
+                const boldLabel = emphasize || isHub || deg >= 8;
 
                 ctx.save();
                 if (hasFocus && !inNeighborhood) ctx.globalAlpha = 0.18;
                 ctx.beginPath();
                 ctx.arc(node.x || 0, node.y || 0, sizePx, 0, 2 * Math.PI);
-                ctx.globalAlpha = (hasFocus && !inNeighborhood ? 0.08 : emphasize ? 0.88 : 0.14);
+                ctx.globalAlpha = hasFocus && !inNeighborhood ? 0.08 : emphasize ? 0.88 : 0.14;
                 ctx.fillStyle = color;
                 ctx.fill();
                 ctx.globalAlpha = hasFocus && !inNeighborhood ? 0.25 : 1;
@@ -566,24 +614,32 @@ export default function KnowledgeMap() {
                 ctx.strokeStyle = isSel ? "#1a1d26" : color;
                 ctx.stroke();
 
+                // Large graphs zoom out hard — still paint hub/entity names.
                 const showLabel =
                   emphasize ||
                   (inNeighborhood &&
-                    (globalScale >= 1.15 ||
-                      (globalScale >= 0.7 && (boldLabel || deg >= 4)) ||
-                      (globalScale >= 0.45 && deg >= 8)));
-                if (showLabel) {
-                  const fontScreen = boldLabel ? 11 : 10;
-                  const fontSize = fontScreen / globalScale;
+                    (isHub ||
+                      (entity && (deg >= 2 || globalScale >= 0.5)) ||
+                      globalScale >= 1.05 ||
+                      (globalScale >= 0.65 && deg >= 3) ||
+                      (globalScale >= 0.4 && deg >= 6)));
+                if (showLabel && label) {
+                  const fontScreen = boldLabel ? 11.5 : 10;
+                  const fontSize = fontScreen / Math.max(0.35, globalScale);
+                  const maxChars = globalScale < 0.55 ? 18 : globalScale < 1 ? 26 : 36;
                   const short =
-                    label.length > 28 && globalScale < 1.2
-                      ? `${label.slice(0, 26)}…`
-                      : label.slice(0, 40);
-                  ctx.font = `${boldLabel ? 500 : 400} ${fontSize}px DM Sans, Sora, Segoe UI, sans-serif`;
+                    label.length > maxChars ? `${label.slice(0, maxChars - 1)}…` : label;
+                  ctx.font = `${boldLabel ? 600 : 500} ${fontSize}px DM Sans, Sora, Segoe UI, sans-serif`;
                   ctx.textAlign = "center";
                   ctx.textBaseline = "top";
-                  ctx.fillStyle = emphasize ? "#1a1d26" : "#3a4050";
-                  ctx.fillText(short, node.x || 0, (node.y || 0) + sizePx + 3.5 / globalScale);
+                  const tx = node.x || 0;
+                  const ty = (node.y || 0) + sizePx + 3.5 / globalScale;
+                  // Soft halo so labels stay readable on dense webs
+                  ctx.lineWidth = 3.2 / Math.max(0.35, globalScale);
+                  ctx.strokeStyle = "rgba(255,255,255,0.92)";
+                  ctx.strokeText(short, tx, ty);
+                  ctx.fillStyle = emphasize ? "#12151c" : "#2a3140";
+                  ctx.fillText(short, tx, ty);
                 }
                 ctx.restore();
               }}

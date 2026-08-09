@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-import mimetypes
 from pathlib import Path
 
 from app.agents.base import AgentContext, AgentError, AgentResult, AgentWarning
 from app.agents.ingest.contracts import AcquiredFile, ConnectInput, ConnectOutput
-from app.config import BACKEND_ROOT
-
-SAMPLE_DIR = BACKEND_ROOT / "app" / "data" / "sample_kb"
+from app.knowledge.sources.documents.sample import load_sample_files
 
 
 class ConnectAgent:
@@ -21,26 +18,7 @@ class ConnectAgent:
         warnings: list[AgentWarning] = []
 
         if payload.sample:
-            if not SAMPLE_DIR.exists():
-                return AgentResult(
-                    ok=False,
-                    error=AgentError(
-                        code="SAMPLE_MISSING",
-                        message="Sample KB folder not found — upload your own documents instead.",
-                    ),
-                )
-            files = []
-            for path in sorted(SAMPLE_DIR.glob("*")):
-                if path.is_file() and path.suffix.lower() in {".txt", ".md", ".pdf", ".docx"}:
-                    mime, _ = mimetypes.guess_type(path.name)
-                    files.append(
-                        AcquiredFile(
-                            filename=path.name,
-                            mime=mime or "text/plain",
-                            content=path.read_bytes(),
-                            appears_at=f"sample://{path.name}",
-                        )
-                    )
+            files = load_sample_files()
             if not files:
                 return AgentResult(
                     ok=False,

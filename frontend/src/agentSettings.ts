@@ -18,6 +18,8 @@ export type AgentSettings = {
   showTrustTrail: boolean;
   showCitations: boolean;
   showTrustScore: boolean;
+  /** Publisher setting: stream answers on published embed / widget */
+  embedStreaming: boolean;
   placeholder: string;
   /** Suggested chips in chat — leave empty to auto-pick from agent name */
   sampleQuestions: string[];
@@ -32,6 +34,7 @@ export const DEFAULT_AGENT_SETTINGS: AgentSettings = {
   showTrustTrail: true,
   showCitations: true,
   showTrustScore: true,
+  embedStreaming: true,
   placeholder: "Ask about your connected knowledge…",
   sampleQuestions: [],
 };

@@ -4,15 +4,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-
-class AcquiredFile(BaseModel):
-    source_id: str | None = None
-    filename: str
-    mime: str | None = None
-    content: bytes = Field(repr=False)
-    appears_at: str | None = None
-    binary_hash: str | None = None
-    storage_path: str | None = None
+# AcquiredFile is owned by knowledge/ — re-export for ingest agents & shims
+from app.knowledge.contracts import AcquiredFile as AcquiredFile  # noqa: F401
 
 
 class ConnectInput(BaseModel):

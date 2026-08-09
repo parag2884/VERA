@@ -7,6 +7,7 @@ import logging
 import re
 
 from app.agents.ask.contracts import QuoteHit
+from app.agents.ask.page_signals import extract_offering_labels
 from app.agents.ask.retrieve import coverage_ratio, required_terms
 from app.agents.base import AgentContext
 
@@ -94,8 +95,35 @@ async def gpt_answer_from_quotes(
                         "subscription/license/renewal passages when present — use numbered steps.\n"
                         "4) For definition / \"what is\" questions: short definition paragraph, "
                         "then ## Key points with bullets.\n"
-                        "5) Set sufficient=false ONLY when quotes are clearly unrelated "
-                        "(wrong topic) or empty of answerable content.\n"
+                        "5) Set sufficient=false when quotes are unrelated to the question, "
+                        "or only say that the sources lack the answer. Do NOT set "
+                        "sufficient=true for outside/world-knowledge questions "
+                        "(weather, geography trivia, news, etc.) just to explain that "
+                        "the KB is silent — that must be sufficient=false.\n"
+                        "5b) When sources conflict, prefer current / newer dated wording "
+                        "over outdated or former/previous phrasing, and mention the "
+                        "transition when the sources do. Never list someone as current "
+                        "CEO/President if a newer quote names a different current CEO.\n"
+                        "5d) Only use facts from quotes that clearly address the question. "
+                        "Ignore tangential passages in the pack.\n"
+                        "5e) For how-many / how-long / office-count questions: prefer "
+                        "organization-level metrics (e.g. '10,000+ people', '30+ years', "
+                        "'47 offices') over personal tenure or vague 'many' language. "
+                        "If no numeric metric appears in the quotes, set sufficient=false.\n"
+                        "5c) For who / leadership / executive / board roster questions: "
+                        "only list people and roles that are explicitly named in the "
+                        "quotes. Prefer a short bullet list of Name — Title. If quotes "
+                        "only discuss culture, accessibility, or awards without naming "
+                        "officers, set sufficient=false (do not invent a roster).\n"
+                        "5f) For a single-role who-is question (CEO, CTO, Chief … Officer): "
+                        "answer with that person's name when a matching title appears; "
+                        "do not refuse just because other officers are also listed.\n"
+                        "5g) If quotes present named transformation pathways or a short "
+                        "branded triad (Word. Word. Word.), answer with those labels "
+                        "(sufficient=true) even if surrounding marketing copy is thin.\n"
+                        "5h) If quotes name offerings / services / solutions (headings or "
+                        "short capability labels), list those as capabilities "
+                        "(sufficient=true).\n"
                         "6) Never invent facts from general world knowledge.\n"
                         "7) Do NOT mention document names, filenames, PDF titles, "
                         "parenthetical source lists, or a References / Sources section. "
@@ -126,25 +154,55 @@ async def gpt_answer_from_quotes(
         answer = _normalize_answer_markdown(answer)
         reason = (parsed.get("reason") or "").strip()
 
-        # High lexical coverage → do not refuse if GPT produced an answer
-        if answer and cov >= 0.45:
-            sufficient = True
-        # Soft repair when model answered but flagged false
-        if answer and not sufficient and (
-            cov >= 0.3
-            or re.search(
-                r"\b(according to|based on|the (document|source|quote)|from )\b",
-                answer,
-                re.I,
-            )
-        ):
-            sufficient = True
+        # "Sources don't contain X" is a refuse, not a grounded answer
+        if is_unsupported_by_evidence_answer(answer):
+            sufficient = False
+            reason = reason or "unsupported_by_evidence_prose"
+        else:
+            # High lexical coverage → do not refuse if GPT produced a real answer
+            if answer and cov >= 0.45:
+                sufficient = True
+            # Soft repair when model answered with grounded content but flagged false
+            if answer and not sufficient and (
+                cov >= 0.3
+                or re.search(
+                    r"\b(according to|based on|the (document|source|quote)|from )\b",
+                    answer,
+                    re.I,
+                )
+            ):
+                sufficient = True
         if sufficient and not answer:
             sufficient = False
             reason = reason or "Model returned empty answer."
-        # Low coverage + refuse text → keep refuse
         if not answer and cov < 0.25:
             sufficient = False
+
+        # Offerings / capabilities: salvage structural labels when GPT is overly cautious
+        if (not sufficient or is_unsupported_by_evidence_answer(answer)) and re.search(
+            r"\b(capabilities|services|offerings?|solutions)\b", question or "", re.I
+        ):
+            found: list[str] = []
+            seen_c: set[str] = set()
+            for qh in quotes or []:
+                for label in extract_offering_labels(
+                    getattr(qh, "quote", "") or "",
+                    getattr(qh, "document_title", "") or "",
+                    limit=6,
+                ):
+                    key = label.lower()
+                    if key in seen_c:
+                        continue
+                    seen_c.add(key)
+                    found.append(label)
+            if found:
+                bullets = "\n".join(f"- {c}" for c in found[:8])
+                answer = (
+                    "Connected sources describe these offerings / capabilities:\n\n"
+                    f"{bullets}"
+                )
+                sufficient = True
+                reason = reason or "capability_phrase_salvage"
 
         ctx.demo_mode = ctx.demo_mode or getattr(ctx.llm, "mode", "") == "mock"
         return {
@@ -169,6 +227,49 @@ async def gpt_answer_from_quotes(
             "reason": f"llm_error:{exc}",
             "coverage": cov,
         }
+
+
+_NO_EVIDENCE_RE = re.compile(
+    r"("
+    r"\b(do not|don't|does not|doesn't|did not|didn't)\s+contain\b|"
+    r"\b(do not|don't|does not|doesn't)\s+(specify|provide|include|state)\b|"
+    r"\b(no|not\s+any|without\s+any)\s+(information|evidence|data|details|mention|number|count|estimate)\b|"
+    r"\b(could not|couldn't|cannot|can't)\s+find\b|"
+    r"\b(not\s+enough|insufficient)\s+evidence\b|"
+    r"\bprovided\s+(sources?|evidence|quotes?)\s+(do not|don't|does not|doesn't|"
+    r"mention|discuss)\b|"
+    r"\bsources?\s+(do not|don't|does not|doesn't|"
+    r"mention.{0,40}but)\s+(contain|mention|address|discuss|specify|provide)?\b|"
+    r"\bsources?\s+mention\b.{0,80}\bbut\s+do\s+not\b|"
+    r"\bno\s+(specific|relevant)\s+information\b|"
+    r"\boutside\s+(the\s+)?(knowledge\s+base|connected\s+sources)\b"
+    r")",
+    re.I,
+)
+
+
+def is_unsupported_by_evidence_answer(answer: str) -> bool:
+    """True when the model’s main point is that the KB cannot answer."""
+    t = (answer or "").strip()
+    if not t:
+        return False
+    low = t.lower()
+    if not _NO_EVIDENCE_RE.search(low):
+        return False
+    # First sentence decides: real claim first → keep as answer (gap note OK later)
+    parts = [p.strip() for p in re.split(r"(?<=[.!?])\s+", low) if p.strip()]
+    first = parts[0] if parts else low[:220]
+    first_is_gap = bool(_NO_EVIDENCE_RE.search(first))
+    first_has_claim = bool(
+        re.search(
+            r"\b(is|are|was|were|means|refers|includes|requires|provides|covers|"
+            r"offers|located|holds|titled)\b",
+            first,
+        )
+    ) and not first_is_gap
+    if first_has_claim:
+        return False
+    return first_is_gap
 
 
 def _strip_reference_noise(answer: str) -> str:

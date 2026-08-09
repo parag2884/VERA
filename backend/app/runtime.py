@@ -141,14 +141,15 @@ def build_orchestrator(registry: AgentRegistry) -> PipelineOrchestrator:
 
     def _after_guard(bag: dict[str, Any]) -> dict[str, Any] | None:
         if bag.get("blocked"):
+            from app.agents.ask.moderation import SECRET_FALLBACK, fallback_for_codes
+
+            codes = bag.get("reason_codes") or ["SECRET_OR_SENSITIVE_REQUEST"]
+            answer = fallback_for_codes(codes) or SECRET_FALLBACK
             return {
                 "decision": "refuse",
-                "answer": (
-                    "I can’t help with secrets or personal data requests. "
-                    "I only answer from the connected knowledge base."
-                ),
-                "reason_codes": bag.get("reason_codes") or ["SECRET_OR_SENSITIVE_REQUEST"],
-                "retrieval_mode": "refuse",
+                "answer": answer,
+                "reason_codes": codes,
+                "retrieval_mode": "policy_refuse",
                 "trust_score": {"overall": 0.0},
                 "trust_trail": [],
                 "claims": [],
@@ -255,6 +256,7 @@ def build_orchestrator(registry: AgentRegistry) -> PipelineOrchestrator:
                         or 0.0,
                         clarify_options=bag.get("clarify_options") or [],
                         clarification_prompt=bag.get("clarification_prompt"),
+                        evidence_contract=bag.get("evidence_contract"),
                     ),
                 ),
             ],

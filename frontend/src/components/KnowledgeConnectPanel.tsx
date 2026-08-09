@@ -1,28 +1,56 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, formatApiError, Job } from "../api/client";
 import { useWorkspace } from "../state";
 import AgentPipelineProgress from "./AgentPipelineProgress";
 import CleanStackImpact, { CleanStackReport } from "./CleanStackImpact";
 
-type SourceTab = "upload" | "website" | "sharepoint";
+type SourceTab = string;
+
+type CatalogTile = {
+  id: string | null;
+  title: string;
+  blurb: string;
+  state: "live" | "needs_config" | "planned" | "soon";
+  setup_hint?: string;
+  interactive: boolean;
+};
 
 type Props = {
   compact?: boolean;
   onIngestComplete?: () => void;
 };
 
-const CATALOG = [
-  { id: "upload" as const, title: "Files & Zip", blurb: "PDF, Office, images", state: "live" as const },
-  { id: "website" as const, title: "Website", blurb: "Public docs & pages", state: "live" as const },
-  { id: "sharepoint" as const, title: "SharePoint", blurb: "Sites & libraries", state: "live" as const },
-  { id: null, title: "Azure Blob", blurb: "Container sync", state: "soon" as const },
-  { id: null, title: "OneLake / Fabric", blurb: "Lakehouse files", state: "soon" as const },
-  { id: null, title: "Azure SQL", blurb: "Structured facts", state: "soon" as const },
+const FALLBACK_CATALOG: CatalogTile[] = [
+  { id: "upload", title: "Files & Zip", blurb: "PDF, Office, images", state: "live", interactive: true },
+  { id: "website", title: "Website", blurb: "Public docs & pages", state: "live", interactive: true },
+  { id: "sharepoint", title: "SharePoint", blurb: "Sites & libraries", state: "live", interactive: true },
+  { id: "blob", title: "Azure Blob", blurb: "Container sync", state: "needs_config", interactive: true },
+  { id: "outlook", title: "Email & calendar", blurb: "Ask about mail, meetings, summaries", state: "planned", interactive: false },
+  { id: "onedrive", title: "OneDrive", blurb: "Personal / work files", state: "planned", interactive: false },
+  { id: "teams", title: "Microsoft Teams", blurb: "Channels & files", state: "planned", interactive: false },
+  { id: "onelake", title: "OneLake / Fabric", blurb: "Lakehouse files", state: "planned", interactive: false },
+  { id: "azure_sql", title: "Azure SQL", blurb: "Structured facts", state: "planned", interactive: false },
+  { id: "confluence", title: "Confluence", blurb: "Wiki spaces", state: "planned", interactive: false },
+  { id: "gdrive", title: "Google Drive", blurb: "Shared drives & Docs", state: "planned", interactive: false },
 ];
 
+const LIVE_TABS = new Set(["upload", "website", "sharepoint", "blob"]);
+
+function tileStateLabel(state: CatalogTile["state"]): string {
+  if (state === "live") return "Ready";
+  if (state === "needs_config") return "Setup";
+  return "Next";
+}
+
+function tileCssState(state: CatalogTile["state"]): string {
+  if (state === "live") return "live";
+  if (state === "needs_config") return "setup";
+  return "soon";
+}
+
 export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Props) {
-  const { ensureWorkspace, setDemoMode, refreshAgents } = useWorkspace();
+  const { ensureWorkspace, setDemoMode, refreshAgents, currentAgent } = useWorkspace();
   const nav = useNavigate();
   const [job, setJob] = useState<Job | null>(null);
   const [busy, setBusy] = useState(false);
@@ -31,7 +59,49 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
   const [tab, setTab] = useState<SourceTab>("upload");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [sharepointUrl, setSharepointUrl] = useState("");
+  const [blobContainer, setBlobContainer] = useState("");
+  const [blobPrefix, setBlobPrefix] = useState("");
+  const [blobConfigured, setBlobConfigured] = useState(false);
+  const [catalog, setCatalog] = useState<CatalogTile[]>(FALLBACK_CATALOG);
+  const [plannedHint, setPlannedHint] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    void api
+      .connectors()
+      .then((c) => {
+        const blob = c.blob || {};
+        setBlobConfigured(Boolean(blob.configured) || blob.state === "configured");
+        if (Array.isArray(c.catalog) && c.catalog.length) {
+          setCatalog(
+            c.catalog.map((row) => {
+              const raw = (row.state || "planned").toLowerCase();
+              let state: CatalogTile["state"] = "planned";
+              if (raw === "configured" || (row.id === "blob" && row.configured)) state = "live";
+              else if (raw === "needs_config") state = "needs_config";
+              else if (["upload", "website", "sharepoint", "documents", "web"].includes(row.id))
+                state = "live";
+              else if (row.id === "blob") state = row.configured ? "live" : "needs_config";
+              else if (raw === "planned" || raw === "soon") state = "planned";
+              else if (raw === "live") state = "live";
+              const id = row.id === "documents" ? "upload" : row.id === "web" ? "website" : row.id;
+              return {
+                id,
+                title: row.title,
+                blurb: row.blurb,
+                state,
+                setup_hint: row.setup_hint,
+                interactive: LIVE_TABS.has(id),
+              };
+            })
+          );
+        }
+      })
+      .catch(() => {
+        setBlobConfigured(false);
+        setCatalog(FALLBACK_CATALOG);
+      });
+  }, []);
 
   async function clearKnowledge() {
     const ok = window.confirm(
@@ -56,14 +126,21 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
   }
 
   async function poll(workspaceId: string, jobId: string) {
-    for (let i = 0; i < 300; i++) {
+    // Large website crawls (hundreds of pages + weave) can exceed a few minutes.
+    for (let i = 0; i < 900; i++) {
       const j = await api.job(workspaceId, jobId);
       setJob(j);
       const ev = (j.events || []) as Array<{ message?: string }>;
       const last = [...ev].reverse().find((e) => e.message);
       if (last?.message) setStatusText(last.message);
       if (j.result && (j.result as { demo_mode?: boolean }).demo_mode) setDemoMode(true);
-      if (j.status === "completed" || j.status === "failed") return j;
+      if (j.status === "completed" || j.status === "failed") {
+        await refreshAgents().catch(() => undefined);
+        return j;
+      }
+      if (i > 0 && i % 15 === 0) {
+        await refreshAgents().catch(() => undefined);
+      }
       await new Promise((r) => setTimeout(r, 800));
     }
     throw new Error("Timed out waiting for ingest");
@@ -125,9 +202,13 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
       return;
     }
     await runJob(async () => {
-      setStatusText(`Crawling ${websiteUrl.trim()}…`);
+      setStatusText(`Crawling public pages on ${websiteUrl.trim()}…`);
       const ws = await ensureWorkspace();
-      const j = await api.ingestUrl(ws, websiteUrl.trim());
+      // Full public crawl: sitemap + same-host BFS (server defaults ~500 pages / depth 4)
+      const j = await api.ingestUrl(ws, websiteUrl.trim(), {
+        max_pages: 500,
+        max_depth: 4,
+      });
       return { ws, job: j, label: "Website" };
     });
   }
@@ -148,13 +229,58 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
     });
   }
 
+  async function runBlob() {
+    if (!blobContainer.trim()) {
+      setError("Enter an Azure Blob container name");
+      return;
+    }
+    await runJob(async () => {
+      setStatusText(`Syncing blob container ${blobContainer.trim()}…`);
+      const ws = await ensureWorkspace();
+      const j = await api.ingestBlob(ws, {
+        container: blobContainer.trim(),
+        prefix: blobPrefix.trim() || undefined,
+      });
+      return { ws, job: j, label: "Azure Blob" };
+    });
+  }
+
   const report = (job?.result?.cleanstack || null) as CleanStackReport | null;
   const impact = (job?.result?.impact || null) as Record<string, number> | null;
-  const catalog = compact ? CATALOG.filter((s) => s.state === "live") : CATALOG;
+  const visibleCatalog = compact
+    ? catalog.filter((s) => s.state === "live" || s.id === "blob")
+    : catalog;
   const showPipeline = !compact || busy || Boolean(job);
+  const activeTile = catalog.find((s) => s.id === tab);
 
   const sourceControls = (
     <>
+      {!compact && (
+        <p className="muted" style={{ marginTop: 0, marginBottom: "0.75rem" }}>
+          VERA builds <strong>AI that works</strong> — answers only from knowledge you connect here,
+          and says when the sources don’t cover the question. Hook Email & calendar so Ask can brief
+          you on important mail, upcoming meetings, and summaries — same as Website or Files.
+        </p>
+      )}
+      {activeTile && !LIVE_TABS.has(tab) && (
+        <div className="source-pane">
+          <p className="muted" style={{ marginTop: 0 }}>
+            <strong>{activeTile.title}</strong> is provisioned in the connector registry but not
+            wired for ingest yet. Same pattern as Blob/SharePoint: acquire → CleanStack → weave →
+            Ask with proof.
+          </p>
+          {activeTile.setup_hint && (
+            <p className="muted" style={{ fontSize: "0.85rem" }}>
+              Planned setup: {activeTile.setup_hint}
+            </p>
+          )}
+          {plannedHint && (
+            <p className="muted" style={{ fontSize: "0.85rem" }}>
+              {plannedHint}
+            </p>
+          )}
+        </div>
+      )}
       {tab === "upload" && (
         <div className="source-pane">
           {!compact && (
@@ -199,15 +325,24 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
         <div className="source-pane">
           {!compact && (
             <p className="muted" style={{ marginTop: 0 }}>
-              Paste a public page URL. VERA fetches the page (and same-site links up to depth 1) into
-              markdown sources for CleanStack.
+              Enter the website homepage (example: https://www.thoughtworks.com). VERA will read up
+              to about 500 public pages from that site.
+              <br />
+              <br />
+              We keep pages like About, Leaders, News, and Services. We skip case studies, client
+              stories, job listings, and glossary pages — those fill the crawl without helping Ask.
+              Pages that need a login are skipped.
+              <br />
+              <br />
+              If Ask still misses something important, crawl that section next (example: …/about-us
+              or …/about-us/leaders).
             </p>
           )}
           <label className="field">
             <span>Website URL</span>
             <input
               type="url"
-              placeholder="https://learn.microsoft.com/…"
+              placeholder="https://www.example.com"
               value={websiteUrl}
               disabled={busy}
               onChange={(e) => setWebsiteUrl(e.target.value)}
@@ -215,7 +350,7 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
           </label>
           <div className="cta-row">
             <button className="btn btn-primary" type="button" disabled={busy} onClick={() => void runWebsite()}>
-              {busy ? "Crawling…" : "Add website"}
+              {busy ? "Crawling public site…" : "Crawl public site"}
             </button>
           </div>
         </div>
@@ -266,6 +401,58 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
         </div>
       )}
 
+      {tab === "blob" && (
+        <div className="source-pane">
+          {!compact && (
+            <p className="muted" style={{ marginTop: 0 }}>
+              Sync files from an Azure Blob container into the same ingest pipeline as uploads.
+              {!blobConfigured && (
+                <>
+                  {" "}
+                  Set <code>VERA_AZURE_BLOB_CONNECTION_STRING</code> in the API env to enable
+                  (see Configuration docs).
+                </>
+              )}
+            </p>
+          )}
+          <label className="field">
+            <span>Container</span>
+            <input
+              type="text"
+              placeholder="knowledge-docs"
+              value={blobContainer}
+              disabled={busy}
+              onChange={(e) => setBlobContainer(e.target.value)}
+            />
+          </label>
+          <label className="field">
+            <span>Prefix (optional)</span>
+            <input
+              type="text"
+              placeholder="policies/"
+              value={blobPrefix}
+              disabled={busy}
+              onChange={(e) => setBlobPrefix(e.target.value)}
+            />
+          </label>
+          <div className="cta-row">
+            <button
+              className="btn btn-primary"
+              type="button"
+              disabled={busy || !blobConfigured}
+              title={
+                blobConfigured
+                  ? "List and ingest blobs from the container"
+                  : "Configure VERA_AZURE_BLOB_CONNECTION_STRING first"
+              }
+              onClick={() => void runBlob()}
+            >
+              {busy ? "Syncing blob…" : blobConfigured ? "Connect Azure Blob" : "Blob needs config"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {statusText && !error && !compact && (
         <p className="muted" style={{ marginTop: "1rem", fontSize: "0.9rem" }}>
           {statusText}
@@ -279,8 +466,8 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
     return (
       <div className="kb-connect-panel kb-connect-compact">
         <div className="kb-compact-tabs" role="tablist" aria-label="Knowledge source">
-          {catalog.map((src) =>
-            src.id ? (
+          {visibleCatalog.map((src) =>
+            src.id && src.interactive ? (
               <button
                 key={src.title}
                 type="button"
@@ -313,9 +500,11 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
           <div className="kb-pipeline-block">
             <AgentPipelineProgress
               compact
+              agentName={currentAgent?.name}
+              jobType={job?.type}
               events={(job?.events as Array<Record<string, unknown>>) || []}
-              progress={job?.progress || 0}
-              status={job?.status}
+              progress={job?.progress || (busy ? 0.01 : 0)}
+              status={job?.status || (busy ? "running" : undefined)}
               statusText={statusText}
             />
           </div>
@@ -341,28 +530,35 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
   return (
     <div className="kb-connect-panel">
       <div className="kb-catalog">
-        {catalog.map((src) => (
+        {visibleCatalog.map((src) => (
           <button
             key={src.title}
             type="button"
-            className={`kb-tile ${src.id && tab === src.id ? "active" : ""} ${src.state}`}
-            disabled={busy || src.state === "soon"}
-            onClick={() => src.id && setTab(src.id)}
+            className={`kb-tile ${src.id && tab === src.id ? "active" : ""} ${tileCssState(src.state)}`}
+            disabled={busy}
+            onClick={() => {
+              if (!src.id) return;
+              setTab(src.id);
+              setPlannedHint(
+                src.interactive
+                  ? null
+                  : src.setup_hint || "Reserved module — implement under app/knowledge/sources/."
+              );
+            }}
           >
             <strong>{src.title}</strong>
             <span>{src.blurb}</span>
-            <em>{src.state === "live" ? "Ready" : "Next"}</em>
+            <em>{tileStateLabel(src.state)}</em>
           </button>
         ))}
       </div>
-
       <div className="grid-2">
         <div className="stack">
           <div className="panel">
             <div className="panel-head">
               <div>
                 <h3>
-                  {tab === "upload" ? "Files & Zip" : tab === "website" ? "Website" : "SharePoint"}
+                  {activeTile?.title || "Connect"}
                 </h3>
                 <p>Feeds the active agent only — other agents stay isolated.</p>
               </div>
@@ -402,19 +598,36 @@ export default function KnowledgeConnectPanel({ compact, onIngestComplete }: Pro
           <div className="panel-head">
             <div>
               <h3>Named agent stages</h3>
-              <p>Watch CleanStack as a first-class gate — not a black-box spinner.</p>
+              <p>
+                Live progress for <strong>{currentAgent?.name || "this agent"}</strong> only — other
+                agents stay isolated.
+              </p>
             </div>
             {job?.status === "completed" && (
-              <div className="metric-tile" style={{ minWidth: 110 }}>
-                <div className="label">Health</div>
-                <div className="value">{String(job.result?.health_score ?? "—")}</div>
-              </div>
+              <>
+                <div className="metric-tile" style={{ minWidth: 110 }}>
+                  <div className="label">Health</div>
+                  <div className="value">{String(job.result?.health_score ?? "—")}</div>
+                </div>
+                {job.result?.ask_readiness && (
+                  <div className="metric-tile" style={{ minWidth: 130 }}>
+                    <div className="label">Ask ready</div>
+                    <div className="value">
+                      {String(
+                        (job.result.ask_readiness as { status?: string }).status ?? "—"
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
           <AgentPipelineProgress
+            agentName={currentAgent?.name}
+            jobType={job?.type}
             events={(job?.events as Array<Record<string, unknown>>) || []}
-            progress={job?.progress || 0}
-            status={job?.status}
+            progress={job?.progress || (busy ? 0.01 : 0)}
+            status={job?.status || (busy ? "running" : undefined)}
             statusText={statusText}
           />
         </div>

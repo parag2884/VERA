@@ -11,6 +11,13 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 
 export type Workspace = { id: string; name: string; created_at: string };
 
+export type AskReadiness = {
+  status: "unknown" | "ready" | "needs_attention";
+  pass_rate?: number | null;
+  failing_patterns?: string[];
+  passage?: Record<string, unknown>;
+};
+
 export type Agent = {
   id: string;
   workspace_id: string;
@@ -22,6 +29,7 @@ export type Agent = {
   embed_key?: string | null;
   allowed_origins: string;
   published: boolean;
+  disabled?: boolean;
   created_at: string;
   counts: {
     sources?: number;
@@ -31,6 +39,7 @@ export type Agent = {
     edges?: number;
     asks?: number;
   };
+  ask_readiness?: AskReadiness | null;
 };
 
 export type AgentPublish = {
@@ -63,7 +72,11 @@ export type StudioDashboard = {
     description: string;
     workspace_id: string;
     published: boolean;
-    readiness: "draft" | "ready" | "live";
+    disabled?: boolean;
+    readiness: "draft" | "ready" | "live" | "disabled";
+    ask_status?: "unknown" | "ready" | "needs_attention";
+    ask_pass_rate?: number | null;
+    ask_failing_patterns?: string[];
     embed_key?: string | null;
     counts: Record<string, number>;
     endpoints: {
@@ -84,6 +97,25 @@ export type StudioDashboard = {
     highlighted?: boolean;
   }>;
   revenue_model: string[];
+  intelligence?: {
+    trust: {
+      grounded_pct: number;
+      evidence_coverage_pct: number;
+      unsupported_claims: number;
+      conflicts: number;
+      asks_sampled: number;
+      status: "trusted" | "review" | "building";
+    };
+    findings: Array<{ kind: "ok" | "warn" | "info"; text: string }>;
+    graph: {
+      health_score: number;
+      most_connected: string;
+      top_agent: string;
+      top_agent_asks: number;
+      concepts: number;
+      relationships: number;
+    };
+  };
 };
 export type Job = {
   id: string;
@@ -120,6 +152,54 @@ export type ChatResponse = {
   session_id?: string;
   events?: Array<Record<string, unknown>>;
 };
+
+type StreamHandlers = {
+  onStatus?: (message: string) => void;
+  onToken?: (text: string) => void;
+};
+
+async function consumeAskSse(res: Response, handlers: StreamHandlers = {}): Promise<ChatResponse> {
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || res.statusText);
+  }
+  if (!res.body) throw new Error("Streaming not supported by this browser");
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let finalResponse: ChatResponse | null = null;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const chunks = buffer.split("\n\n");
+    buffer = chunks.pop() || "";
+    for (const chunk of chunks) {
+      const line = chunk
+        .split("\n")
+        .map((l) => l.trim())
+        .find((l) => l.startsWith("data:"));
+      if (!line) continue;
+      const raw = line.slice(5).trim();
+      if (!raw) continue;
+      let ev: { type?: string; message?: string; text?: string; response?: ChatResponse };
+      try {
+        ev = JSON.parse(raw);
+      } catch {
+        continue;
+      }
+      if (ev.type === "status" && ev.message) handlers.onStatus?.(ev.message);
+      else if (ev.type === "token" && ev.text) handlers.onToken?.(ev.text);
+      else if (ev.type === "done" && ev.response) finalResponse = ev.response;
+      else if (ev.type === "error") throw new Error(ev.message || "Stream failed");
+    }
+  }
+
+  if (!finalResponse) throw new Error("Stream ended without a response");
+  return finalResponse;
+}
 
 export type GraphData = {
   nodes: Array<{ id: string; type: string; name: string; normalized_name: string }>;
@@ -216,11 +296,35 @@ export const api = {
         demo: !!opts.demo,
       }),
     }),
+  ingestBlob: (
+    workspaceId: string,
+    opts: { container: string; prefix?: string }
+  ) =>
+    req<Job>("/api/sources/blob", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        workspace_id: workspaceId,
+        container: opts.container,
+        prefix: opts.prefix,
+      }),
+    }),
   connectors: () =>
     req<{
       upload: Record<string, unknown>;
       website: Record<string, unknown>;
-      sharepoint: { graph_configured: boolean; demo_available: boolean };
+      sharepoint: { graph_configured: boolean; demo_available: boolean; state?: string };
+      blob?: { state?: string; configured?: boolean; note?: string };
+      catalog?: Array<{
+        id: string;
+        kind?: string;
+        title: string;
+        blurb: string;
+        state?: string;
+        configured?: boolean;
+        setup_hint?: string;
+        category?: string;
+      }>;
     }>("/api/sources/connectors"),
   job: (workspaceId: string, jobId: string) =>
     req<Job>(`/api/sources/jobs/${workspaceId}/${jobId}`),
@@ -241,6 +345,34 @@ export const api = {
         verbosity: opts?.verbosity || "balanced",
       }),
     }),
+  /**
+   * Studio Ask SSE stream. Events: status | token | done | error.
+   * Trust trail / citations arrive on `done.response`.
+   */
+  chatStream: async (
+    workspaceId: string,
+    question: string,
+    sessionId: string | undefined,
+    opts: {
+      tone?: string;
+      verbosity?: string;
+      onStatus?: (message: string) => void;
+      onToken?: (text: string) => void;
+    } = {}
+  ): Promise<ChatResponse> => {
+    const res = await fetch(`${API}/api/chat/stream`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+      body: JSON.stringify({
+        workspace_id: workspaceId,
+        question,
+        session_id: sessionId,
+        tone: opts.tone || "professional",
+        verbosity: opts.verbosity || "balanced",
+      }),
+    });
+    return consumeAskSse(res, opts);
+  },
   graph: (workspaceId: string) => req<GraphData>(`/api/graph?workspace_id=${workspaceId}`),
   health: (workspaceId: string) =>
     req<{ score: number; components: Record<string, unknown>; demo_mode: boolean }>(
@@ -259,6 +391,8 @@ export const api = {
       body: JSON.stringify({ name, description }),
     }),
   getAgent: (agentId: string) => req<Agent>(`/api/agents/${agentId}`),
+  runAskReadiness: (agentId: string) =>
+    req<AskReadiness>(`/api/agents/${agentId}/ask-readiness`, { method: "POST" }),
   updateAgent: (
     agentId: string,
     patch: {
@@ -267,6 +401,7 @@ export const api = {
       settings?: Record<string, unknown>;
       allowed_origins?: string;
       published?: boolean;
+      disabled?: boolean;
       rotate_embed_key?: boolean;
     }
   ) =>
@@ -275,6 +410,12 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patch),
     }),
+  disableAgent: (agentId: string) =>
+    req<Agent>(`/api/agents/${agentId}/disable`, { method: "POST" }),
+  enableAgent: (agentId: string) =>
+    req<Agent>(`/api/agents/${agentId}/enable`, { method: "POST" }),
+  deleteAgent: (agentId: string) =>
+    req<{ ok: boolean }>(`/api/agents/${agentId}`, { method: "DELETE" }),
   publishAgent: (agentId: string) =>
     req<AgentPublish>(`/api/agents/${agentId}/publish`, { method: "POST" }),
   unpublishAgent: (agentId: string) =>
@@ -287,7 +428,10 @@ export const api = {
       accent: string;
       show_trust_trail: boolean;
       show_citations: boolean;
+      streaming?: boolean;
       published: boolean;
+      disabled?: boolean;
+      disabled_message?: string | null;
     }>(`/api/public/agents/${embedKey}`),
   publicChat: (embedKey: string, question: string, sessionId?: string) =>
     req<ChatResponse>("/api/public/chat", {
@@ -299,4 +443,22 @@ export const api = {
         session_id: sessionId,
       }),
     }),
+  /** Published embed SSE stream. Events: status | token | done | error. */
+  publicChatStream: async (
+    embedKey: string,
+    question: string,
+    sessionId?: string,
+    opts: StreamHandlers = {}
+  ): Promise<ChatResponse> => {
+    const res = await fetch(`${API}/api/public/chat/stream`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+      body: JSON.stringify({
+        embed_key: embedKey,
+        question,
+        session_id: sessionId,
+      }),
+    });
+    return consumeAskSse(res, opts);
+  },
 };

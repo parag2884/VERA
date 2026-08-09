@@ -18,10 +18,12 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_TRUSTED_HOST=packagefeedproxy.microsoft.io
 
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    playwright install --with-deps chromium
 
 COPY app ./app
 COPY scripts ./scripts
+COPY tests ./tests
 RUN mkdir -p /app/data /app/data/chroma /app/data/uploads
 
 ENV VERA_DB=./data/vera.db \

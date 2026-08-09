@@ -5,7 +5,18 @@ import type { ReactNode } from "react";
 type Props = {
   text: string;
   className?: string;
+  /** Soft-close unfinished ** / ` while tokens are still arriving. */
+  live?: boolean;
 };
+
+/** Soft-close unfinished markers so live streaming still looks formatted. */
+function softCloseMarkdown(src: string): string {
+  let t = src;
+  if (((t.match(/\*\*/g) || []).length) % 2 === 1) t += "**";
+  const withoutBold = t.replace(/\*\*/g, "");
+  if (((withoutBold.match(/`/g) || []).length) % 2 === 1) t += "`";
+  return t;
+}
 
 function inlineFormat(text: string): ReactNode[] {
   // Split on **bold**, *italic*, `code` — order matters
@@ -45,8 +56,13 @@ function isSimpleTermsLine(line: string): boolean {
   return /^\s*(?:>\s*)?(?:\*\*)?In simple terms:?\**/i.test(line.trim());
 }
 
-export function AnswerMarkdown({ text, className }: Props) {
-  const raw = (text || "").replace(/\r\n/g, "\n").trim();
+export function AnswerMarkdown({ text, className, live }: Props) {
+  let raw = (text || "").replace(/\r\n/g, "\n");
+  if (live) {
+    raw = softCloseMarkdown(raw).replace(/^\s+/, "");
+  } else {
+    raw = raw.trim();
+  }
   if (!raw) return null;
 
   const lines = raw.split("\n");
@@ -112,16 +128,19 @@ export function AnswerMarkdown({ text, className }: Props) {
     if (isBullet(line)) {
       const items: string[] = [];
       while (i < lines.length && isBullet(lines[i])) {
-        items.push(stripBullet(lines[i]));
+        const item = stripBullet(lines[i]).trim();
+        if (item) items.push(item);
         i += 1;
       }
-      blocks.push(
-        <ul key={key++} className="ans-list">
-          {items.map((item, ii) => (
-            <li key={ii}>{inlineFormat(item)}</li>
-          ))}
-        </ul>
-      );
+      if (items.length) {
+        blocks.push(
+          <ul key={key++} className="ans-list">
+            {items.map((item, ii) => (
+              <li key={ii}>{inlineFormat(item)}</li>
+            ))}
+          </ul>
+        );
+      }
       continue;
     }
 
@@ -129,16 +148,19 @@ export function AnswerMarkdown({ text, className }: Props) {
     if (isNumbered(line)) {
       const items: string[] = [];
       while (i < lines.length && isNumbered(lines[i])) {
-        items.push(stripNumbered(lines[i]));
+        const item = stripNumbered(lines[i]).trim();
+        if (item) items.push(item);
         i += 1;
       }
-      blocks.push(
-        <ol key={key++} className="ans-list ans-ol">
-          {items.map((item, ii) => (
-            <li key={ii}>{inlineFormat(item)}</li>
-          ))}
-        </ol>
-      );
+      if (items.length) {
+        blocks.push(
+          <ol key={key++} className="ans-list ans-ol">
+            {items.map((item, ii) => (
+              <li key={ii}>{inlineFormat(item)}</li>
+            ))}
+          </ol>
+        );
+      }
       continue;
     }
 

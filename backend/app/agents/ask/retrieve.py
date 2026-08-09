@@ -15,9 +15,35 @@ import json
 import logging
 
 from app.agents.ask.contracts import QuoteHit
+from app.agents.ask.evidence_contract import (
+    EvidenceContract,
+    contract_fit_score,
+    detect_evidence_contract,
+    prune_supporting_quotes,
+)
 from app.agents.ask.lexical import distinctive_terms
 from app.agents.ask.people import extract_query_names
+from app.agents.ask.page_signals import (
+    has_transformation_triad,
+    is_career_pathway_page,
+    is_insight_chrome_page,
+    is_service_page,
+    offering_list_density,
+    service_support_hit,
+    triad_span_pos,
+)
+from app.agents.ask.relevance import (
+    boilerplate_penalty,
+    graph_quote_base,
+    is_org_roster_question,
+    person_title_names,
+    question_term_overlap,
+    recency_bonus,
+    roster_evidence_bonus,
+    trail_answer_relevance,
+)
 from app.agents.base import AgentContext
+from app.services.passage_signals import signals_from_chunk
 from app.stores.vector import VectorStore
 
 logger = logging.getLogger(__name__)
@@ -35,8 +61,13 @@ async def gpt_search_terms(ctx: AgentContext, question: str) -> list[str]:
                     "content": (
                         "Extract 3-8 literal search terms/phrases useful for finding "
                         "answers in a document corpus. Prefer distinctive codes, "
-                        "feature names, verbs from the question, and multi-word phrases. "
+                        "feature names, titles, proper nouns, verbs from the question, "
+                        "and multi-word phrases. "
                         "Include BOTH sides of a comparison when present. "
+                        "Expand short acronyms from the question into full phrases when "
+                        "obvious from the question text alone. "
+                        "Do NOT include vague singleton words like about/team/page/"
+                        "leadership/executive/home/menu. "
                         "Return JSON {terms: string[]}."
                     ),
                 },
@@ -81,6 +112,23 @@ _STOP_SOFT = {
     "comparison",
     "versus",
     "between",
+    "name",
+    "some",
+    "roughly",
+    "long",
+    "many",
+    "much",
+    "offer",
+    "offers",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "several",
+    "various",
+    "main",
+    "key",
 }
 
 
@@ -105,15 +153,43 @@ def required_terms(question: str, extra: list[str] | None = None) -> list[str]:
         if tl in _STOP_SOFT and len(terms) > 2:
             continue
         out.append(t)
-    # Comparison codes always required
+    # Comparison codes + standards always required (ISO 27001, SL2000, …)
     for m in re.finditer(r"\b([A-Z]{2,}\d{2,})\b", question or ""):
         if m.group(1) not in out:
             out.insert(0, m.group(1))
+    for m in re.finditer(r"\b([A-Z]{2,})\s*[- ]?\s*(\d{2,}(?:\.\d+)?)\b", question or ""):
+        phrase = f"{m.group(1)} {m.group(2)}"
+        compact = f"{m.group(1)}{m.group(2)}"
+        if phrase not in out:
+            out.insert(0, phrase)
+        if compact not in out:
+            out.insert(0, compact)
     # How-to verbs that matter in corpus
     q = (question or "").lower()
     for verb in ("renew", "renewal", "install", "configure", "enable", "disable"):
         if verb in q and verb not in {x.lower() for x in out}:
             out.append(verb)
+    # Keep multi-word phrases the user actually said (no invented brand lexicon)
+    for phrase in (
+        "transformation pathways",
+        "transformation pathway",
+        "ai transformation",
+        "what we do",
+    ):
+        if phrase in q and phrase not in {x.lower() for x in out}:
+            out.insert(0, phrase)
+    if re.search(r"\b(capabilities|services|offerings?|solutions)\b", q) and re.search(
+        r"\b(name|list|offer|what|which)\b", q
+    ):
+        for t in ("capabilities", "services", "offerings", "solutions"):
+            if t in q and t not in {x.lower() for x in out}:
+                out.append(t)
+        # Drop awkward "capabilities OrgName" concatenations that never appear in prose
+        out = [
+            t
+            for t in out
+            if not re.search(r"^capabilities\s+\w+$", t, re.I)
+        ]
     return out[:14]
 
 
@@ -121,10 +197,27 @@ def _is_strong(term: str) -> bool:
     return bool(re.search(r"\d", term) or " " in term)
 
 
-def _window(text: str, terms: list[str], *, radius: int = 220) -> str:
+def _window(text: str, terms: list[str], *, radius: int = 220, question: str = "") -> str:
     """Excerpt spanning as many matched terms as possible."""
     if not text:
         return ""
+    # Roster questions: prefer a window around named officers, not nav chrome
+    if is_org_roster_question(question):
+        people = person_title_names(text)
+        if people:
+            pos = text.find(people[0])
+            if pos >= 0:
+                start = max(0, pos - 80)
+                end = min(len(text), pos + 480)
+                return re.sub(r"\s+", " ", text[start:end].strip())
+    ql = (question or "").lower()
+    # Pathway / triad pages: center on any branded Word. Word. Word. strip
+    if "pathway" in ql or "transformation" in ql:
+        pos = triad_span_pos(text)
+        if pos >= 0:
+            start = max(0, pos - 120)
+            end = min(len(text), pos + 360)
+            return re.sub(r"\s+", " ", text[start:end].strip())
     low = text.lower()
     positions: list[int] = []
     for t in terms:
@@ -147,24 +240,121 @@ def _term_hits(text: str, title: str, terms: list[str]) -> list[str]:
     return [t for t in terms if t.lower() in blob]
 
 
-def _score_chunk(text: str, title: str, terms: list[str], *, base: float = 0.0) -> float:
+def _score_chunk(
+    text: str,
+    title: str,
+    terms: list[str],
+    *,
+    base: float = 0.0,
+    question: str = "",
+    contract: EvidenceContract | None = None,
+    signals: dict | None = None,
+) -> float:
     hits = _term_hits(text, title, terms)
-    if not hits:
+    sig = signals or {}
+    # Contract-shaped passages may enter with weak term hits (list_people officers)
+    if not hits and not (
+        contract
+        and contract.shape == "list_people"
+        and (sig.get("has_person_role") or person_title_names(f"{title}\n{text}"))
+    ):
         return base * 0.2
     score = base
     strong = [t for t in terms if _is_strong(t)]
     soft = [t for t in terms if not _is_strong(t)]
     for t in hits:
         score += 3.5 if _is_strong(t) else 1.0
-    # Big boost when ALL strong terms co-occur (comparison questions)
-    if strong and all(t.lower() in f"{title}\n{text}".lower() for t in strong):
+    blob = f"{title}\n{text}"
+    blob_l = blob.lower()
+    if strong and all(t.lower() in blob_l for t in strong):
         score += 8.0
-    # Co-occurrence of 2+ soft content terms (renew + license)
-    soft_hits = [t for t in soft if t.lower() in f"{title}\n{text}".lower()]
+    soft_hits = [t for t in soft if t.lower() in blob_l]
     if len(soft_hits) >= 2:
         score += 3.0
-    # Coverage ratio
-    score += 2.0 * (len(hits) / max(len(terms), 1))
+    if terms:
+        score += 2.0 * (len(hits) / max(len(terms), 1))
+
+    # Title match: distinctive terms in document title are high-signal
+    title_hits = sum(1 for t in terms if t.lower() in title.lower())
+    if title_hits:
+        score += 2.5 * title_hits
+
+    # Generic quality: demote chrome, prefer dated materials when present
+    chrome = float(sig.get("chrome_score") or 0.0)
+    prose = float(sig.get("prose_score") or 0.0)
+    if chrome or prose:
+        score -= 5.0 * chrome
+        score += 2.5 * prose
+    else:
+        score -= 4.0 * boilerplate_penalty(blob)
+    score += recency_bonus(title, text)
+    score += roster_evidence_bonus(question, title, text)
+
+    # Evidence-contract fit (primary smart ranking signal)
+    if contract is not None:
+        fit = contract_fit_score(contract, title, text, question=question, signals=sig)
+        score += 10.0 * fit
+        if sig.get("doc_kind") == "spotlight" and contract.shape == "list_people":
+            score -= 6.0
+        if sig.get("doc_kind") in {"press", "letter"} and contract.shape in {
+            "list_people",
+            "attribute",
+        }:
+            score += 3.0
+
+    # Slight boost when many question terms co-occur (answer-shaped passage)
+    if question:
+        ov = question_term_overlap(terms, blob)
+        score += 3.0 * ov
+        if is_org_roster_question(question) and person_title_names(blob):
+            score += 2.0
+        elif is_org_roster_question(question) and not person_title_names(blob):
+            score -= 3.0
+        # Factoid: boost metric numerals near distinctive terms
+        if contract is not None and contract.shape == "factoid":
+            if re.search(
+                r"\b\d{1,3}(?:,\d{3})+\+?\b|\b\d+\+\s*(?:years?|offices?|countries?)?\b",
+                blob,
+                re.I,
+            ):
+                score += 4.0
+            # Demote personal tenure narratives for org how-long / how-many
+            ql = question.lower()
+            if re.search(r"\b(how\s+long|how\s+many)\b", ql) and re.search(
+                r"\b\d+\+?\s+years?\s+of\s+(?:experience|career|technology consulting)\b",
+                blob,
+                re.I,
+            ):
+                if not re.search(
+                    r"\b(?:more\s+than|over)\s+\d{1,3}(?:,\d{3})+|"
+                    r"\b\d+\+\s+years?\s+of\s+technology\s+consulting\b|"
+                    r"\b\d+\s+offices?\b",
+                    blob,
+                    re.I,
+                ):
+                    score -= 5.0
+        # Define / capabilities: prefer service-shaped pages and triad / list structure
+        if contract is not None and contract.shape == "define":
+            ql = question.lower()
+            dens = offering_list_density(text)
+            if dens >= 0.55 or is_service_page(title):
+                score += 3.5
+            if ("pathway" in ql or "transformation" in ql) and has_transformation_triad(
+                text
+            ):
+                score += 10.0
+            if "pathway" in ql and is_career_pathway_page(title):
+                score -= 12.0
+            if re.search(r"\b(capabilities|services|offerings?|solutions)\b", ql):
+                if is_service_page(title):
+                    score += 8.0
+                elif dens >= 0.55:
+                    score += 5.0
+            # Demote blog/news chrome for short define/list asks
+            if is_insight_chrome_page(title) and re.search(
+                r"\b(pathway|capabilities|services|offerings?)\b", ql
+            ):
+                score -= 6.0
     return score
 
 
@@ -187,10 +377,13 @@ async def retrieve_evidence_pack(
     prefer_overview: bool = False,
     overview_quotes: list[QuoteHit] | None = None,
     name_only: bool = False,
+    contract: EvidenceContract | None = None,
 ) -> RetrievalPack:
     """Build a coverage-complete quote pack from the whole knowledge base."""
     if store is None:
         return RetrievalPack(quotes=[], mode="empty", coverage=0.0, required_terms=[])
+
+    contract = contract or detect_evidence_contract(question)
 
     # --- special fast paths ---
     if name_only:
@@ -212,10 +405,23 @@ async def retrieve_evidence_pack(
 
     def add_chunk(ch: dict, text: str, title: str, base: float, edge_id: str | None = None) -> None:
         cid = ch["id"]
-        sc = _score_chunk(text, title, terms, base=base)
+        sig = signals_from_chunk(ch, title=title, text=text)
+        if sig.get("quarantine"):
+            return
+        sc = _score_chunk(
+            text,
+            title,
+            terms,
+            base=base,
+            question=question,
+            contract=contract,
+            signals=sig,
+        )
         prev = cand.get(cid)
         if prev is None or sc > prev[0]:
             cand[cid] = (sc, ch, text, title, edge_id or (prev[4] if prev else None))
+
+    roster_q = contract.shape == "list_people" or is_org_roster_question(question)
 
     # 1) Lexical scan of all chunks
     for ch in chunks:
@@ -223,9 +429,113 @@ async def retrieve_evidence_pack(
         if len(text.strip()) < 20:
             continue
         title = docs.get(ch.get("canonical_document_id"), "") or "document"
-        if not _term_hits(text, title, terms) and terms:
+        sig = signals_from_chunk(ch, title=title, text=text)
+        if sig.get("quarantine"):
             continue
-        add_chunk(ch, text, title, base=0.55)
+        low = f"{title}\n{text}".lower()
+        shape_hit = False
+        if contract.shape == "define":
+            ql = question.lower()
+            if ("pathway" in ql or "transformation" in ql) and has_transformation_triad(
+                text
+            ):
+                shape_hit = True
+            if re.search(
+                r"\b(capabilities|services|offerings?|solutions)\b", ql
+            ) and service_support_hit(title, text):
+                shape_hit = True
+        if not _term_hits(text, title, terms) and terms:
+            # Contract: still consider passages that satisfy shape without soft terms
+            if not (
+                (
+                    roster_q
+                    and (
+                        sig.get("has_person_role")
+                        or len(person_title_names(f"{title}\n{text}")) >= 1
+                    )
+                )
+                or shape_hit
+            ):
+                continue
+        add_chunk(ch, text, title, base=0.85 if shape_hit else 0.55)
+
+    # 1b) Roster / list_people scan — surface officer-named passages
+    if roster_q:
+        for ch in chunks:
+            text = ch.get("text") or ""
+            if len(text.strip()) < 40:
+                continue
+            title = docs.get(ch.get("canonical_document_id"), "") or "document"
+            sig = signals_from_chunk(ch, title=title, text=text)
+            if sig.get("quarantine"):
+                continue
+            people = person_title_names(f"{title}\n{text}")
+            if len(people) < 1 and not sig.get("has_person_role"):
+                continue
+            add_chunk(ch, text, title, base=0.7 + 0.05 * min(len(people) or 1, 6))
+
+    # 1c) Define pathway / offerings — force triad & service-shaped pages into the pack
+    if contract.shape == "define":
+        ql = question.lower()
+        for ch in chunks:
+            text = ch.get("text") or ""
+            if len(text.strip()) < 40:
+                continue
+            title = docs.get(ch.get("canonical_document_id"), "") or "document"
+            if ("pathway" in ql or "transformation" in ql) and has_transformation_triad(
+                text
+            ):
+                add_chunk(ch, text, title, base=1.35)
+            elif re.search(
+                r"\b(capabilities|services|offerings?|solutions|capability)\b", ql
+            ) and (is_service_page(title) or offering_list_density(text) >= 0.55):
+                add_chunk(ch, text, title, base=1.2)
+
+    # 1d) Section-path force — when the question names a site section, prefer that path
+    # (works for /history, /partnerships, /careers, /radar, etc. on any domain)
+    ql = question.lower()
+    section_hints: list[tuple[str, tuple[str, ...]]] = [
+        (r"\b(history|founded|founding)\b", ("_history", "/history", "about-us_history")),
+        (r"\b(purpose|mission)\b", ("purpose", "our-purpose", "our_purpose")),
+        (r"\b(partner|partnership|aws|azure|gcp)\b", ("partnership", "partners")),
+        (r"\b(career|careers|working there|join us)\b", ("career", "careers")),
+        (r"\b(radar)\b", ("_radar", "/radar", "radar_")),
+        (
+            r"\b(diversity|inclusion|equity|dei)\b",
+            ("diversity", "inclusion"),
+        ),
+        (r"\b(social change|social impact)\b", ("social-change", "social_change")),
+        (
+            r"\b(software-defined|software defined)\b",
+            ("software-defined", "software_defined"),
+        ),
+        (
+            r"\b(iso\s*27001|iso27001|certification)\b",
+            ("iso-27001", "iso_27001", "iso27001", "certification"),
+        ),
+        (
+            r"\b(readiness)\b",
+            ("readiness",),
+        ),
+    ]
+    active_markers: list[str] = []
+    for pat, markers in section_hints:
+        if re.search(pat, ql):
+            active_markers.extend(markers)
+    if active_markers:
+        for ch in chunks:
+            text = ch.get("text") or ""
+            if len(text.strip()) < 40:
+                continue
+            title = docs.get(ch.get("canonical_document_id"), "") or "document"
+            tl = title.lower()
+            if any(m in tl for m in active_markers):
+                # Prefer corporate section pages over news that merely mention the word
+                boost = 1.4 if not is_insight_chrome_page(title) else 0.95
+                # history ask: demote "natural history museum" news vs about/history
+                if "history" in ql and "history" in tl and "museum" in tl:
+                    continue
+                add_chunk(ch, text, title, base=boost)
 
     # 2) Embeddings (additive)
     if ctx.llm is not None:
@@ -244,24 +554,32 @@ async def retrieve_evidence_pack(
         except Exception:  # noqa: BLE001
             pass
 
-    # 3) Graph evidence — boosted so evidence-bound trails lead the pack
+    # 3) Graph evidence — base scaled by question relevance (never flat crown)
     graph_primary = bool(graph_quotes) and any(gq.edge_id for gq in graph_quotes or [])
+    graph_blob = " ".join(
+        f"{gq.document_title} {gq.quote}" for gq in (graph_quotes or [])
+    )
+    trail_rel = trail_answer_relevance(question, None, graph_blob, terms)
     for gq in graph_quotes or []:
         ch = next((c for c in chunks if c["id"] == gq.chunk_id), None)
+        g_blob = f"{gq.document_title}\n{gq.quote}"
+        quote_rel = trail_answer_relevance(question, None, g_blob, terms)
+        g_base = graph_quote_base(
+            max(trail_rel, quote_rel),
+            float(gq.score or 0.8),
+        )
         if not ch:
-            # keep quote text even if chunk missing
             fake = {
                 "id": gq.chunk_id,
                 "canonical_document_id": None,
                 "loc": {"locator": gq.locator},
             }
-            add_chunk(fake, gq.quote, gq.document_title, base=0.85, edge_id=gq.edge_id)
+            add_chunk(fake, gq.quote, gq.document_title, base=min(g_base, 0.85), edge_id=gq.edge_id)
             continue
         text = ch.get("text") or gq.quote
         title = docs.get(ch.get("canonical_document_id"), gq.document_title) or gq.document_title
-        # Prefer shorter evidence quotes when packing the window
         prefer = gq.quote if gq.quote and len(gq.quote) >= 24 else text
-        add_chunk(ch, prefer, title, base=0.9 + float(gq.score or 0) * 0.05, edge_id=gq.edge_id)
+        add_chunk(ch, prefer, title, base=g_base, edge_id=gq.edge_id)
 
     # 4) Overview chunks (additive for deictic / summarize)
     if prefer_overview and overview_quotes:
@@ -292,12 +610,21 @@ async def retrieve_evidence_pack(
             break
         take(row)
 
-    must = [t for t in terms if _is_strong(t)] or terms[:3]
+    # Prefer multi-word / coded terms; drop filler number-word phrases for gap-fill
+    must = [
+        t
+        for t in terms
+        if _is_strong(t)
+        and not re.search(
+            r"\b(one|two|three|four|five|six|seven|eight|nine|ten|some|several)\b",
+            t,
+            re.I,
+        )
+    ] or [t for t in terms[:5] if t.lower() not in _STOP_SOFT] or terms[:3]
     pack_blob = " ".join(f"{title} {text}" for _, _, text, title, _ in selected).lower()
     for term in must:
         if term.lower() in pack_blob:
             continue
-        # find best chunk for this term alone
         best = None
         best_sc = -1.0
         for row in ranked:
@@ -323,11 +650,10 @@ async def retrieve_evidence_pack(
 
     quotes: list[QuoteHit] = []
     for sc, ch, text, title, edge_id in selected[: max(top_k, 12)]:
-        # Keep graph evidence quotes intact; window hybrid chunks around terms
         if edge_id and len(text.strip()) <= 560:
             quote = text.strip()
         else:
-            quote = _window(text, terms)
+            quote = _window(text, terms, question=question)
         if len(quote) < 24:
             continue
         quotes.append(
@@ -341,17 +667,41 @@ async def retrieve_evidence_pack(
             )
         )
 
-    # Learned-ish rerank: LLM orders the candidate pack by answer utility
     quotes = await rerank_quotes(ctx, question, quotes, top_k=max(top_k, 8))
+
+    # Roster: drop chrome/culture quotes that name nobody with a title
+    if roster_q and quotes:
+        named = [q for q in quotes if person_title_names(f"{q.document_title}\n{q.quote}")]
+        if named:
+            # Keep named officers first; allow at most one unnamed context quote
+            rest = [q for q in quotes if q not in named][:1]
+            quotes = (named + rest)[: max(top_k, 8)]
+
+    # Trust: drop padding quotes that don't support the question
+    if quotes and not prefer_overview:
+        pruned = prune_supporting_quotes(
+            contract, quotes, question, min_support=0.38, max_keep=max(5, top_k // 2)
+        )
+        if pruned:
+            quotes = pruned
 
     cov = coverage_ratio(quotes, must if must else terms)
     mode = "hybrid_kb"
-    if graph_primary and any(q.edge_id for q in quotes[:3]):
+    top_overlap = 0.0
+    if quotes[:3]:
+        top_blob = " ".join(f"{q.document_title} {q.quote}" for q in quotes[:3])
+        top_overlap = question_term_overlap(terms, top_blob)
+    graph_tops = sum(1 for q in quotes[:3] if q.edge_id)
+    if graph_primary and graph_tops >= 1 and top_overlap >= 0.45 and trail_rel >= 0.45:
         mode = "graph_primary" if cov >= 0.45 else "hybrid_graph_kb"
     elif graph_quotes and any(q.edge_id for q in quotes):
         mode = "hybrid_graph_kb"
+    # Weak trail relevance → never crown as graph_primary
+    if trail_rel < 0.35:
+        mode = "hybrid_kb" if not any(q.edge_id for q in quotes) else "hybrid_graph_kb"
+        if trail_rel < 0.2:
+            mode = "hybrid_kb"
     if prefer_overview and cov < 0.35 and overview_quotes:
-        # fall back to overview only if hybrid coverage is weak
         quotes = overview_quotes[:top_k]
         mode = "document_overview"
         cov = coverage_ratio(quotes, terms)
@@ -374,23 +724,35 @@ async def rerank_quotes(
     """Reorder quote candidates so the judge sees the most answer-relevant evidence first."""
     if len(quotes) <= 1:
         return quotes
-    # Cheap heuristic first (always applied)
     q_l = question.lower()
     q_terms = [t for t in re.findall(r"[a-z0-9]{3,}", q_l) if t not in _STOP_SOFT]
 
     def _heuristic(q: QuoteHit) -> float:
-        blob = f"{q.document_title} {q.quote}".lower()
-        term_hit = sum(1 for t in q_terms if t in blob)
-        graph_bonus = 0.35 if q.edge_id else 0.0
+        blob = f"{q.document_title} {q.quote}"
+        term_hit = sum(1 for t in q_terms if t in blob.lower())
+        # Graph is a weak prior — only helps when overlap is already decent
+        ov = question_term_overlap(q_terms, blob)
+        graph_bonus = 0.12 if q.edge_id and ov >= 0.35 else 0.0
         length_pen = 0.05 if len(q.quote) < 40 else 0.0
-        return float(q.score) + 0.08 * term_hit + graph_bonus - length_pen
+        roster_b = roster_evidence_bonus(question, q.document_title, q.quote)
+        contract = detect_evidence_contract(question)
+        fit = contract_fit_score(contract, q.document_title, q.quote, question=question)
+        return (
+            float(q.score)
+            + 0.08 * term_hit
+            + graph_bonus
+            + 0.1 * recency_bonus(q.document_title, q.quote)
+            + 0.08 * roster_b
+            + 0.35 * fit
+            - 0.25 * boilerplate_penalty(blob)
+            - length_pen
+        )
 
     ordered = sorted(quotes, key=_heuristic, reverse=True)
 
     if ctx.llm is None or len(ordered) < 3:
         return ordered[:top_k]
 
-    # LLM rerank over a shortlist (keeps latency bounded)
     shortlist = ordered[: min(12, len(ordered))]
     catalog = [
         {
@@ -409,9 +771,11 @@ async def rerank_quotes(
                     "content": (
                         "You rerank evidence quotes for an evidence-bound QA system. "
                         "Return JSON {order: number[]} — indices of quotes from most to least "
-                        "useful for answering the question. Prefer quotes that directly support "
-                        "an answer; prefer graph-backed quotes when equally relevant. "
-                        "Do not invent quotes; only permute the given indices."
+                        "useful for answering the question. Prefer passages that directly "
+                        "support an answer with specific facts. Prefer concrete content over "
+                        "navigation/menus/footers. When sources conflict, prefer current/"
+                        "newer dated wording over outdated. Prefer graph-backed quotes only "
+                        "when equally relevant. Do not invent quotes; only permute indices."
                     ),
                 },
                 {
@@ -437,10 +801,9 @@ async def rerank_quotes(
                 continue
             seen.add(i)
             q = shortlist[i]
-            # Nudge score to reflect new rank while preserving relative gaps
-            q.score = min(0.99, 0.99 - 0.04 * len(reranked) + (0.05 if q.edge_id else 0))
+            # Rank position only — no free edge_id score bump
+            q.score = min(0.99, 0.99 - 0.04 * len(reranked))
             reranked.append(q)
-        # Append any shortlist items the model skipped
         for i, q in enumerate(shortlist):
             if i not in seen:
                 reranked.append(q)

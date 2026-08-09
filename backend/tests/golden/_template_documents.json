@@ -1,0 +1,38 @@
+{
+  "suite_id": "example_documents_v1",
+  "source_kind": "documents",
+  "agent_name": "Example Docs Assistant",
+  "kb_notes": [
+    "Upload the PDFs/txt listed in required_documents before running.",
+    "Every expected_answer / must_any must be Ctrl+F-able in source_document."
+  ],
+  "required_documents": [
+    "Product_Guide.pdf",
+    "FAQ.txt"
+  ],
+  "cases": [
+    {
+      "id": "DOC01",
+      "category": "product",
+      "question": "What does the product guide say about feature X?",
+      "expect_decision": "answer",
+      "expected_answer": "Draft only from Product_Guide.pdf.",
+      "must_any": ["feature"],
+      "forbid_any": [],
+      "citation_any": ["product_guide", "guide"],
+      "source_document": "Product_Guide.pdf",
+      "kb_quote_hint": "Paste a short literal phrase from the PDF here"
+    },
+    {
+      "id": "DOC99",
+      "category": "refuse",
+      "question": "What is the weather in Seattle today?",
+      "expect_decision": "refuse",
+      "expected_answer": "Must refuse — not in uploaded docs.",
+      "must_any": [],
+      "forbid_any": ["sunny", "fahrenheit"],
+      "source_document": null,
+      "kb_quote_hint": null
+    }
+  ]
+}

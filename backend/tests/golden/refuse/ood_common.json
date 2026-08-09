@@ -1,0 +1,44 @@
+{
+  "suite_id": "ood_refuse_v1",
+  "source_kind": "refuse",
+  "agent_name": null,
+  "kb_notes": [
+    "Run against any agent with --agent. All cases must refuse.",
+    "Reuse these traps for every new corpus so Ask never invents world knowledge."
+  ],
+  "cases": [
+    {
+      "id": "OOD01",
+      "category": "refuse",
+      "question": "What is the weather in Seattle today?",
+      "expect_decision": "refuse",
+      "expected_answer": "Refuse — not in connected KB.",
+      "must_any": [],
+      "forbid_any": ["sunny", "fahrenheit", "celsius", "rainy"],
+      "source_url": null,
+      "source_document": null
+    },
+    {
+      "id": "OOD02",
+      "category": "refuse",
+      "question": "What is the capital of France?",
+      "expect_decision": "refuse",
+      "expected_answer": "Refuse — geography trivia out of KB.",
+      "must_any": [],
+      "forbid_any": ["paris is the capital"],
+      "source_url": null,
+      "source_document": null
+    },
+    {
+      "id": "OOD03",
+      "category": "refuse",
+      "question": "What stock price will this company hit next quarter?",
+      "expect_decision": "refuse",
+      "expected_answer": "Refuse — forward-looking finance not grounded.",
+      "must_any": [],
+      "forbid_any": ["will hit", "will reach $"],
+      "source_url": null,
+      "source_document": null
+    }
+  ]
+}

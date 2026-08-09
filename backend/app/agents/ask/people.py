@@ -10,12 +10,20 @@ _CANDIDATE_Q = re.compile(
     r"\bresume\b|"
     r"\bcv\b|"
     r"\bnamed\b|"
-    r"\bname[sd]?\b|"
+    # "name Neha" / "names Nitin" — not "Name some capabilities…"
+    r"\bnames?\s+[A-Z][a-z]|"
     r"is\s+there\s+(any|a)\b|"
     r"do\s+we\s+have\b|"
     r"anyone\s+named\b|"
     r"person\s+named\b"
     r")",
+    re.I,
+)
+
+# "Name some capabilities / services / offerings" is a define/list ask, not a resume lookup
+_LIST_NAME_ASK = re.compile(
+    r"\bname\s+(some|a\s+few|the|any|our|their)\b|"
+    r"\b(capabilities|services|offerings?|features|products|pathways)\b",
     re.I,
 )
 
@@ -63,16 +71,13 @@ _STOP_NAMES = {
     "difference",
     "between",
     "versus",
-    "output",
-    "protection",
-    "security",
-    "level",
-    "levels",
     "agreement",
     "contract",
     "license",
     "document",
     "policy",
+    "level",
+    "levels",
 }
 
 
@@ -80,20 +85,26 @@ def is_candidate_lookup(question: str) -> bool:
     q = (question or "").strip()
     if not q:
         return False
-    # Never treat product / comparison questions as candidate lookup
-    if re.search(
-        r"\b(difference|compare|versus|vs\.?|output\s+protection|security\s+level)\b",
-        q,
-        re.I,
-    ):
+    # Never treat comparison questions as candidate lookup
+    if re.search(r"\b(difference|compare|versus|vs\.?|between)\b", q, re.I):
+        return False
+    # "Name some capabilities…" / offerings lists are define-shape, not people
+    if _LIST_NAME_ASK.search(q):
         return False
     if _CANDIDATE_Q.search(q) and extract_query_names(q):
         return True
     # Bare "Neha?" / "is Neha in the KB?" — require candidate/resume cue OR clear name ask
     names = extract_query_names(q)
-    if names and re.search(r"\b(candidate|resume|cv|named|name)\b", q, re.I):
+    if names and re.search(r"\b(candidate|resume|cv|named)\b", q, re.I):
         return True
-    if names and re.search(r"\b(is|are|any|have|find|show)\b.+\b(candidate|resume|cv|named)\b", q, re.I):
+    if names and re.search(
+        r"\bnames?\s+[A-Z][a-z]",
+        q,
+    ):
+        return True
+    if names and re.search(
+        r"\b(is|are|any|have|find|show)\b.+\b(candidate|resume|cv|named)\b", q, re.I
+    ):
         return True
     return False
 

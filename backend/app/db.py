@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS assistants (
     embed_key TEXT,
     allowed_origins TEXT DEFAULT '*',
     published INTEGER NOT NULL DEFAULT 0,
+    disabled INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL,
     FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
 );
@@ -255,6 +256,7 @@ _ASSISTANT_MIGRATIONS = [
     ("embed_key", "ALTER TABLE assistants ADD COLUMN embed_key TEXT"),
     ("allowed_origins", "ALTER TABLE assistants ADD COLUMN allowed_origins TEXT DEFAULT '*'"),
     ("published", "ALTER TABLE assistants ADD COLUMN published INTEGER NOT NULL DEFAULT 0"),
+    ("disabled", "ALTER TABLE assistants ADD COLUMN disabled INTEGER NOT NULL DEFAULT 0"),
 ]
 
 

@@ -14,6 +14,7 @@ from app.agents.ask.comparison import extract_compare_sides, is_comparison_quest
 from app.agents.ask.overview import is_document_overview, mentions_document
 from app.agents.base import AgentContext, AgentResult
 from app.identity import normalize_entity_name
+from app.agents.ask.evidence_contract import detect_evidence_contract
 from app.schemas import ClarifyOption
 
 logger = logging.getLogger(__name__)
@@ -71,13 +72,34 @@ class EntityResolveAgent:
         comparison = is_comparison_question(payload.question)
         compare_sides = extract_compare_sides(payload.question)
 
+        # Evidence-contract clarify (e.g. bare "who/team" → which team)
+        contract = detect_evidence_contract(payload.question)
+        if contract.needs_clarify and not comparison:
+            ctx.emit(self.id, "resolve.clarify", "Evidence contract needs clarify", progress=1.0)
+            return AgentResult(
+                ok=True,
+                data=EntityResolveOutput(
+                    question=payload.question,
+                    intent=payload.intent,
+                    entities=[],
+                    resolved_clearly=False,
+                    reason_codes=list(contract.reason_codes) or ["TEAM_SCOPE_AMBIGUOUS"],
+                    clarify_options=list(contract.clarify_options),
+                    clarification_prompt=contract.clarification_prompt
+                    or "Please clarify your question.",
+                    comparison=False,
+                    compare_sides=[],
+                ),
+                metrics={"ambiguous": 1, "contract": contract.shape},
+            )
+
         terms: list[str] = []
         # Comparison sides first — these are the answer subjects
         terms.extend(compare_sides)
         for pat, flags in TERM_PATTERNS:
             for m in re.finditer(pat, payload.question, flags):
                 terms.append(m.group(0))
-        # Token codes like SL3000 / PlayReady (capitalized runs) — not lowercase glue words
+        # Capitalized runs / product-style codes — not lowercase glue words
         terms.extend(
             re.findall(r"\b[A-Z][A-Za-z0-9]+(?:\s+[A-Z][A-Za-z0-9]+)*\b", payload.question)
         )
@@ -149,9 +171,17 @@ class EntityResolveAgent:
 
             # For comparisons: only clarify when a *side* itself is multi-match ambiguous
             allow_clarify = (not comparison) or (term.lower() in compare_side_keys)
+            # Report / certification asks already name the artifact — don't stall on
+            # short graph tokens like "Digital" matching many unrelated nodes
+            if allow_clarify and len(term.split()) == 1 and re.search(
+                r"\b(report|index|survey|whitepaper|certification|standard)\b",
+                payload.question or "",
+                re.I,
+            ):
+                allow_clarify = False
 
             if len(matches) > 1 and _looks_ambiguous(matches, term) and allow_clarify:
-                # Codes like SL3000 must not clarify against unrelated nodes (PlayReady, …)
+                # Product codes must not clarify against unrelated broad nodes
                 if _is_product_code(term) and not _matches_relate_to_term(matches, term):
                     matches = _prefer_related(matches, term)[:1] or matches[:1]
                 else:
@@ -178,7 +208,7 @@ class EntityResolveAgent:
                 # Prefer a match that actually looks like the term for codes
                 related = _prefer_related(matches, term)
                 if _is_product_code(term) and not related:
-                    # e.g. SL3000 must not bind to over-aliased PlayReady
+                    # Product codes must not bind to over-aliased broad seed nodes
                     entities.append(
                         ResolvedEntity(
                             query_term=term, node_ids=[], names=[], ambiguous=False

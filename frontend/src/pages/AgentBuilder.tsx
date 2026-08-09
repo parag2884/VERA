@@ -461,7 +461,21 @@ export default function AgentBuilder() {
                         />
                         <span>Scorecard</span>
                       </label>
+                      <label className="toggle-row">
+                        <input
+                          type="checkbox"
+                          checked={s.embedStreaming !== false}
+                          onChange={(e) =>
+                            updateAgentSettings({ embedStreaming: e.target.checked })
+                          }
+                        />
+                        <span>Stream answers on embed</span>
+                      </label>
                     </div>
+                    <p className="muted" style={{ fontSize: "0.78rem", marginTop: "0.45rem" }}>
+                      When on, customer embed/widget reveals answer text as it becomes available.
+                      Turn off to deliver the full reply at once.
+                    </p>
                   </div>
 
                   <div className="builder-pane-foot">

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from app.agents.base import AgentContext, AgentResult
 from app.agents.ingest.contracts import HealthInput, HealthOutput
+from app.services.passage_signals import summarize_passage_readiness
 
 
 class IndexHealthAgent:
@@ -25,14 +26,24 @@ class IndexHealthAgent:
         connectivity = min(1.0, counts.get("edges", 0) / max(counts.get("nodes", 1), 1))
         dupe_hygiene = min(1.0, (report.get("embeddings_avoided") or 0) / max(report.get("total_files") or 1, 1) + 0.5)
 
+        passage = {}
+        if store is not None:
+            docs = await store.list_canonical_documents(ctx.workspace_id)
+            chunks = await store.list_chunks(ctx.workspace_id)
+            passage = summarize_passage_readiness(chunks, docs)
+
+        chrome_pct = float(passage.get("chrome_heavy_pct") or 0)
+        passage_hygiene = max(0.0, min(1.0, 1.0 - chrome_pct / 100.0))
+
         score = round(
             100
             * (
-                0.25 * ingest_success
-                + 0.20 * embed_ratio
-                + 0.25 * evidence_ratio
-                + 0.20 * connectivity
+                0.22 * ingest_success
+                + 0.18 * embed_ratio
+                + 0.22 * evidence_ratio
+                + 0.18 * connectivity
                 + 0.10 * min(dupe_hygiene, 1.0)
+                + 0.10 * passage_hygiene
             ),
             1,
         )
@@ -42,6 +53,8 @@ class IndexHealthAgent:
             "evidence_bound_ratio": round(evidence_ratio, 3),
             "graph_connectivity": round(connectivity, 3),
             "cleanstack_hygiene": round(min(dupe_hygiene, 1.0), 3),
+            "passage_hygiene": round(passage_hygiene, 3),
+            "passage": passage,
             "counts": counts,
             "cleanstack": {
                 "keepers": report.get("keepers"),
@@ -56,5 +69,5 @@ class IndexHealthAgent:
         return AgentResult(
             ok=True,
             data=HealthOutput(score=score, components=components),
-            metrics={"score": score},
+            metrics={"score": score, "chrome_heavy_pct": chrome_pct},
         )

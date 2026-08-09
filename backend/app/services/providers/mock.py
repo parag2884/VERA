@@ -16,9 +16,14 @@ class MockLLMProvider:
         *,
         temperature: float = 0.1,
         response_format: dict[str, Any] | None = None,
+        max_tokens: int | None = None,
     ) -> str:
         user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
         system = next((m["content"] for m in messages if m["role"] == "system"), "")
+
+        # Intent / safety classifier (meaning-first gate)
+        if "intent classifier" in system.lower() or "safety + intent" in system.lower():
+            return self._intent_json(user)
 
         # Graph extraction
         if "extract entities" in system.lower() or "extract entities" in user.lower():
@@ -124,6 +129,65 @@ class MockLLMProvider:
 
     async def embed(self, texts: list[str]) -> list[list[float]]:
         return local_embed(texts)
+
+    def _intent_json(self, user: str) -> str:
+        # USER MESSAGE:\n...
+        q = user
+        m = re.search(r"USER MESSAGE:\s*(.+)$", user, re.I | re.S)
+        if m:
+            q = m.group(1).strip()
+        lower = q.lower()
+        if any(
+            x in lower
+            for x in (
+                "sexy",
+                "sex",
+                "porn",
+                "nude",
+                "fuck",
+                "bitch",
+                "horny",
+                "blowjob",
+                "asshole",
+            )
+        ):
+            return json.dumps(
+                {
+                    "intent": "inappropriate",
+                    "category": "sexual_or_abuse",
+                    "confidence": 0.95,
+                    "reason": "mock_inappropriate",
+                }
+            )
+        if any(x in lower for x in ("password", "api key", "secret key", "ssn", "private key")):
+            return json.dumps(
+                {
+                    "intent": "sensitive",
+                    "category": "secrets",
+                    "confidence": 0.95,
+                    "reason": "mock_sensitive",
+                }
+            )
+        if re.match(
+            r"^\s*(hi|hello|hey|good\s*(morning|afternoon|evening)|how\s+are\s+you)\s*[!?.]*\s*$",
+            lower,
+        ):
+            return json.dumps(
+                {
+                    "intent": "greeting",
+                    "category": "greeting",
+                    "confidence": 0.95,
+                    "reason": "mock_greeting",
+                }
+            )
+        return json.dumps(
+            {
+                "intent": "knowledge",
+                "category": "knowledge",
+                "confidence": 0.8,
+                "reason": "mock_knowledge",
+            }
+        )
 
     def _extract_json(self, text: str) -> str:
         entities = []

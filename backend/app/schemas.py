@@ -99,7 +99,15 @@ class AgentUpdate(BaseModel):
     settings: dict[str, Any] | None = None
     allowed_origins: str | None = None
     published: bool | None = None
+    disabled: bool | None = None
     rotate_embed_key: bool = False
+
+
+class AskReadinessOut(BaseModel):
+    status: Literal["unknown", "ready", "needs_attention"] = "unknown"
+    pass_rate: float | None = None
+    failing_patterns: list[str] = Field(default_factory=list)
+    passage: dict[str, Any] = Field(default_factory=dict)
 
 
 class AgentOut(BaseModel):
@@ -113,8 +121,10 @@ class AgentOut(BaseModel):
     embed_key: str | None = None
     allowed_origins: str = "*"
     published: bool = False
+    disabled: bool = False
     created_at: str
     counts: dict[str, int] = Field(default_factory=dict)
+    ask_readiness: AskReadinessOut | None = None
 
 
 class AgentPublishOut(BaseModel):
@@ -142,7 +152,11 @@ class AgentFleetItem(BaseModel):
     description: str = ""
     workspace_id: str
     published: bool = False
-    readiness: Literal["draft", "ready", "live"] = "draft"
+    disabled: bool = False
+    readiness: Literal["draft", "ready", "live", "disabled"] = "draft"
+    ask_status: Literal["unknown", "ready", "needs_attention"] = "unknown"
+    ask_pass_rate: float | None = None
+    ask_failing_patterns: list[str] = Field(default_factory=list)
     embed_key: str | None = None
     counts: dict[str, int] = Field(default_factory=dict)
     endpoints: AgentEndpoints
@@ -158,6 +172,35 @@ class PricingTier(BaseModel):
     highlighted: bool = False
 
 
+class TrustCenter(BaseModel):
+    grounded_pct: float = 0.0
+    evidence_coverage_pct: float = 0.0
+    unsupported_claims: int = 0
+    conflicts: int = 0
+    asks_sampled: int = 0
+    status: Literal["trusted", "review", "building"] = "building"
+
+
+class AiFinding(BaseModel):
+    kind: Literal["ok", "warn", "info"] = "ok"
+    text: str
+
+
+class GraphInsights(BaseModel):
+    health_score: float = 0.0
+    most_connected: str = ""
+    top_agent: str = ""
+    top_agent_asks: int = 0
+    concepts: int = 0
+    relationships: int = 0
+
+
+class PlatformIntelligence(BaseModel):
+    trust: TrustCenter = Field(default_factory=TrustCenter)
+    findings: list[AiFinding] = Field(default_factory=list)
+    graph: GraphInsights = Field(default_factory=GraphInsights)
+
+
 class StudioDashboard(BaseModel):
     plan: str = "builder"
     plan_label: str = "Builder"
@@ -167,6 +210,7 @@ class StudioDashboard(BaseModel):
     agents: list[AgentFleetItem] = Field(default_factory=list)
     pricing: list[PricingTier] = Field(default_factory=list)
     revenue_model: list[str] = Field(default_factory=list)
+    intelligence: PlatformIntelligence = Field(default_factory=PlatformIntelligence)
 
 
 class PublicChatRequest(BaseModel):
@@ -182,7 +226,10 @@ class PublicAgentConfig(BaseModel):
     accent: str
     show_trust_trail: bool = True
     show_citations: bool = True
+    streaming: bool = True
     published: bool = True
+    disabled: bool = False
+    disabled_message: str | None = None
 
 
 class JobOut(BaseModel):
@@ -207,6 +254,12 @@ class SharePointIngestRequest(BaseModel):
     workspace_id: str
     url: str | None = None
     demo: bool = False
+
+
+class BlobIngestRequest(BaseModel):
+    workspace_id: str
+    container: str
+    prefix: str | None = None
 
 
 class GraphNodeOut(BaseModel):

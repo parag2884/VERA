@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from app.agents.ask.intent_classify import classify_user_intent
 from app.agents.base import AgentContext
 from app.runtime import get_runtime
 from app.schemas import (
@@ -35,6 +36,81 @@ async def run_ask_chat(
         role="user",
         content=question,
     )
+
+    # Meaning-first gate: lexical hard-block + GPT intent + heuristic fallback.
+    agent = None
+    if assistant_id:
+        agent = await store.get_agent(assistant_id)
+    if agent is None:
+        agent = await store.get_agent_by_workspace(workspace_id)
+    settings = settings_from_agent(agent or {})
+    agent_name = str(settings.get("agentName") or (agent or {}).get("name") or "").strip()
+
+    decision = await classify_user_intent(
+        runtime.llm,
+        question,
+        agent_name=agent_name or None,
+    )
+    demo_mode = bool(runtime.demo_mode)
+    provider_mode = "mock" if demo_mode else runtime.provider_mode
+
+    if decision.intent in {"inappropriate", "sensitive"}:
+        trust = TrustScore()
+        answer = decision.reply or ""
+        mid = await store.insert_message(
+            workspace_id,
+            session_id=session_id,
+            role="assistant",
+            content=answer,
+            decision="refuse",
+            reason_codes=[decision.reason_code or decision.category],
+            trust_score=trust.model_dump(),
+            trust_trail=[],
+            retrieval_mode=decision.retrieval_mode or "policy_refuse",
+            provider_mode=provider_mode,
+        )
+        await store.commit()
+        return ChatResponse(
+            decision="refuse",
+            answer=answer,
+            reason_codes=[decision.reason_code or decision.category],
+            trust_score=trust,
+            retrieval_mode=decision.retrieval_mode or "policy_refuse",
+            provider_mode=provider_mode,  # type: ignore[arg-type]
+            demo_mode=demo_mode,
+            session_id=session_id,
+            message_id=mid,
+        )
+
+    if decision.intent == "greeting":
+        trust = TrustScore(
+            overall=1.0, entity_resolution=1.0, evidence_coverage=1.0, source_quality=1.0
+        )
+        answer = decision.reply or ""
+        mid = await store.insert_message(
+            workspace_id,
+            session_id=session_id,
+            role="assistant",
+            content=answer,
+            decision="answer",
+            reason_codes=["greeting"],
+            trust_score=trust.model_dump(),
+            trust_trail=[],
+            retrieval_mode="greeting",
+            provider_mode=provider_mode,
+        )
+        await store.commit()
+        return ChatResponse(
+            decision="answer",
+            answer=answer,
+            reason_codes=["greeting"],
+            trust_score=trust,
+            retrieval_mode="greeting",
+            provider_mode=provider_mode,  # type: ignore[arg-type]
+            demo_mode=demo_mode,
+            session_id=session_id,
+            message_id=mid,
+        )
 
     ctx = AgentContext(
         workspace_id=workspace_id,

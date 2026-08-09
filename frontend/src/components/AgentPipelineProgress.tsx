@@ -4,9 +4,11 @@ type Event = {
   message?: string;
   progress?: number;
   level?: string;
+  pages?: number;
+  max_pages?: number;
 };
 
-const INGEST_STAGES = [
+const BASE_STAGES = [
   { id: "connect", label: "Connect", short: "Connect" },
   { id: "fingerprint", label: "Fingerprint", short: "Print" },
   { id: "parse", label: "Parse", short: "Parse" },
@@ -17,19 +19,31 @@ const INGEST_STAGES = [
   { id: "index_health", label: "Health score", short: "Health" },
 ];
 
+const CRAWL_STAGE = { id: "crawl", label: "Crawl site", short: "Crawl" };
+
 export default function AgentPipelineProgress({
   events = [],
   progress = 0,
   status,
   statusText,
   compact = false,
+  agentName,
+  jobType,
 }: {
   events?: Event[];
   progress?: number;
   status?: string;
   statusText?: string | null;
   compact?: boolean;
+  /** Active agent — shown so multi-agent studios know which KB is updating */
+  agentName?: string | null;
+  jobType?: string | null;
 }) {
+  const hasCrawl =
+    jobType === "ingest_url" ||
+    events.some((e) => e.agent_id === "crawl" || String(e.stage || "").includes("crawl"));
+  const stages = hasCrawl ? [CRAWL_STAGE, ...BASE_STAGES] : BASE_STAGES;
+
   const failed =
     status === "failed" ||
     events.some((e) => String(e.stage || "").includes(".failed") || e.level === "error");
@@ -68,22 +82,32 @@ export default function AgentPipelineProgress({
   }
 
   const lastMsg = [...events].reverse().find((e) => e.message)?.message;
-  const pct = Math.round(progress * 100);
+  const crawlEv = [...events].reverse().find((e) => e.agent_id === "crawl");
+  const pct = Math.round(Math.min(100, Math.max(0, progress * 100)));
+  const scope = agentName ? `${agentName}` : null;
+  const headline = scope
+    ? `${scope} · ${pct}%${status ? ` · ${status}` : ""}`
+    : `Progress · ${pct}%${status ? ` · ${status}` : ""}`;
+  const detail = statusText || lastMsg;
+  const crawlHint =
+    crawlEv && typeof crawlEv.pages === "number" && typeof crawlEv.max_pages === "number"
+      ? `${crawlEv.pages}/${crawlEv.max_pages} pages`
+      : null;
 
   if (compact) {
     return (
       <div className="pipe-compact">
         <div className="pipe-compact-meta">
-          <span>
-            {pct}%{status ? ` · ${status}` : ""}
-          </span>
-          {(statusText || lastMsg) && <span className="pipe-compact-msg">{statusText || lastMsg}</span>}
+          <span>{headline}</span>
+          {(detail || crawlHint) && (
+            <span className="pipe-compact-msg">{detail || crawlHint}</span>
+          )}
         </div>
-        <div className="pipe-compact-bar" aria-hidden>
-          <i style={{ width: `${Math.min(100, Math.max(0, pct))}%` }} />
+        <div className="pipe-compact-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
+          <i style={{ width: `${pct}%` }} />
         </div>
         <div className="pipe-compact-steps" role="list">
-          {INGEST_STAGES.map((s) => {
+          {stages.map((s) => {
             const done = stageDone.has(s.id) || doneAgents.has(s.id);
             const isActive = !failed && !done && active === s.id;
             return (
@@ -106,16 +130,34 @@ export default function AgentPipelineProgress({
 
   return (
     <div className="agent-list">
-      <div className="muted" style={{ marginBottom: "0.45rem", fontSize: "0.85rem" }}>
-        Progress · {pct}%
-        {status ? ` · ${status}` : ""}
-      </div>
-      {(statusText || lastMsg) && (
-        <div style={{ fontSize: "0.82rem", marginBottom: "0.65rem", color: "var(--navy)" }}>
-          {statusText || lastMsg}
+      {scope && (
+        <div className="pipe-agent-scope" title="Ingest updates this agent only">
+          Updating <strong>{scope}</strong>
+          <span className="muted"> — other agents stay isolated</span>
         </div>
       )}
-      {INGEST_STAGES.map((s) => {
+      <div className="pipe-progress-head">
+        <div className="muted" style={{ fontSize: "0.85rem" }}>
+          {headline}
+          {crawlHint ? ` · ${crawlHint}` : ""}
+        </div>
+        <div
+          className="pipe-progress-bar"
+          role="progressbar"
+          aria-valuenow={pct}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Ingest progress"
+        >
+          <i style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+      {detail && (
+        <div className="pipe-progress-msg" title={detail}>
+          {detail}
+        </div>
+      )}
+      {stages.map((s) => {
         const done = stageDone.has(s.id) || doneAgents.has(s.id);
         const isActive = !failed && !done && active === s.id;
         return (

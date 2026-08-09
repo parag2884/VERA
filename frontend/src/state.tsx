@@ -28,6 +28,8 @@ type Ctx = {
   publishInfo: { snippet: string; url: string; key: string } | null;
   publishAgent: () => Promise<void>;
   unpublishAgent: () => Promise<void>;
+  setAgentDisabled: (agentId: string, disabled: boolean) => Promise<void>;
+  deleteAgent: (agentId: string) => Promise<void>;
 };
 
 const WorkspaceCtx = createContext<Ctx | null>(null);
@@ -279,6 +281,31 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     await refreshAgents();
   };
 
+  const setAgentDisabled = useCallback(
+    async (id: string, disabled: boolean) => {
+      const agent = disabled ? await api.disableAgent(id) : await api.enableAgent(id);
+      if (agentId === id) applyAgent(agent);
+      await refreshAgents();
+    },
+    [agentId, applyAgent, refreshAgents]
+  );
+
+  const deleteAgent = useCallback(
+    async (id: string) => {
+      await api.deleteAgent(id);
+      const list = await refreshAgents();
+      if (agentId === id) {
+        if (list.length) {
+          applyAgent(list[0]);
+        } else {
+          clearWorkspace();
+          setPublishInfo(null);
+        }
+      }
+    },
+    [agentId, applyAgent, refreshAgents]
+  );
+
   const value = useMemo(
     () => ({
       workspaceId,
@@ -300,6 +327,8 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       publishInfo,
       publishAgent,
       unpublishAgent,
+      setAgentDisabled,
+      deleteAgent,
     }),
     [
       workspaceId,
@@ -314,6 +343,8 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       selectAgent,
       createAgent,
       renameAgent,
+      setAgentDisabled,
+      deleteAgent,
     ]
   );
 

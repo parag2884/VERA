@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from app.agents.ask.contracts import QuoteFillInput, QuoteFillOutput, QuoteHit
+from app.agents.ask.evidence_contract import detect_evidence_contract
 from app.agents.ask.overview import (
     chunk_info_score,
     clean_excerpt,
@@ -9,6 +10,7 @@ from app.agents.ask.overview import (
     score_documents,
 )
 from app.agents.ask.people import is_candidate_lookup
+from app.agents.ask.relevance import graph_should_lead, trail_answer_relevance
 from app.agents.ask.retrieve import retrieve_evidence_pack
 from app.agents.base import AgentContext, AgentResult
 from app.config import get_settings
@@ -78,6 +80,8 @@ class QuoteFillAgent:
         path_strength = payload.best_trail.path_strength if payload.best_trail else 0.0
         overview = is_document_overview(payload.question)
         candidate = is_candidate_lookup(payload.question)
+        contract = payload.evidence_contract or detect_evidence_contract(payload.question)
+        reason_codes.extend(c for c in contract.reason_codes if c not in reason_codes)
 
         graph_quotes: list[QuoteHit] = []
         if payload.viable_evidence_bound_trail and payload.best_trail and store:
@@ -121,6 +125,7 @@ class QuoteFillAgent:
             prefer_overview=overview and not candidate,
             overview_quotes=overview_quotes,
             name_only=candidate,
+            contract=contract,
         )
 
         quotes = pack.quotes
@@ -128,36 +133,59 @@ class QuoteFillAgent:
         viable_graph = bool(
             payload.viable_evidence_bound_trail and graph_quotes and path_strength >= 0.5
         )
+        hop_names: list[str] = []
+        if payload.best_trail:
+            hop_names = [h.from_name for h in payload.best_trail.hops] + [
+                h.to_name for h in payload.best_trail.hops
+            ]
+        evidence_blob = " ".join(q.quote for q in graph_quotes)
+        trail_rel = trail_answer_relevance(
+            payload.question,
+            hop_names,
+            evidence_blob,
+            pack.required_terms,
+        )
+        graph_leads = viable_graph and graph_should_lead(
+            trail_rel, path_strength, pack.coverage
+        )
+        limit = max(settings.vera_quote_top_k, 8)
         if candidate:
             retrieval_mode = "name_lookup"
             if not quotes:
                 reason_codes.append("NAME_NOT_FOUND_IN_SOURCES")
         elif overview and pack.mode == "document_overview":
             retrieval_mode = "document_overview"
-        elif viable_graph:
-            # Graph-first: lead with evidence-bound trail quotes, keep hybrid gap-fill
+        elif graph_leads:
+            # Graph-first, but always reserve hybrid slots so KB hits survive
             g_ids = {q.chunk_id for q in graph_quotes}
             lead = [q for q in quotes if q.edge_id or q.chunk_id in g_ids]
             rest = [q for q in quotes if q not in lead]
             if not lead:
                 lead = list(graph_quotes)
-            quotes = (lead + rest)[: max(settings.vera_quote_top_k, 8)]
+            reserve = max(3, limit // 2)
+            quotes = (lead[: max(1, limit - reserve)] + rest)[:limit]
             retrieval_mode = (
                 "graph_primary"
                 if path_strength >= 0.65 or pack.mode == "graph_primary"
                 else "hybrid_graph_kb"
             )
+        elif viable_graph:
+            # Trail exists but does not answer the question — hybrid leads
+            retrieval_mode = (
+                "hybrid_kb"
+                if pack.mode == "hybrid_kb"
+                else ("hybrid_graph_kb" if graph_quotes else pack.mode)
+            )
+            reason_codes.append("GRAPH_TRAIL_LOW_RELEVANCE")
         elif pack.coverage >= 0.5:
             retrieval_mode = "hybrid_kb" if "graph" not in pack.mode else pack.mode
         elif graph_quotes and pack.coverage < 0.35 and not quotes:
-            # last resort: keep graph quotes so GPT can refuse with context
             quotes = graph_quotes
             retrieval_mode = "graph_primary"
 
         if not quotes:
             reason_codes.append("NO_QUOTE_EVIDENCE")
 
-        # Drop entity noise once we have a real evidence pack
         if quotes and retrieval_mode in {
             "hybrid_kb",
             "hybrid_graph_kb",
@@ -171,7 +199,13 @@ class QuoteFillAgent:
                 if c not in {"ENTITY_NOT_RESOLVED", "NO_SEED_ENTITIES", "NO_EVIDENCE_BOUND_PATH"}
             ]
 
-        quotes.sort(key=lambda q: q.score, reverse=True)
+        # Preserve retrieve/rerank order — do not re-crown by raw score
+        out_trail = payload.best_trail
+        out_strength = path_strength
+        if "GRAPH_TRAIL_LOW_RELEVANCE" in reason_codes:
+            out_trail = None
+            out_strength = 0.0
+
         ctx.emit(
             self.id,
             "quotes.done",
@@ -180,6 +214,7 @@ class QuoteFillAgent:
             data={
                 "coverage": pack.coverage,
                 "required_terms": pack.required_terms,
+                "trail_relevance": trail_rel,
             },
         )
         return AgentResult(
@@ -189,14 +224,17 @@ class QuoteFillAgent:
                 intent=payload.intent,
                 quotes=quotes[: max(settings.vera_quote_top_k, 8)],
                 retrieval_mode=retrieval_mode,
-                best_trail=payload.best_trail,
+                best_trail=out_trail,
                 reason_codes=reason_codes,
                 entity_resolution_score=payload.entity_resolution_score,
-                path_strength=path_strength,
+                path_strength=out_strength,
+                evidence_contract=contract,
             ),
             metrics={
                 "quotes": len(quotes),
                 "mode": retrieval_mode,
                 "coverage": pack.coverage,
+                "trail_relevance": trail_rel,
+                "contract": contract.shape,
             },
         )

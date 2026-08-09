@@ -14,6 +14,8 @@ services:
     volumes:
       - vera_data:/app/data
       - ./backend/app/data/sample_kb:/app/app/data/sample_kb:ro
+      # Live golden Ask suites (draft Q&A from the KB; edit without image rebuild)
+      - ./tests/golden:/app/tests/golden:ro
     environment:
       VERA_DB: ./data/vera.db
       VERA_DATA_DIR: ./data

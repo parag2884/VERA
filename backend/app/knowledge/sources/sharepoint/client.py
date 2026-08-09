@@ -11,8 +11,8 @@ from urllib.parse import unquote, urlparse
 
 import httpx
 
-from app.agents.ingest.contracts import AcquiredFile
 from app.config import BACKEND_ROOT, get_settings
+from app.knowledge.contracts import AcquiredFile
 
 logger = logging.getLogger(__name__)
 
@@ -180,6 +180,7 @@ async def _walk_drive_children(
                     mime=mime,
                     content=raw,
                     appears_at=f"sharepoint://{rel}",
+                    source_kind="sharepoint",
                 )
             )
             if len(out) >= settings.vera_max_upload_files:
@@ -206,6 +207,7 @@ def load_sharepoint_demo() -> list[AcquiredFile]:
                 mime=mime,
                 content=path.read_bytes(),
                 appears_at=f"sharepoint-demo://{rel}",
+                source_kind="sharepoint",
             )
         )
     return files

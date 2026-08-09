@@ -1,0 +1,39 @@
+{
+  "suite_id": "example_web_v1",
+  "source_kind": "web",
+  "agent_name": "Example Website Assistant",
+  "seed_url": "https://www.example.com",
+  "kb_notes": [
+    "Crawl the seed URL (and section URLs if needed) before running.",
+    "Every expected_answer / must_any must be verifiable on source_url in a browser."
+  ],
+  "required_pages": [
+    "https://www.example.com/",
+    "https://www.example.com/about"
+  ],
+  "cases": [
+    {
+      "id": "EX01",
+      "category": "about",
+      "question": "What does Example Co. say about itself on its about page?",
+      "expect_decision": "answer",
+      "expected_answer": "Draft from the about page only.",
+      "must_any": ["example"],
+      "forbid_any": [],
+      "citation_any": ["about"],
+      "source_url": "https://www.example.com/about",
+      "kb_quote_hint": "Paste a short literal phrase from the about page here"
+    },
+    {
+      "id": "EX99",
+      "category": "refuse",
+      "question": "What is the capital of France?",
+      "expect_decision": "refuse",
+      "expected_answer": "Must refuse — not in this website KB.",
+      "must_any": [],
+      "forbid_any": ["paris is the capital"],
+      "source_url": null,
+      "kb_quote_hint": null
+    }
+  ]
+}

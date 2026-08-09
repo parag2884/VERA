@@ -4,6 +4,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+from app.agents.ask.evidence_contract import EvidenceContract
 from app.schemas import ClarifyOption, TrustScore, TrustTrailHop
 
 
@@ -86,6 +87,7 @@ class QuoteFillInput(BaseModel):
     viable_evidence_bound_trail: bool = False
     reason_codes: list[str] = Field(default_factory=list)
     entity_resolution_score: float = 0.0
+    evidence_contract: EvidenceContract | None = None
 
 
 class QuoteHit(BaseModel):
@@ -106,6 +108,7 @@ class QuoteFillOutput(BaseModel):
     reason_codes: list[str] = Field(default_factory=list)
     entity_resolution_score: float = 0.0
     path_strength: float = 0.0
+    evidence_contract: EvidenceContract | None = None
 
 
 class EvidenceJudgeInput(BaseModel):
@@ -120,6 +123,7 @@ class EvidenceJudgeInput(BaseModel):
     clarify_options: list[ClarifyOption] = Field(default_factory=list)
     clarification_prompt: str | None = None
     decision_hint: Literal["answer", "clarify", "refuse"] | None = None
+    evidence_contract: EvidenceContract | None = None
 
 
 class EvidenceJudgeOutput(BaseModel):

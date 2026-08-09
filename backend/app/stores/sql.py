@@ -39,6 +39,7 @@ DEFAULT_AGENT_SETTINGS = {
     "showTrustTrail": True,
     "showCitations": True,
     "showTrustScore": True,
+    "embedStreaming": True,
     "placeholder": "Ask about your knowledge…",
 }
 
@@ -110,6 +111,7 @@ class WorkspaceStore:
             "embed_key": data.get("embed_key"),
             "allowed_origins": data.get("allowed_origins") or "*",
             "published": bool(data.get("published")),
+            "disabled": bool(data.get("disabled")),
             "created_at": data["created_at"],
             "counts": counts or {},
         }
@@ -157,8 +159,8 @@ class WorkspaceStore:
         await self.conn.execute(
             """INSERT INTO assistants
                (id, workspace_id, name, slug, description, settings_json,
-                embed_key, allowed_origins, published, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, '*', 0, ?)""",
+                embed_key, allowed_origins, published, disabled, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, '*', 0, 0, ?)""",
             (
                 aid,
                 wid,
@@ -238,6 +240,7 @@ class WorkspaceStore:
         settings: dict[str, Any] | None = None,
         allowed_origins: str | None = None,
         published: bool | None = None,
+        disabled: bool | None = None,
         rotate_embed_key: bool = False,
     ) -> dict[str, Any] | None:
         agent = await self.get_agent(agent_id)
@@ -274,6 +277,9 @@ class WorkspaceStore:
         if published is not None:
             fields.append("published = ?")
             values.append(1 if published else 0)
+        if disabled is not None:
+            fields.append("disabled = ?")
+            values.append(1 if disabled else 0)
         if rotate_embed_key:
             fields.append("embed_key = ?")
             values.append(secrets.token_urlsafe(24))
@@ -285,6 +291,23 @@ class WorkspaceStore:
             )
             await self.commit()
         return await self.get_agent(agent_id)
+
+    async def delete_agent(self, agent_id: str) -> dict[str, Any] | None:
+        """Hard-delete agent row + workspace row after knowledge purge (caller clears vectors)."""
+        agent = await self.get_agent(agent_id)
+        if not agent:
+            return None
+        workspace_id = agent["workspace_id"]
+        purge = await self.purge_knowledge(workspace_id)
+        await self.conn.execute("DELETE FROM assistants WHERE id = ?", (agent_id,))
+        await self.conn.execute("DELETE FROM workspaces WHERE id = ?", (workspace_id,))
+        await self.commit()
+        return {
+            "id": agent_id,
+            "workspace_id": workspace_id,
+            "name": agent.get("name"),
+            "purge": purge,
+        }
 
     # --- jobs ---
     async def create_job(self, workspace_id: str, job_type: str) -> dict[str, Any]:
@@ -1002,6 +1025,213 @@ class WorkspaceStore:
             "chunks": chunks,
             "nodes": nodes,
             "asks": asks,
+        }
+
+    async def studio_intelligence(self) -> dict[str, Any]:
+        """Platform-wide Trust Center / AI Findings / Graph Insights (real aggregates)."""
+        agents = await self.list_agents()
+        totals = await self.studio_totals()
+
+        cur = await self.conn.execute(
+            """SELECT decision, retrieval_mode, trust_trail_json
+               FROM chat_messages
+               WHERE role = 'assistant'
+               ORDER BY created_at DESC
+               LIMIT 120"""
+        )
+        ask_rows = await cur.fetchall()
+        answered = [r for r in ask_rows if (r["decision"] or "") == "answer"]
+        grounded_n = 0
+        for r in answered:
+            mode = (r["retrieval_mode"] or "").lower()
+            trail_raw = r["trust_trail_json"] or "[]"
+            has_trail = False
+            try:
+                trail = json.loads(trail_raw)
+                has_trail = isinstance(trail, list) and len(trail) > 0
+            except (TypeError, ValueError, json.JSONDecodeError):
+                pass
+            if "graph" in mode or has_trail:
+                grounded_n += 1
+        asks_sampled = len(answered)
+        grounded_pct = round(100.0 * grounded_n / asks_sampled, 1) if asks_sampled else 0.0
+
+        cur = await self.conn.execute(
+            """SELECT
+                 SUM(CASE WHEN lower(support_status) IN ('supported','evidence_backed','backed') THEN 1 ELSE 0 END) AS supported,
+                 SUM(CASE WHEN lower(support_status) IN ('unsupported','refuted','contradicted') THEN 1 ELSE 0 END) AS unsupported,
+                 COUNT(*) AS total
+               FROM answer_claims"""
+        )
+        claim_row = await cur.fetchone()
+        claims_total = int(claim_row["total"] or 0) if claim_row else 0
+        claims_supported = int(claim_row["supported"] or 0) if claim_row else 0
+        unsupported = int(claim_row["unsupported"] or 0) if claim_row else 0
+
+        cur = await self.conn.execute(
+            """SELECT
+                 (SELECT COUNT(*) FROM kg_edges WHERE status = 'active') AS edges,
+                 (SELECT COUNT(DISTINCT ee.edge_id) FROM kg_edge_evidence ee
+                    JOIN kg_edges e ON e.id = ee.edge_id AND e.status = 'active') AS evidenced,
+                 (SELECT COUNT(*) FROM kg_edges
+                    WHERE status = 'active' AND edge_class = 'documentary') AS documentary"""
+        )
+        erow = await cur.fetchone()
+        edges = int(erow["edges"] or 0) if erow else 0
+        evidenced = max(int(erow["evidenced"] or 0), int(erow["documentary"] or 0)) if erow else 0
+        evidence_pct = round(100.0 * evidenced / edges, 1) if edges else 0.0
+        if claims_total > 0:
+            # Prefer claim-level evidence when answers exist
+            evidence_pct = round(
+                0.55 * evidence_pct + 0.45 * (100.0 * claims_supported / claims_total),
+                1,
+            )
+
+        cur = await self.conn.execute(
+            """SELECT COUNT(*) AS c FROM kg_edges
+               WHERE status = 'active'
+                 AND (lower(rel_type) LIKE '%conflict%'
+                      OR lower(rel_type) = 'conflicts_with')"""
+        )
+        conflicts = int((await cur.fetchone())["c"] or 0)
+
+        docs = int(totals.get("documents") or 0)
+        nodes = int(totals.get("nodes") or 0)
+        if docs == 0 or nodes == 0:
+            status = "building"
+        elif conflicts > 0 or unsupported > 0 or (asks_sampled >= 3 and grounded_pct < 70):
+            status = "review"
+        elif asks_sampled == 0 and evidence_pct >= 50:
+            status = "trusted"
+        elif grounded_pct >= 70 or evidence_pct >= 75:
+            status = "trusted"
+        else:
+            status = "review"
+
+        cur = await self.conn.execute(
+            """SELECT COUNT(*) AS c FROM kg_nodes
+               WHERE type NOT IN ('Document', 'Chunk', 'Section')"""
+        )
+        concepts = int((await cur.fetchone())["c"] or 0)
+
+        cur = await self.conn.execute(
+            """SELECT COUNT(*) AS c FROM kg_nodes
+               WHERE type NOT IN ('Document', 'Chunk', 'Section')
+                 AND (
+                   lower(type) LIKE '%compliance%'
+                   OR lower(type) LIKE '%obligation%'
+                   OR lower(type) LIKE '%rule%'
+                   OR lower(type) LIKE '%policy%'
+                   OR lower(name) LIKE '%compliance%'
+                   OR lower(name) LIKE '%obligation%'
+                 )"""
+        )
+        compliance_n = int((await cur.fetchone())["c"] or 0)
+
+        cur = await self.conn.execute(
+            """SELECT COUNT(*) AS c FROM kg_edges
+               WHERE status = 'active'
+                 AND (edge_class IN ('documentary', 'derived')
+                      OR id IN (SELECT edge_id FROM kg_edge_evidence))"""
+        )
+        discovered_rels = int((await cur.fetchone())["c"] or 0)
+
+        findings: list[dict[str, str]] = []
+        if compliance_n:
+            findings.append(
+                {
+                    "kind": "ok",
+                    "text": f"Identified {compliance_n} compliance / obligation concepts",
+                }
+            )
+        if concepts:
+            findings.append(
+                {"kind": "ok", "text": f"Extracted {concepts:,} key concepts across agents"}
+            )
+        if discovered_rels:
+            findings.append(
+                {
+                    "kind": "ok",
+                    "text": f"Bound {discovered_rels:,} evidence-linked relationships",
+                }
+            )
+        if conflicts:
+            findings.append(
+                {
+                    "kind": "warn",
+                    "text": f"Detected {conflicts} conflicting statements in the graph",
+                }
+            )
+        if unsupported:
+            findings.append(
+                {
+                    "kind": "warn",
+                    "text": f"{unsupported} unsupported claims flagged in recent answers",
+                }
+            )
+        if not findings:
+            if docs == 0:
+                findings.append(
+                    {"kind": "info", "text": "Connect a knowledge base to start discovering evidence"}
+                )
+            else:
+                findings.append(
+                    {
+                        "kind": "info",
+                        "text": "Graph is warming — Ask questions to surface trust trails",
+                    }
+                )
+
+        cur = await self.conn.execute(
+            """SELECT AVG(score) AS s FROM knowledge_health"""
+        )
+        hrow = await cur.fetchone()
+        health = round(float(hrow["s"] or 0), 1) if hrow and hrow["s"] is not None else 0.0
+        if health <= 0 and edges and nodes:
+            # Lightweight fallback when health rows are stale/missing
+            health = round(min(100.0, 40 + evidence_pct * 0.4 + min(concepts, 500) / 20), 1)
+
+        cur = await self.conn.execute(
+            """SELECT n.name AS name, COUNT(*) AS deg
+               FROM kg_nodes n
+               JOIN kg_edges e
+                 ON e.workspace_id = n.workspace_id
+                AND e.status = 'active'
+                AND (e.src = n.id OR e.dst = n.id)
+               WHERE n.type NOT IN ('Document', 'Chunk', 'Section')
+               GROUP BY n.id
+               ORDER BY deg DESC
+               LIMIT 1"""
+        )
+        top_node = await cur.fetchone()
+        most_connected = (top_node["name"] if top_node else "") or ""
+
+        top_agent = ""
+        top_asks = 0
+        for a in agents:
+            asks = int((a.get("counts") or {}).get("asks") or 0)
+            if asks >= top_asks:
+                top_asks = asks
+                top_agent = a.get("name") or ""
+
+        return {
+            "trust": {
+                "grounded_pct": grounded_pct,
+                "evidence_coverage_pct": evidence_pct,
+                "unsupported_claims": unsupported,
+                "conflicts": conflicts,
+                "asks_sampled": asks_sampled,
+                "status": status,
+            },
+            "findings": findings[:5],
+            "graph": {
+                "health_score": health,
+                "most_connected": most_connected[:80],
+                "top_agent": top_agent,
+                "top_agent_asks": top_asks,
+                "concepts": concepts,
+                "relationships": edges,
+            },
         }
 
     async def purge_knowledge(self, workspace_id: str) -> dict[str, Any]:

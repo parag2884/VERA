@@ -7,6 +7,7 @@ from app.agents.ask.contracts import (
     GraphRetrieveOutput,
     RankedTrail,
 )
+from app.agents.ask.relevance import trail_answer_relevance
 from app.agents.base import AgentContext, AgentResult
 from app.config import get_settings
 from app.schemas import TrustTrailHop
@@ -146,8 +147,21 @@ class GraphRetrieveAgent:
         seed_names = {nodes[s].get("name") for s in seed_ids if s in nodes}
         for trail in trails:
             rels = " ".join(h.rel for h in trail.hops).lower()
+            hop_name_list = [h.from_name for h in trail.hops] + [
+                h.to_name for h in trail.hops
+            ]
+            evidence_blob = " ".join(
+                (h.evidence_quote or "") for h in trail.hops if h.evidence_quote
+            )
             trail.path_strength += _relation_question_boost(q, rels)
-            hop_names = {h.from_name for h in trail.hops} | {h.to_name for h in trail.hops}
+            # Generic: boost/penalize by how well hops+evidence match the question
+            rel = trail_answer_relevance(
+                payload.question, hop_name_list, evidence_blob
+            )
+            trail.path_strength += 0.28 * rel
+            if rel < 0.2:
+                trail.path_strength -= 0.35
+            hop_names = set(hop_name_list)
             overlap = len(hop_names & seed_names)
             if overlap >= 2:
                 trail.path_strength += 0.12 * (overlap - 1)
@@ -196,6 +210,14 @@ def _relation_question_boost(question: str, rels: str) -> float:
         (("provide", "offer"), "provides", 0.15),
         (("related", "relationship", "between"), "related_to", 0.2),
         (("defin", "mean", "what is"), "defined_as", 0.2),
+        (("who", "employ", "works", "reports"), "employs", 0.2),
+        (("who", "employ", "works", "reports"), "works_for", 0.2),
+        (("who", "employ", "works", "reports"), "reports_to", 0.2),
+        (("who", "found"), "founded_by", 0.22),
+        (("who", "found"), "founded", 0.18),
+        (("who", "lead", "leads", "heads", "run"), "led_by", 0.18),
+        (("who", "lead", "leads", "heads", "run"), "leads", 0.15),
+        (("who", "role"), "has_role", 0.2),
     ]
     for q_words, rel_token, score in checks:
         if any(w in question for w in q_words) and rel_token in rels:

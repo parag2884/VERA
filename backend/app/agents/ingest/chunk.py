@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from app.agents.base import AgentContext, AgentError, AgentResult
 from app.agents.ingest.contracts import ChunkInput, ChunkOutput, ChunkRecord
+from app.services.passage_signals import compute_passage_signals
 from app.services.tokens import count_tokens
 
 
@@ -28,6 +29,7 @@ class ChunkAgent:
         all_chunks: list[ChunkRecord] = []
         doc_ids: list[str] = []
         source_links: list[dict] = []
+        quarantined = 0
 
         for keeper in payload.keepers:
             existing = await store.find_canonical_by_text_hash(ctx.workspace_id, keeper.text_hash)
@@ -92,12 +94,18 @@ class ChunkAgent:
 
             pieces = _chunk_text(keeper.text, self.chunk_size, self.overlap)
             for ordinal, (start, end, text) in enumerate(pieces):
+                signals = compute_passage_signals(keeper.filename, text)
+                # Quarantine pure chrome / nav shells — do not store as knowledge
+                if signals.get("quarantine"):
+                    quarantined += 1
+                    continue
                 cid = str(uuid4())
                 loc = {
                     "filename": keeper.filename,
                     "char_start": start,
                     "char_end": end,
                     "locator": f"chars {start}-{end}",
+                    "signals": signals,
                 }
                 await store.insert_chunk(
                     ctx.workspace_id,
@@ -133,7 +141,11 @@ class ChunkAgent:
                 chunks=all_chunks,
                 source_links=source_links,
             ),
-            metrics={"chunks": len(all_chunks), "documents": len(set(doc_ids))},
+            metrics={
+                "chunks": len(all_chunks),
+                "documents": len(set(doc_ids)),
+                "quarantined": quarantined,
+            },
         )
 
 

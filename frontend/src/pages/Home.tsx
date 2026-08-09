@@ -49,12 +49,19 @@ export default function Home() {
 
   const t = dash?.totals || {};
   const agents = dash?.agents || [];
+  const intel = dash?.intelligence;
+  const trust = intel?.trust;
+  const findings = intel?.findings || [];
+  const graph = intel?.graph;
   const active = useMemo(
     () => agents.find((a) => a.id === agentId) || agents[0] || null,
     [agents, agentId]
   );
   const live = agents.filter((a) => a.readiness === "live").length;
   const ready = agents.filter((a) => a.readiness === "ready").length;
+  const trustStatus = trust?.status || "building";
+  const trustLabel =
+    trustStatus === "trusted" ? "Trusted" : trustStatus === "review" ? "Needs review" : "Building";
 
   return (
     <div className="bento">
@@ -143,6 +150,18 @@ export default function Home() {
             />
             <div className="spotlight-meta">
               <span className={`ready-pill ${active.readiness}`}>{active.readiness}</span>
+              {active.ask_status && active.ask_status !== "unknown" && (
+                <span
+                  className={`ready-pill ${active.ask_status === "ready" ? "ready" : "draft"}`}
+                  title={
+                    (active.ask_failing_patterns || []).length
+                      ? `Ask issues: ${active.ask_failing_patterns?.join(", ")}`
+                      : "Ask readiness suite"
+                  }
+                >
+                  ask {active.ask_status === "ready" ? "ready" : "needs attention"}
+                </span>
+              )}
               <span>{active.counts.documents ?? 0} docs</span>
               <span>{active.counts.nodes ?? 0} nodes</span>
               <span>{active.counts.chunks ?? 0} chunks</span>
@@ -204,97 +223,192 @@ export default function Home() {
             </button>
           </div>
         ) : (
-          <div className="bento-table">
-            <div className="bento-row bento-row-head">
-              <span>Agent</span>
-              <span>Status</span>
-              <span>Docs</span>
-              <span>Nodes</span>
-              <span>Asks</span>
-              <span>Endpoint</span>
-              <span>Actions</span>
-            </div>
-            {agents.map((a) => (
-              <div key={a.id} className={`bento-row ${a.id === agentId ? "is-active" : ""}`}>
-                <div className="bento-cell-agent">
-                  <EditableText
-                    as="strong"
-                    value={a.name}
-                    onSave={async (name) => {
-                      await renameAgent(a.id, name, a.description);
-                      await load();
+          <table className="agent-table has-endpoint">
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Status</th>
+                <th className="num">Docs</th>
+                <th className="num">Nodes</th>
+                <th className="num">Asks</th>
+                <th className="endpoint">Endpoint</th>
+                <th className="actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {agents.map((a) => {
+                const selected = a.id === agentId;
+                return (
+                  <tr
+                    key={a.id}
+                    className={selected ? "is-active" : ""}
+                    onClick={() => {
+                      if (!selected) void selectAgent(a.id);
                     }}
-                  />
-                  <EditableText
-                    as="div"
-                    className="bento-cell-desc"
-                    value={a.description || "Add description…"}
-                    onSave={async (description) => {
-                      const desc = description === "Add description…" ? "" : description;
-                      await renameAgent(a.id, a.name, desc);
-                      await load();
-                    }}
-                  />
-                </div>
-                <span className={`ready-pill ${a.readiness}`}>{a.readiness}</span>
-                <span className="bento-num">{a.counts.documents ?? 0}</span>
-                <span className="bento-num">{a.counts.nodes ?? 0}</span>
-                <span className="bento-num">{a.counts.asks ?? 0}</span>
-                <div className="bento-cell-ep">
-                  {a.published && a.endpoints.embed_url ? (
-                    <button
-                      type="button"
-                      className="linkish"
-                      onClick={() => void copyText(`ep-${a.id}`, a.endpoints.embed_url || "")}
-                    >
-                      {copied === `ep-${a.id}` ? "Copied" : "Copy embed"}
-                    </button>
-                  ) : (
-                    <span className="muted">Not published</span>
-                  )}
-                </div>
-                <div className="bento-cell-actions">
-                  <button
-                    type="button"
-                    className={`btn ${a.id === agentId ? "btn-accent" : "btn-ghost"}`}
-                    onClick={() => void selectAgent(a.id)}
                   >
-                    {a.id === agentId ? "Active" : "Use"}
-                  </button>
-                  <Link className="btn btn-ghost" to="/map" onClick={() => void selectAgent(a.id)}>
-                    Map
-                  </Link>
-                  <Link className="btn btn-primary" to="/connect" onClick={() => void selectAgent(a.id)}>
-                    Connect
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+                    <td>
+                      <div className="bento-cell-agent">
+                        <div className="bento-cell-agent-title">
+                          <EditableText
+                            as="strong"
+                            value={a.name}
+                            onSave={async (name) => {
+                              await renameAgent(a.id, name, a.description);
+                              await load();
+                            }}
+                          />
+                          {selected && <span className="studio-chip">In studio</span>}
+                        </div>
+                        <EditableText
+                          as="div"
+                          className="bento-cell-desc"
+                          value={a.description || ""}
+                          placeholder="Add description…"
+                          maxLength={120}
+                          onSave={async (description) => {
+                            await renameAgent(a.id, a.name, description);
+                            await load();
+                          }}
+                        />
+                      </div>
+                    </td>
+                    <td>
+                      <div className="bento-cell-status">
+                        <span className={`ready-pill ${a.readiness}`}>
+                          {a.readiness === "disabled"
+                            ? "Disabled"
+                            : a.readiness === "live"
+                              ? "Live"
+                              : a.readiness === "ready"
+                                ? "Ready"
+                                : a.readiness}
+                        </span>
+                        {a.ask_status && a.ask_status !== "unknown" && (
+                          <span
+                            className={`ready-pill ${a.ask_status === "ready" ? "ready" : "draft"}`}
+                            title={
+                              (a.ask_failing_patterns || []).join(", ") ||
+                              "Ask readiness smoke check"
+                            }
+                          >
+                            {a.ask_status === "ready" ? "Ask ok" : "Ask check"}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="num">{a.counts.documents ?? 0}</td>
+                    <td className="num">{a.counts.nodes ?? 0}</td>
+                    <td className="num">{a.counts.asks ?? 0}</td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      {a.published && a.endpoints.embed_url ? (
+                        <button
+                          type="button"
+                          className="linkish"
+                          onClick={() => void copyText(`ep-${a.id}`, a.endpoints.embed_url || "")}
+                        >
+                          {copied === `ep-${a.id}` ? "Copied" : "Copy embed"}
+                        </button>
+                      ) : (
+                        <span className="muted">Draft</span>
+                      )}
+                    </td>
+                    <td className="actions" onClick={(e) => e.stopPropagation()}>
+                      <div className="agent-row-actions">
+                        <Link
+                          className="btn btn-primary"
+                          to="/ask"
+                          onClick={() => void selectAgent(a.id)}
+                        >
+                          Ask
+                        </Link>
+                        <Link
+                          className="btn btn-ghost"
+                          to="/connect"
+                          onClick={() => void selectAgent(a.id)}
+                        >
+                          Connect
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         )}
       </section>
 
-      <section className="bento-foot">
-        <div>
-          <h3>Ship path</h3>
-          <p>
-            <Link to="/connect">Connect</Link> → <Link to="/map">Map</Link> →{" "}
-            <Link to="/agent">Publish</Link> → <Link to="/deploy">Embed</Link>
-          </p>
-        </div>
-        <div>
-          <h3>Plan · {dash?.plan_label || "Builder"}</h3>
-          <p>
-            Upgrade on <Link to="/deploy">Deploy</Link> when you sell site hooks.
-          </p>
-        </div>
-        <div>
-          <h3>Public surfaces</h3>
-          <p>
-            <code>/widget.js</code> · <code>/embed/&#123;key&#125;</code> ·{" "}
-            <code>POST /api/public/chat</code>
-          </p>
-        </div>
+      <section className="bento-intel" aria-label="VERA platform intelligence">
+        <article className={`intel-card intel-trust is-${trustStatus}`}>
+          <div className="intel-kicker">Trust Center</div>
+          <div className="intel-trust-grid">
+            <div>
+              <span>Grounded answers</span>
+              <strong>{trust?.asks_sampled ? `${trust.grounded_pct}%` : "—"}</strong>
+            </div>
+            <div>
+              <span>Evidence coverage</span>
+              <strong>{`${trust?.evidence_coverage_pct ?? 0}%`}</strong>
+            </div>
+            <div>
+              <span>Conflicts</span>
+              <strong>{trust?.conflicts ?? 0}</strong>
+            </div>
+            <div>
+              <span>Unsupported</span>
+              <strong>{trust?.unsupported_claims ?? 0}</strong>
+            </div>
+          </div>
+          <div className={`intel-status is-${trustStatus}`}>
+            Status: {trustLabel}
+          </div>
+        </article>
+
+        <article className="intel-card intel-findings">
+          <div className="intel-kicker">AI Findings</div>
+          <ul>
+            {findings.map((f, i) => (
+              <li key={i} className={`is-${f.kind}`}>
+                <i aria-hidden>{f.kind === "warn" ? "!" : f.kind === "ok" ? "✓" : "·"}</i>
+                <span>{f.text}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="intel-card intel-graph">
+          <div className="intel-kicker">Graph Insights</div>
+          <div className="intel-graph-score">
+            <strong>{graph?.health_score ? Math.round(graph.health_score) : "—"}</strong>
+            <span>Knowledge health</span>
+          </div>
+          <dl>
+            <div>
+              <dt>Most connected</dt>
+              <dd>{graph?.most_connected || "—"}</dd>
+            </div>
+            <div>
+              <dt>Top agent</dt>
+              <dd>
+                {graph?.top_agent
+                  ? `${graph.top_agent}${graph.top_agent_asks ? ` · ${graph.top_agent_asks} asks` : ""}`
+                  : "—"}
+              </dd>
+            </div>
+            <div>
+              <dt>Network</dt>
+              <dd>
+                {(graph?.concepts ?? 0).toLocaleString()} concepts ·{" "}
+                {(graph?.relationships ?? 0).toLocaleString()} links
+              </dd>
+            </div>
+          </dl>
+          {active && (
+            <Link className="intel-link" to="/map" onClick={() => void selectAgent(active.id)}>
+              Open map →
+            </Link>
+          )}
+        </article>
       </section>
     </div>
   );

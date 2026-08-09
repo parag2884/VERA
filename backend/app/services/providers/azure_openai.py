@@ -28,6 +28,7 @@ class AzureOpenAIProvider:
         *,
         temperature: float = 0.1,
         response_format: dict[str, Any] | None = None,
+        max_tokens: int | None = None,
     ) -> str:
         kwargs: dict[str, Any] = {
             "model": self.settings.azure_openai_deployment,
@@ -36,6 +37,8 @@ class AzureOpenAIProvider:
         }
         if response_format:
             kwargs["response_format"] = response_format
+        if max_tokens is not None:
+            kwargs["max_tokens"] = max_tokens
         response = await self.client.chat.completions.create(**kwargs)
         content = response.choices[0].message.content or ""
         return content

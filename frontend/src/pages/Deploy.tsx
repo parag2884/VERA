@@ -141,6 +141,10 @@ export default function Deploy() {
             <span>Body: embed_key, question, session_id — answers from that agent’s KB only</span>
           </div>
           <div>
+            <code>POST {dash?.api_base || "/api"}/public/chat/stream</code>
+            <span>SSE stream for embeds when “Stream answers on embed” is on</span>
+          </div>
+          <div>
             <code>{dash?.widget_origin || ""}/widget.js</code>
             <span>Drop-in floating chat for any website</span>
           </div>

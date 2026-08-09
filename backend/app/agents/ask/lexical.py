@@ -1,4 +1,4 @@
-"""Lexical chunk search for distinctive question terms (SL3000, output protection, …)."""
+"""Lexical chunk search for distinctive question terms (codes, phrases, …)."""
 
 from __future__ import annotations
 
@@ -75,6 +75,36 @@ _STOP = {
     "file",
     "files",
     "pdf",
+    "name",
+    "some",
+    "roughly",
+    "about",
+    "does",
+    "offer",
+    "offers",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "several",
+    "various",
+    "main",
+    "key",
+    # Soft org words that match site nav on every page
+    "team",
+    "teams",
+    "leadership",
+    "leader",
+    "leaders",
+    "executive",
+    "executives",
+    "management",
 }
 
 
@@ -83,7 +113,7 @@ def distinctive_terms(question: str) -> list[str]:
     q = question or ""
     terms: list[str] = []
 
-    # Product / security level codes: SL2000, SL3000, HDCP, etc.
+    # Product / level codes: SL2000, HDCP2, OPL270, …
     for m in re.finditer(r"\b([A-Z]{2,}\d{2,}|\d{3,}[A-Z]+|[A-Z]{3,}\d+)\b", q):
         terms.append(m.group(1))
 
@@ -91,20 +121,30 @@ def distinctive_terms(question: str) -> list[str]:
     for m in re.finditer(r"[\"']([^\"']{3,80})[\"']", q):
         terms.append(m.group(1).strip())
 
-    # Multi-word technical phrases
-    for m in re.finditer(
-        r"\b((?:output\s+protection(?:\s+levels?)?|"
-        r"security\s+level(?:s)?|"
-        r"secure\s+stop|"
-        r"analog\s+television|"
-        r"content\s+protection))\b",
-        q,
-        re.I,
-    ):
-        terms.append(re.sub(r"\s+", " ", m.group(1)).strip())
+    # Title-Case multi-word spans from the question (any domain)
+    for m in re.finditer(r"\b([A-Z][a-z0-9]+(?:\s+[A-Z][a-z0-9]+){1,4})\b", q):
+        terms.append(m.group(1).strip())
+
+    # Adjacent content-word phrases (2–3 tokens) harvested from the question
+    words = re.findall(r"[A-Za-z][A-Za-z0-9_-]{2,}", q)
+    for i in range(len(words) - 1):
+        w0, w1 = words[i], words[i + 1]
+        if w0.lower() in _STOP or w1.lower() in _STOP:
+            continue
+        terms.append(f"{w0} {w1}")
+        if i + 2 < len(words):
+            w2 = words[i + 2]
+            if w2.lower() not in _STOP:
+                terms.append(f"{w0} {w1} {w2}")
 
     # Remaining tokens (alnum, length >= 4), drop stopwords
     for w in re.findall(r"[A-Za-z][A-Za-z0-9_-]{3,}", q):
+        if w.lower() in _STOP:
+            continue
+        terms.append(w)
+
+    # Short uppercase tokens from the question itself (CEO, API, SLA, …)
+    for w in re.findall(r"\b[A-Z]{2,4}\b", q):
         if w.lower() in _STOP:
             continue
         terms.append(w)

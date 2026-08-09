@@ -41,6 +41,23 @@ export default function ChatConsole({
   const [thinkStep, setThinkStep] = useState(0);
   const [showScoreFor, setShowScoreFor] = useState<number | null>(null);
   const [showExtras, setShowExtras] = useState(false);
+  const [streaming, setStreaming] = useState(() => {
+    try {
+      const v = localStorage.getItem("vera.askStreaming");
+      return v === null ? true : v === "1";
+    } catch {
+      return true;
+    }
+  });
+  const [streamStatus, setStreamStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("vera.askStreaming", streaming ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }, [streaming]);
 
   const domainProfile = (currentAgent?.settings?.domainProfile || null) as
     | { label?: string; focus?: string; entityTypes?: string[] }
@@ -68,27 +85,71 @@ export default function ChatConsole({
     const text = q.trim();
     setQuestion("");
     setBusy(true);
+    setStreamStatus(null);
     setMsgs((m) => [...m, { role: "user", text }]);
     try {
       const ws = await ensureWorkspace();
-      const res = await api.chat(ws, text, sessionId, {
-        tone: settings.tone,
-        verbosity: settings.verbosity,
-      });
-      setSessionId(res.session_id);
-      if (res.demo_mode) setDemoMode(true);
-      const reply =
-        res.decision === "clarify"
-          ? res.clarification_prompt || "Please clarify."
-          : res.answer || "No response.";
-      setMsgs((m) => [...m, { role: "assistant", text: reply, data: res }]);
+      if (streaming) {
+        // Placeholder bubble that fills as tokens arrive
+        setMsgs((m) => [...m, { role: "assistant", text: "" }]);
+        const res = await api.chatStream(ws, text, sessionId, {
+          tone: settings.tone,
+          verbosity: settings.verbosity,
+          onStatus: (message) => setStreamStatus(message),
+          onToken: (piece) => {
+            setMsgs((m) => {
+              if (!m.length) return m;
+              const copy = m.slice();
+              const last = copy[copy.length - 1];
+              if (!last || last.role !== "assistant") return m;
+              copy[copy.length - 1] = { ...last, text: `${last.text}${piece}` };
+              return copy;
+            });
+          },
+        });
+        setSessionId(res.session_id);
+        if (res.demo_mode) setDemoMode(true);
+        const reply =
+          res.decision === "clarify"
+            ? res.clarification_prompt || "Please clarify."
+            : res.answer || "No response.";
+        setMsgs((m) => {
+          const copy = m.slice();
+          const last = copy[copy.length - 1];
+          if (last?.role === "assistant") {
+            copy[copy.length - 1] = { role: "assistant", text: reply, data: res };
+          } else {
+            copy.push({ role: "assistant", text: reply, data: res });
+          }
+          return copy;
+        });
+      } else {
+        const res = await api.chat(ws, text, sessionId, {
+          tone: settings.tone,
+          verbosity: settings.verbosity,
+        });
+        setSessionId(res.session_id);
+        if (res.demo_mode) setDemoMode(true);
+        const reply =
+          res.decision === "clarify"
+            ? res.clarification_prompt || "Please clarify."
+            : res.answer || "No response.";
+        setMsgs((m) => [...m, { role: "assistant", text: reply, data: res }]);
+      }
     } catch (e) {
-      setMsgs((m) => [
-        ...m,
-        { role: "assistant", text: e instanceof Error ? e.message : String(e) },
-      ]);
+      setMsgs((m) => {
+        const copy = m.slice();
+        const errText = e instanceof Error ? e.message : String(e);
+        const last = copy[copy.length - 1];
+        if (last?.role === "assistant" && !last.data) {
+          copy[copy.length - 1] = { role: "assistant", text: errText };
+          return copy;
+        }
+        return [...copy, { role: "assistant", text: errText }];
+      });
     } finally {
       setBusy(false);
+      setStreamStatus(null);
     }
   }
 
@@ -133,17 +194,31 @@ export default function ChatConsole({
             </div>
           )}
         </div>
-        {focusMode && (
+        <div className="chat-header-actions">
           <button
             type="button"
-            className={`chat-extras-toggle ${showExtras ? "on" : ""}`}
-            aria-expanded={showExtras}
-            aria-label="Answer display options"
-            onClick={() => setShowExtras((v) => !v)}
+            className={`chat-seg-btn ${streaming ? "on" : "off"}`}
+            aria-pressed={streaming}
+            title="Stream answer text as it becomes available"
+            onClick={() => setStreaming((v) => !v)}
           >
-            Options
+            <span className="chat-seg-mark" aria-hidden>
+              {streaming ? "✓" : ""}
+            </span>
+            Streaming {streaming ? "On" : "Off"}
           </button>
-        )}
+          {focusMode && (
+            <button
+              type="button"
+              className={`chat-extras-toggle ${showExtras ? "on" : ""}`}
+              aria-expanded={showExtras}
+              aria-label="Answer display options"
+              onClick={() => setShowExtras((v) => !v)}
+            >
+              Options
+            </button>
+          )}
+        </div>
       </div>
 
       {(!focusMode || showExtras) && (
@@ -178,13 +253,22 @@ export default function ChatConsole({
         {msgs.length === 0 && !busy && (
           <div className="empty-state agent-greeting">{settings.greeting}</div>
         )}
-        {msgs.map((m, i) => (
+        {msgs.map((m, i) => {
+          // Hide the streaming placeholder until the first token arrives
+          // (otherwise an empty bordered bubble looks like a blank circle).
+          const waitingForTokens =
+            m.role === "assistant" && !m.data && !(m.text || "").trim();
+          if (waitingForTokens) return null;
+          return (
           <div key={i} className={`bubble ${m.role}`}>
             {m.data && !focusMode && (
               <span className={`decision ${m.data.decision}`}>{m.data.decision}</span>
             )}
             {m.role === "assistant" ? (
-              <AnswerMarkdown text={m.text} />
+              <AnswerMarkdown
+                text={m.text}
+                live={streaming && busy && !m.data && i === msgs.length - 1}
+              />
             ) : (
               <div style={{ whiteSpace: "pre-wrap" }}>{m.text}</div>
             )}
@@ -261,15 +345,28 @@ export default function ChatConsole({
               </div>
             )}
           </div>
-        ))}
-        <ThinkingStatus active={busy} />
+          );
+        })}
+        <ThinkingStatus active={busy && !streamStatus} />
+        {busy && streamStatus ? (
+          <div className="chat-stream-status" aria-live="polite">
+            {streamStatus}
+          </div>
+        ) : null}
       </div>
 
       {showSamples && samples.length > 0 && (!focusMode || (msgs.length === 0 && !busy)) && (
         <div className="chat-try">
           <div className="chips">
             {samples.map((s) => (
-              <button key={s} className="chip" type="button" disabled={busy} onClick={() => void send(s)}>
+              <button
+                key={s}
+                className="chip"
+                type="button"
+                disabled={busy}
+                title={s}
+                onClick={() => void send(s)}
+              >
                 {s}
               </button>
             ))}

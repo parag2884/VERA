@@ -1,0 +1,249 @@
+{
+  "suite_id": "oz_baum_docs_v1",
+  "source_kind": "documents",
+  "agent_name": "Frank Baum - Novel",
+  "kb_notes": [
+    "One author (L. Frank Baum), connected Oz series — mixed PDF / DOCX / TXT.",
+    "Upload all files from the mixed-formats folder before running eval.",
+    "must_any / kb_quote_hint are grounded in Project Gutenberg public-domain text (truncated corpus OK).",
+    "Create Fleet agent named exactly: Oz Series Assistant (or pass --agent)."
+  ],
+  "required_documents": [
+    "01-wizard-of-oz.pdf",
+    "02-marvelous-land-of-oz.docx",
+    "03-ozma-of-oz.txt",
+    "04-dorothy-and-the-wizard.pdf",
+    "05-road-to-oz.docx",
+    "06-emerald-city-of-oz.txt",
+    "07-patchwork-girl-of-oz.pdf",
+    "08-tik-tok-of-oz.docx",
+    "09-scarecrow-of-oz.txt",
+    "10-rinkitink-in-oz.pdf",
+    "11-lost-princess-of-oz.docx",
+    "12-tin-woodman-of-oz.txt"
+  ],
+  "cases": [
+    {
+      "id": "OZ001",
+      "category": "characters",
+      "question": "Who is Dorothy Gale and where is she from in the Oz books?",
+      "expect_decision": "answer",
+      "expected_answer": "Dorothy Gale is a little girl from Kansas who travels to the Land of Oz.",
+      "must_any": ["dorothy", "kansas"],
+      "forbid_any": [],
+      "source_document": "03-ozma-of-oz.txt",
+      "kb_quote_hint": "Adventures with Dorothy Gale of Kansas",
+      "map_check": "Person: Dorothy Gale"
+    },
+    {
+      "id": "OZ002",
+      "category": "characters",
+      "question": "According to Ozma of Oz, who becomes the Ruler of Oz?",
+      "expect_decision": "answer",
+      "expected_answer": "Ozma became the Ruler of Oz.",
+      "must_any": ["ozma", "ruler"],
+      "forbid_any": [],
+      "source_document": "03-ozma-of-oz.txt",
+      "kb_quote_hint": "after she became the Ruler of Oz",
+      "map_check": "Person: Ozma"
+    },
+    {
+      "id": "OZ003",
+      "category": "characters",
+      "question": "In Ozma of Oz, who are Tiktok and Billina?",
+      "expect_decision": "answer",
+      "expected_answer": "Tiktok is the machine man; Billina is the yellow hen (called 'real Ozzy' in the author's note).",
+      "must_any": ["tiktok", "billina"],
+      "forbid_any": [],
+      "source_document": "03-ozma-of-oz.txt",
+      "kb_quote_hint": "Billina is REAL OZZY, Mr. Baum, and so are Tiktok and the Hungry Tiger."
+    },
+    {
+      "id": "OZ004",
+      "category": "plot",
+      "question": "In The Emerald City of Oz, what did the Nome King lose and who took it?",
+      "expect_decision": "answer",
+      "expected_answer": "The Nome King lost his Magic Belt; Dorothy (with Ozma) carried it away.",
+      "must_any": ["magic belt", "dorothy"],
+      "forbid_any": [],
+      "source_document": "06-emerald-city-of-oz.txt",
+      "kb_quote_hint": "I've lost my Magic Belt. A little girl named Dorothy, who was here with Ozma of Oz, stole my Belt"
+    },
+    {
+      "id": "OZ005",
+      "category": "plot",
+      "question": "Why can't the Nome King easily go to the Land of Oz to recover his belt?",
+      "expect_decision": "answer",
+      "expected_answer": "A deadly desert surrounds the fairy country that no one can cross.",
+      "must_any": ["desert", "oz"],
+      "forbid_any": [],
+      "source_document": "06-emerald-city-of-oz.txt",
+      "kb_quote_hint": "there is a deadly desert all around that fairy country, which no one is able to cross"
+    },
+    {
+      "id": "OZ006",
+      "category": "characters",
+      "question": "Who is Kaliko in The Emerald City of Oz?",
+      "expect_decision": "answer",
+      "expected_answer": "Kaliko is the Nome King's Chief Steward.",
+      "must_any": ["kaliko", "steward"],
+      "forbid_any": [],
+      "source_document": "06-emerald-city-of-oz.txt",
+      "kb_quote_hint": "In came the Chief Steward"
+    },
+    {
+      "id": "OZ007",
+      "category": "characters",
+      "question": "In The Scarecrow of Oz, who are Trot and Cap'n Bill?",
+      "expect_decision": "answer",
+      "expected_answer": "Trot is a little girl; Cap'n Bill is her faithful companion (with a wooden leg).",
+      "must_any": ["trot", "cap'n bill"],
+      "forbid_any": [],
+      "source_document": "09-scarecrow-of-oz.txt",
+      "kb_quote_hint": "Trot and Cap'n Bill be admitted to the Land of Oz"
+    },
+    {
+      "id": "OZ008",
+      "category": "characters",
+      "question": "Which friend helps land Trot and Cap'n Bill in Oz in The Scarecrow of Oz?",
+      "expect_decision": "answer",
+      "expected_answer": "The Scarecrow helps bring them into the Land of Oz.",
+      "must_any": ["scarecrow"],
+      "forbid_any": [],
+      "source_document": "09-scarecrow-of-oz.txt",
+      "kb_quote_hint": "required the best efforts of our dear old friend, the Scarecrow"
+    },
+    {
+      "id": "OZ009",
+      "category": "places",
+      "question": "What kingdom appears in The Scarecrow of Oz besides Oz?",
+      "expect_decision": "answer",
+      "expected_answer": "Jinxland is a kingdom in the story.",
+      "must_any": ["jinxland"],
+      "forbid_any": [],
+      "source_document": "09-scarecrow-of-oz.txt",
+      "kb_quote_hint": "The Kingdom of Jinxland"
+    },
+    {
+      "id": "OZ010",
+      "category": "characters",
+      "question": "In The Tin Woodman of Oz, what is Nick Chopper also known as?",
+      "expect_decision": "answer",
+      "expected_answer": "Nick Chopper is the Tin Woodman (Emperor of the Winkies).",
+      "must_any": ["tin woodman", "nick chopper"],
+      "forbid_any": [],
+      "source_document": "12-tin-woodman-of-oz.txt",
+      "kb_quote_hint": "the \"pretty Munchkin girl\" whom Nick Chopper was engaged to marry"
+    },
+    {
+      "id": "OZ011",
+      "category": "characters",
+      "question": "Who is Woot the Wanderer in The Tin Woodman of Oz?",
+      "expect_decision": "answer",
+      "expected_answer": "Woot the Wanderer is a boy who helps the Tin Woodman seek the Munchkin girl he once loved.",
+      "must_any": ["woot"],
+      "forbid_any": [],
+      "source_document": "12-tin-woodman-of-oz.txt",
+      "kb_quote_hint": "until Woot the Wanderer interested himself in the matter"
+    },
+    {
+      "id": "OZ012",
+      "category": "characters",
+      "question": "What happened to Nick Chopper before he became tin?",
+      "expect_decision": "answer",
+      "expected_answer": "The Wicked Witch enchanted his axe and he traded his flesh for tin.",
+      "must_any": ["witch", "tin"],
+      "forbid_any": [],
+      "source_document": "12-tin-woodman-of-oz.txt",
+      "kb_quote_hint": "before the Wicked Witch enchanted his axe and he traded his flesh for tin"
+    },
+    {
+      "id": "OZ013",
+      "category": "characters",
+      "question": "Who is the Emperor of the Winkies?",
+      "expect_decision": "answer",
+      "expected_answer": "The Tin Woodman of Oz is the Emperor of the Winkies.",
+      "must_any": ["tin woodman", "winkies"],
+      "forbid_any": [],
+      "source_document": "12-tin-woodman-of-oz.txt",
+      "kb_quote_hint": "The Emperor of the Winkies, who is the famous Tin Woodman of Oz"
+    },
+    {
+      "id": "OZ014",
+      "category": "overview",
+      "question": "Who wrote the Oz books in this knowledge base?",
+      "expect_decision": "answer",
+      "expected_answer": "L. Frank Baum.",
+      "must_any": ["baum", "frank"],
+      "forbid_any": [],
+      "source_document": "03-ozma-of-oz.txt",
+      "kb_quote_hint": "Author : L. Frank Baum"
+    },
+    {
+      "id": "OZ015",
+      "category": "overview",
+      "question": "According to Ozma of Oz, which companions travel with Dorothy?",
+      "expect_decision": "answer",
+      "expected_answer": "Scarecrow, Tin Woodman, Tiktok, Cowardly Lion, Hungry Tiger, and the Yellow Hen among others.",
+      "must_any": ["scarecrow", "tin woodman"],
+      "forbid_any": [],
+      "source_document": "03-ozma-of-oz.txt",
+      "kb_quote_hint": "the Scarecrow, the Tin Woodman, Tiktok, the Cowardly Lion and the Hungry Tiger"
+    },
+    {
+      "id": "OZ016",
+      "category": "places",
+      "question": "What city is central in The Emerald City of Oz?",
+      "expect_decision": "answer",
+      "expected_answer": "The Emerald City.",
+      "must_any": ["emerald city"],
+      "forbid_any": [],
+      "source_document": "06-emerald-city-of-oz.txt",
+      "kb_quote_hint": "Title : The Emerald City of Oz"
+    },
+    {
+      "id": "OZ017",
+      "category": "cross_book",
+      "question": "Name three recurring friends of Dorothy across the Oz series.",
+      "expect_decision": "answer",
+      "expected_answer": "Scarecrow, Tin Woodman, and the Cowardly Lion (also Ozma in later books).",
+      "must_any": ["scarecrow", "tin woodman"],
+      "forbid_any": ["harry potter", "hermione"],
+      "source_document": "03-ozma-of-oz.txt",
+      "kb_quote_hint": "Scarecrow and the Tin Woodman, and about the Cowardly Lion, and Ozma"
+    },
+    {
+      "id": "OZ018",
+      "category": "characters",
+      "question": "In The Scarecrow of Oz, who is Button-Bright?",
+      "expect_decision": "answer",
+      "expected_answer": "Button-Bright is a boy character who gets lost and found again in the story.",
+      "must_any": ["button-bright", "button bright"],
+      "forbid_any": [],
+      "source_document": "09-scarecrow-of-oz.txt",
+      "kb_quote_hint": "Button-Bright is Lost, and Found Again"
+    },
+    {
+      "id": "OZ019",
+      "category": "refuse",
+      "question": "What is the weather in the Emerald City tomorrow?",
+      "expect_decision": "refuse",
+      "expected_answer": "Not in the KB — must refuse.",
+      "must_any": [],
+      "forbid_any": [],
+      "source_document": "",
+      "kb_quote_hint": ""
+    },
+    {
+      "id": "OZ020",
+      "category": "refuse",
+      "question": "Who plays Dorothy in the 1939 MGM Wizard of Oz movie?",
+      "expect_decision": "refuse",
+      "expected_answer": "Movie cast is outside this book corpus — must refuse.",
+      "must_any": [],
+      "forbid_any": ["judy garland"],
+      "source_document": "",
+      "kb_quote_hint": ""
+    }
+  ]
+}

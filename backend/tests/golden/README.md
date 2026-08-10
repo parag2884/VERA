@@ -68,7 +68,8 @@ python /app/scripts/ask_eval_golden.py --suite /app/tests/golden/documents/playr
 ```
 
 Thoughtworks: `web/README_thoughtworks.md` + `web/thoughtworks_coverage.json`.  
-PlayReady: `documents/playready_publicbot_v1.json` (from Excel) + `documents/playready_v2.json` + `documents/README_playready.md`.
+PlayReady: `documents/playready_publicbot_v1.json` (from Excel) + `documents/playready_v2.json` + `documents/README_playready.md`.  
+Oz series (Baum, mixed PDF/DOCX/TXT): `documents/oz_baum_v1.json` + `documents/README_oz.md`.
 
 Results write under `/app/data/ask_eval_<suite_id>_results.json`.
 

@@ -185,24 +185,30 @@ class EntityResolveAgent:
                 if _is_product_code(term) and not _matches_relate_to_term(matches, term):
                     matches = _prefer_related(matches, term)[:1] or matches[:1]
                 else:
-                    ambiguous = True
-                    for n in matches[:4]:
-                        clarify_options.append(
-                            ClarifyOption(
-                                id=n["id"],
-                                label=n["name"],
-                                description=f"{n.get('type', 'Entity')} in knowledge graph",
+                    # If one candidate clearly dominates name overlap, pick it
+                    # (generic — avoids false clarify on near-duplicate aliases).
+                    dominant = _dominant_match(matches, term, payload.question)
+                    if dominant is not None:
+                        matches = [dominant]
+                    else:
+                        ambiguous = True
+                        for n in matches[:4]:
+                            clarify_options.append(
+                                ClarifyOption(
+                                    id=n["id"],
+                                    label=n["name"],
+                                    description=f"{n.get('type', 'Entity')} in knowledge graph",
+                                )
+                            )
+                        entities.append(
+                            ResolvedEntity(
+                                query_term=term,
+                                node_ids=[n["id"] for n in matches[:4]],
+                                names=[n["name"] for n in matches[:4]],
+                                ambiguous=True,
                             )
                         )
-                    entities.append(
-                        ResolvedEntity(
-                            query_term=term,
-                            node_ids=[n["id"] for n in matches[:4]],
-                            names=[n["name"] for n in matches[:4]],
-                            ambiguous=True,
-                        )
-                    )
-                    continue
+                        continue
 
             if matches:
                 # Prefer a match that actually looks like the term for codes
@@ -401,6 +407,48 @@ def _looks_ambiguous(matches: list[dict], term: str) -> bool:
     if not lengths:
         return False
     return lengths[-1] - lengths[0] <= 8
+
+
+def _match_overlap_score(node: dict, term: str, question: str) -> float:
+    name = str(node.get("name") or "")
+    norm = str(node.get("normalized_name") or "")
+    blob = f"{name} {norm}".lower()
+    t = (term or "").lower().strip()
+    score = 0.0
+    if blob == t or norm.lower() == t:
+        score += 10.0
+    elif t and t in blob:
+        score += 6.0
+    # Extra weight when other question tokens appear in the node name
+    for tok in re.findall(r"[a-z0-9]{4,}", (question or "").lower()):
+        if tok == t:
+            continue
+        if tok in blob:
+            score += 1.5
+    # Prefer shorter exact-ish names over long unrelated nodes
+    score -= max(0, len(name) - 40) * 0.05
+    return score
+
+
+def _dominant_match(
+    matches: list[dict], term: str, question: str
+) -> dict | None:
+    """Return the sole clear winner when its score beats #2 by a margin."""
+    if len(matches) < 2:
+        return matches[0] if matches else None
+    ranked = sorted(
+        matches,
+        key=lambda m: _match_overlap_score(m, term, question),
+        reverse=True,
+    )
+    top = _match_overlap_score(ranked[0], term, question)
+    second = _match_overlap_score(ranked[1], term, question)
+    if top >= 6.0 and top >= second + 3.0:
+        return ranked[0]
+    related = _prefer_related(matches, term)
+    if len(related) == 1:
+        return related[0]
+    return None
 
 
 async def _llm_terms(ctx: AgentContext, question: str) -> list[str]:

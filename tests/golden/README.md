@@ -51,15 +51,24 @@ Documents example:
 Inside `vera-api` (after suite files are in the image or mounted):
 
 ```bash
-# One suite
-python /app/scripts/ask_eval_golden.py --suite /app/tests/golden/web/thoughtworks_v2.json
+# Thoughtworks CORE (no news) — see real accuracy on services/about/leaders
+python /app/scripts/ask_eval_golden.py --suite /app/tests/golden/web/thoughtworks_v4_core.json
 
-# By agent name (loads matching suite from tests/golden)
-python /app/scripts/ask_eval_golden.py --agent "Thoughtworks Assistant"
+# Full Thoughtworks (every KB page including news)
+python /app/scripts/ask_eval_golden.py --suite /app/tests/golden/web/thoughtworks_v4.json
 
-# Subset
-python /app/scripts/ask_eval_golden.py --suite /app/tests/golden/web/thoughtworks_v2.json --ids TW01,TW14
+# Leaders spot check
+python /app/scripts/ask_eval_golden.py --suite /app/tests/golden/web/thoughtworks_v4.json --ids TW047,TW048,TW049
+
+# PlayReady — legacy PublicBot questions (recommended regression)
+python /app/scripts/ask_eval_golden.py --suite /app/tests/golden/documents/playready_publicbot_v1.json
+
+# PlayReady — PDF-text derived set
+python /app/scripts/ask_eval_golden.py --suite /app/tests/golden/documents/playready_v2.json
 ```
+
+Thoughtworks: `web/README_thoughtworks.md` + `web/thoughtworks_coverage.json`.  
+PlayReady: `documents/playready_publicbot_v1.json` (from Excel) + `documents/playready_v2.json` + `documents/README_playready.md`.
 
 Results write under `/app/data/ask_eval_<suite_id>_results.json`.
 

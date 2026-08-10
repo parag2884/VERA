@@ -42,18 +42,6 @@ _VAGUE_SINGLETONS = frozenset(
     }
 )
 
-_BOILERPLATE_PATTERNS = (
-    re.compile(r"\bsite\s*map\b", re.I),
-    re.compile(r"\bprivacy\s*policy\b.{0,80}\bterms\b", re.I),
-    re.compile(r"\bcookie\s*(policy|preferences|settings|list)\b", re.I),
-    re.compile(r"\baccessibility\b.{0,40}\b(statement|center|policy)\b", re.I),
-    re.compile(r"\bsubscribe\b.{0,40}\bnewsletter\b", re.I),
-    re.compile(r"\b(skip to (content|main)|all rights reserved|follow us)\b", re.I),
-    re.compile(r"\b(accept all|reject all|confirm my choices)\b", re.I),
-    # Pipe / Title-Case menu strips (any site)
-    re.compile(r"(?:\|?\s*[A-Z][A-Za-z &/-]{2,28}\s*){6,}"),
-)
-
 # Person + senior org-role co-occurrence (generic — not company-specific).
 # Case-sensitive on names so soft words are never treated as person tokens.
 # Avoid bare Director/Officer/Partner — too common in spotlights and nav.
@@ -347,4 +335,75 @@ def roster_evidence_bonus(question: str, title: str, text: str) -> float:
         )
     ):
         bonus += 4.0
+    return bonus
+
+
+_OFFICER_WHO = re.compile(
+    r"\bwho\s+(?:is|was)\b.{0,100}\b("
+    r"ceo|coo|cfo|cto|cmo|chro|cio|clo|chairman|chairwoman|chair|president|"
+    r"chief\s+\w+(?:\s+(?:and|&)\s+\w+)*(?:\s+\w+){0,3}\s+officer"
+    r")\b",
+    re.I,
+)
+
+_ROLE_IN_Q = {
+    "ceo": re.compile(r"\b(ceo|chief\s+executive(?:\s+officer)?)\b", re.I),
+    "cfo": re.compile(r"\b(cfo|chief\s+financial(?:\s+officer)?)\b", re.I),
+    "cto": re.compile(r"\b(cto|chief\s+technology(?:\s+officer)?)\b", re.I),
+    "coo": re.compile(r"\b(coo|chief\s+operating(?:\s+officer)?)\b", re.I),
+}
+
+_PAST_OFFICE = re.compile(
+    r"\b(former|ex-|stepped\s+down|until\s+20\d\d|from\s+20\d\d\s+(?:to|until|through)\b|"
+    r"was\s+the\s+c[efot]o|served\s+as\s+c[efot]o)\b",
+    re.I,
+)
+
+
+def is_officer_attribute_question(question: str) -> bool:
+    """Single-role who-is (CEO/CFO/CTO/Chief … Officer), not a full roster dump."""
+    return bool(_OFFICER_WHO.search(question or ""))
+
+
+def officer_role_evidence_bonus(question: str, title: str, text: str) -> float:
+    """Prefer current org-chart pages over historical CEO letters / regional CTOs."""
+    if not is_officer_attribute_question(question):
+        return 0.0
+    blob = f"{title or ''}\n{text or ''}"
+    bl = blob.lower()
+    tl = (title or "").lower()
+    bonus = 0.0
+    # Hub / org-chart pages that bind name → role
+    if any(k in tl for k in ("/leaders", "_leaders", "leadership", "/profiles/leaders")):
+        bonus += 10.0
+    if re.search(r"\bserves\s+as\s+chief\b", bl):
+        bonus += 12.0
+    # Role asked appears next to a person-name pattern
+    for key, rx in _ROLE_IN_Q.items():
+        if not rx.search(question or ""):
+            continue
+        if key == "ceo" and re.search(
+            r"\b[A-Z][a-z]+\s+[A-Z][a-z]+\b.{0,40}\bchief\s+executive|\bserves\s+as\s+chief\s+executive",
+            blob,
+        ):
+            bonus += 8.0
+        if key == "cfo" and re.search(
+            r"\bserves\s+as\s+chief\s+financial|\bchief\s+financial\s+officer\b",
+            bl,
+        ):
+            bonus += 8.0
+        if key == "cto" and re.search(
+            r"\bserves\s+as\s+chief\s+technology|\bchief\s+technology\s+officer\b",
+            bl,
+        ):
+            bonus += 8.0
+            # Regional CTOs are weaker than global org-chart
+            if re.search(r"\b(americas|emea|europe|asia|region)\b.{0,40}\bcto\b|\bcto\b.{0,40}\b(americas|emea|europe|asia)\b", bl):
+                bonus -= 10.0
+    if _PAST_OFFICE.search(blob):
+        bonus -= 14.0
+    if re.search(r"\b(emerita|emeritus|i\s+became\s+cto|was\s+the\s+cto)\b", bl):
+        bonus -= 12.0
+    if any(k in tl for k in ("insights", "blog", "news", "letter", "social-change", "report")):
+        bonus -= 8.0
     return bonus

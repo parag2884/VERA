@@ -1,0 +1,3121 @@
+{
+  "suite_id": "playready_docs_v2",
+  "source_kind": "documents",
+  "agent_name": "PlayReady Assistant",
+  "kb_notes": [
+    "Drafted from Prod Normalised PDFs; cross-verify must_any / kb_quote_hint inside source_file.",
+    "source_document is best-match KB title when PlayReady agent already has the file uploaded.",
+    "Re-run generator after adding/replacing PDFs."
+  ],
+  "required_documents": [
+    "PR_Compliance_Rules_Part01_v2021.pdf",
+    "PR_Compliance_Rules_Part02_v2021.pdf",
+    "PR_Compliance_Rules_Part03_v2021.pdf",
+    "PR_Compliance_Rules_Part04_v2021.pdf",
+    "PR_Compliance_Rules_Part05_v2021.pdf",
+    "PR_Content_Protection_Whitepaper_v2015.pdf",
+    "PR_Dev_Clients_Part01_v2015.pdf",
+    "PR_Dev_Clients_Part02_v2015.pdf",
+    "PR_Development_Overview.pdf",
+    "PR_Distribution_Overview.pdf",
+    "PR_Documentation_Part01.pdf",
+    "PR_Documentation_Part02.pdf",
+    "PR_Documentation_Part03.pdf",
+    "PR_Documentation_Part04.pdf",
+    "PR_Documentation_Part05.pdf",
+    "PR_Documentation_Part06.pdf",
+    "PR_Documentation_Part07.pdf",
+    "PR_Documentation_Part08.pdf",
+    "PR_Documentation_Part09.pdf",
+    "PR_Documentation_Part10.pdf",
+    "PR_Documentation_Part11.pdf",
+    "PR_Documentation_Part12.pdf",
+    "PR_Documentation_Part13.pdf",
+    "PR_Documentation_Part14.pdf",
+    "PR_Documentation_Part15.pdf",
+    "PR_Documentation_Part16.pdf",
+    "PR_Documentation_Part17.pdf",
+    "PR_EV_Certificate_Instructions.pdf",
+    "PR_Final_Product_License_Sample_v2018.pdf",
+    "PR_IPLA_Licensing_Portal_FAQ.pdf",
+    "PR_Intermediate_Product_License_Sample_v2016.pdf",
+    "PR_LiveTV_Protection_Part01_v2015.pdf",
+    "PR_LiveTV_Protection_Part02_v2015.pdf",
+    "PR_Master_Agreement_Sample_v2013.pdf",
+    "PR_SL3000_Playbook.pdf",
+    "PR_Server_Agreement_Sample_v2019.pdf",
+    "PR_Server_Overview.pdf",
+    "PR_WhatsNew_v4.2.pdf",
+    "PR_WhatsNew_v4.3.pdf",
+    "PR_WhatsNew_v4.4.pdf",
+    "PR_WhatsNew_v4.5.pdf",
+    "PR_WhatsNew_v4.6.pdf",
+    "Robustness_Rules_For_PlayReady_Products.pdf",
+    "Sample Agreements - Microsoft PlayReady.pdf"
+  ],
+  "pdf_count": 44,
+  "kb_title_count": 41,
+  "cases": [
+    {
+      "id": "PR001",
+      "category": "compliance",
+      "question": "According to the PlayReady document “PR Compliance Rules Part01 v2021”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Compliance_Rules_Part01_v2021.pdf.",
+      "must_any": [
+        "secure stop",
+        "compliance rules",
+        "products",
+        "formatting conventions"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part01_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "kb_quote_hint": " Compliance Rules for PlayReady® Products Microsoft Corporation 1st November 2021 Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 1 November 2021 Contents 1 ",
+      "map_check": "PDF — PR_Compliance_Rules_Part01_v2021.pdf"
+    },
+    {
+      "id": "PR002",
+      "category": "compliance",
+      "question": "What are PlayReady output protection levels (OPL)?",
+      "expect_decision": "answer",
+      "expected_answer": "OPL / output protection wording from compliance docs.",
+      "must_any": [
+        "output protection",
+        "opl",
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part01_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "kb_quote_hint": " Compliance Rules for PlayReady® Products Microsoft Corporation 1st November 2021 Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 1 November 2021 Contents 1 ",
+      "map_check": "PDF — PR_Compliance_Rules_Part01_v2021.pdf"
+    },
+    {
+      "id": "PR003",
+      "category": "compliance",
+      "question": "What is PlayReady Secure Stop?",
+      "expect_decision": "answer",
+      "expected_answer": "Secure Stop definition from the documentation.",
+      "must_any": [
+        "secure stop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part01_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "kb_quote_hint": " Compliance Rules for PlayReady® Products Microsoft Corporation 1st November 2021 Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 1 November 2021 Contents 1 ",
+      "map_check": "PDF — PR_Compliance_Rules_Part01_v2021.pdf"
+    },
+    {
+      "id": "PR004",
+      "category": "compliance",
+      "question": "What licensing or agreement terms are described in “PR Compliance Rules Part01 v2021”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Compliance_Rules_Part01_v2021.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part01_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "kb_quote_hint": " Compliance Rules for PlayReady® Products Microsoft Corporation 1st November 2021 Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 1 November 2021 Contents 1 ",
+      "map_check": "PDF — PR_Compliance_Rules_Part01_v2021.pdf"
+    },
+    {
+      "id": "PR005",
+      "category": "compliance",
+      "question": "According to the PlayReady document “PR Compliance Rules Part02 v2021”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Compliance_Rules_Part02_v2021.pdf.",
+      "must_any": [
+        "hdcp",
+        "secure stop",
+        "compliance rules",
+        "restricted outputs"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part02_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part02_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 5 1 November 2021 3 Passing A/V Content A PlayReady Product must comply with this Section 3 (Passing A/V Cont",
+      "map_check": "PDF — PR_Compliance_Rules_Part02_v2021.pdf"
+    },
+    {
+      "id": "PR006",
+      "category": "compliance",
+      "question": "What does PR Compliance Rules Part02 v2021 say about HDCP?",
+      "expect_decision": "answer",
+      "expected_answer": "HDCP-related requirements or guidance from the document.",
+      "must_any": [
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part02_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part02_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 5 1 November 2021 3 Passing A/V Content A PlayReady Product must comply with this Section 3 (Passing A/V Cont",
+      "map_check": "PDF — PR_Compliance_Rules_Part02_v2021.pdf"
+    },
+    {
+      "id": "PR007",
+      "category": "compliance",
+      "question": "What are PlayReady output protection levels (OPL)?",
+      "expect_decision": "answer",
+      "expected_answer": "OPL / output protection wording from compliance docs.",
+      "must_any": [
+        "output protection",
+        "opl",
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part02_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part02_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 5 1 November 2021 3 Passing A/V Content A PlayReady Product must comply with this Section 3 (Passing A/V Cont",
+      "map_check": "PDF — PR_Compliance_Rules_Part02_v2021.pdf"
+    },
+    {
+      "id": "PR008",
+      "category": "compliance",
+      "question": "What is PlayReady Secure Stop?",
+      "expect_decision": "answer",
+      "expected_answer": "Secure Stop definition from the documentation.",
+      "must_any": [
+        "secure stop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part02_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part02_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 5 1 November 2021 3 Passing A/V Content A PlayReady Product must comply with this Section 3 (Passing A/V Cont",
+      "map_check": "PDF — PR_Compliance_Rules_Part02_v2021.pdf"
+    },
+    {
+      "id": "PR009",
+      "category": "compliance",
+      "question": "According to the PlayReady document “PR Compliance Rules Part03 v2021”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Compliance_Rules_Part03_v2021.pdf.",
+      "must_any": [
+        "hdcp",
+        "compliance rules",
+        "extensible media rights specification",
+        "embedded license setting the"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part03_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part03_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 23 1 November 2021 6 Creating PlayReady Licenses A PlayReady Product may create PlayReady Licenses only if al",
+      "map_check": "PDF — PR_Compliance_Rules_Part03_v2021.pdf"
+    },
+    {
+      "id": "PR010",
+      "category": "compliance",
+      "question": "What does PR Compliance Rules Part03 v2021 say about HDCP?",
+      "expect_decision": "answer",
+      "expected_answer": "HDCP-related requirements or guidance from the document.",
+      "must_any": [
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part03_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part03_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 23 1 November 2021 6 Creating PlayReady Licenses A PlayReady Product may create PlayReady Licenses only if al",
+      "map_check": "PDF — PR_Compliance_Rules_Part03_v2021.pdf"
+    },
+    {
+      "id": "PR011",
+      "category": "compliance",
+      "question": "What are PlayReady output protection levels (OPL)?",
+      "expect_decision": "answer",
+      "expected_answer": "OPL / output protection wording from compliance docs.",
+      "must_any": [
+        "output protection",
+        "opl",
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part03_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part03_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 23 1 November 2021 6 Creating PlayReady Licenses A PlayReady Product may create PlayReady Licenses only if al",
+      "map_check": "PDF — PR_Compliance_Rules_Part03_v2021.pdf"
+    },
+    {
+      "id": "PR012",
+      "category": "compliance",
+      "question": "What licensing or agreement terms are described in “PR Compliance Rules Part03 v2021”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Compliance_Rules_Part03_v2021.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part03_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part03_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 23 1 November 2021 6 Creating PlayReady Licenses A PlayReady Product may create PlayReady Licenses only if al",
+      "map_check": "PDF — PR_Compliance_Rules_Part03_v2021.pdf"
+    },
+    {
+      "id": "PR013",
+      "category": "compliance",
+      "question": "According to the PlayReady document “PR Compliance Rules Part04 v2021”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Compliance_Rules_Part04_v2021.pdf.",
+      "must_any": [
+        "compliance rules",
+        "extensible media rights specification",
+        "windows media",
+        "rights settings if"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part04_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part04_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 41 1 November 2021 8 Creating WMDRM-ND Licenses A PlayReady Product may create WMDRM-ND Licenses only if all ",
+      "map_check": "PDF — PR_Compliance_Rules_Part04_v2021.pdf"
+    },
+    {
+      "id": "PR014",
+      "category": "compliance",
+      "question": "What are PlayReady output protection levels (OPL)?",
+      "expect_decision": "answer",
+      "expected_answer": "OPL / output protection wording from compliance docs.",
+      "must_any": [
+        "output protection",
+        "opl",
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part04_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part04_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 41 1 November 2021 8 Creating WMDRM-ND Licenses A PlayReady Product may create WMDRM-ND Licenses only if all ",
+      "map_check": "PDF — PR_Compliance_Rules_Part04_v2021.pdf"
+    },
+    {
+      "id": "PR015",
+      "category": "compliance",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part04_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part04_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 41 1 November 2021 8 Creating WMDRM-ND Licenses A PlayReady Product may create WMDRM-ND Licenses only if all ",
+      "map_check": "PDF — PR_Compliance_Rules_Part04_v2021.pdf"
+    },
+    {
+      "id": "PR016",
+      "category": "compliance",
+      "question": "What licensing or agreement terms are described in “PR Compliance Rules Part04 v2021”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Compliance_Rules_Part04_v2021.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part04_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part04_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 41 1 November 2021 8 Creating WMDRM-ND Licenses A PlayReady Product may create WMDRM-ND Licenses only if all ",
+      "map_check": "PDF — PR_Compliance_Rules_Part04_v2021.pdf"
+    },
+    {
+      "id": "PR017",
+      "category": "compliance",
+      "question": "According to the PlayReady document “PR Compliance Rules Part05 v2021”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Compliance_Rules_Part05_v2021.pdf.",
+      "must_any": [
+        "compliance rules",
+        "key usage",
+        "device certificate",
+        "timer the"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part05_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part05_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 60 1 November 2021 11 Transmitting to PlayReady-ND Receiver A PlayReady Product must comply with this Section",
+      "map_check": "PDF — PR_Compliance_Rules_Part05_v2021.pdf"
+    },
+    {
+      "id": "PR018",
+      "category": "compliance",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part05_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part05_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 60 1 November 2021 11 Transmitting to PlayReady-ND Receiver A PlayReady Product must comply with this Section",
+      "map_check": "PDF — PR_Compliance_Rules_Part05_v2021.pdf"
+    },
+    {
+      "id": "PR019",
+      "category": "compliance",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part05_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part05_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 60 1 November 2021 11 Transmitting to PlayReady-ND Receiver A PlayReady Product must comply with this Section",
+      "map_check": "PDF — PR_Compliance_Rules_Part05_v2021.pdf"
+    },
+    {
+      "id": "PR020",
+      "category": "compliance",
+      "question": "What licensing or agreement terms are described in “PR Compliance Rules Part05 v2021”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Compliance_Rules_Part05_v2021.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Compliance_Rules_Part05_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part05_v2021.pdf",
+      "kb_quote_hint": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 60 1 November 2021 11 Transmitting to PlayReady-ND Receiver A PlayReady Product must comply with this Section",
+      "map_check": "PDF — PR_Compliance_Rules_Part05_v2021.pdf"
+    },
+    {
+      "id": "PR021",
+      "category": "protection",
+      "question": "According to the PlayReady document “PR Content Protection Whitepaper v2015”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Content_Protection_Whitepaper_v2015.pdf.",
+      "must_any": [
+        "opl",
+        "content protection technology april",
+        "legal notice",
+        "internet web"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Content_Protection_Whitepaper_v2015.pdf",
+      "source_file": "PR_Content_Protection_Whitepaper_v2015.pdf",
+      "kb_quote_hint": " Content Protection Technology April 2015 Abstract Microsoft® PlayReady® is the premier platform for protection and distribution of digital content. This white paper provides an overview of Microsoft ",
+      "map_check": "PDF — PR_Content_Protection_Whitepaper_v2015.pdf"
+    },
+    {
+      "id": "PR022",
+      "category": "protection",
+      "question": "What are PlayReady output protection levels (OPL)?",
+      "expect_decision": "answer",
+      "expected_answer": "OPL / output protection wording from compliance docs.",
+      "must_any": [
+        "output protection",
+        "opl",
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Content_Protection_Whitepaper_v2015.pdf",
+      "source_file": "PR_Content_Protection_Whitepaper_v2015.pdf",
+      "kb_quote_hint": " Content Protection Technology April 2015 Abstract Microsoft® PlayReady® is the premier platform for protection and distribution of digital content. This white paper provides an overview of Microsoft ",
+      "map_check": "PDF — PR_Content_Protection_Whitepaper_v2015.pdf"
+    },
+    {
+      "id": "PR023",
+      "category": "protection",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Content_Protection_Whitepaper_v2015.pdf",
+      "source_file": "PR_Content_Protection_Whitepaper_v2015.pdf",
+      "kb_quote_hint": " Content Protection Technology April 2015 Abstract Microsoft® PlayReady® is the premier platform for protection and distribution of digital content. This white paper provides an overview of Microsoft ",
+      "map_check": "PDF — PR_Content_Protection_Whitepaper_v2015.pdf"
+    },
+    {
+      "id": "PR024",
+      "category": "protection",
+      "question": "How does PlayReady protect Live TV content?",
+      "expect_decision": "answer",
+      "expected_answer": "Live TV protection guidance from the LiveTV docs.",
+      "must_any": [
+        "live"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Content_Protection_Whitepaper_v2015.pdf",
+      "source_file": "PR_Content_Protection_Whitepaper_v2015.pdf",
+      "kb_quote_hint": " Content Protection Technology April 2015 Abstract Microsoft® PlayReady® is the premier platform for protection and distribution of digital content. This white paper provides an overview of Microsoft ",
+      "map_check": "PDF — PR_Content_Protection_Whitepaper_v2015.pdf"
+    },
+    {
+      "id": "PR025",
+      "category": "client",
+      "question": "According to the PlayReady document “PR Dev Clients Part01 v2015”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Dev_Clients_Part01_v2015.pdf.",
+      "must_any": [
+        "clients april",
+        "legal notice",
+        "internet web",
+        "contents introduction"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": " Developing PlayReady Clients April 2015 Abstract Microsoft® PlayReady® is the premier platform for protection and distribution of digital content. This white paper provides an overview of the PlayRea",
+      "map_check": "PDF — PR_Dev_Clients_Part01_v2015.pdf"
+    },
+    {
+      "id": "PR026",
+      "category": "client",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": " Developing PlayReady Clients April 2015 Abstract Microsoft® PlayReady® is the premier platform for protection and distribution of digital content. This white paper provides an overview of the PlayRea",
+      "map_check": "PDF — PR_Dev_Clients_Part01_v2015.pdf"
+    },
+    {
+      "id": "PR027",
+      "category": "client",
+      "question": "What licensing or agreement terms are described in “PR Dev Clients Part01 v2015”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Dev_Clients_Part01_v2015.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": " Developing PlayReady Clients April 2015 Abstract Microsoft® PlayReady® is the premier platform for protection and distribution of digital content. This white paper provides an overview of the PlayRea",
+      "map_check": "PDF — PR_Dev_Clients_Part01_v2015.pdf"
+    },
+    {
+      "id": "PR028",
+      "category": "client",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": " Developing PlayReady Clients April 2015 Abstract Microsoft® PlayReady® is the premier platform for protection and distribution of digital content. This white paper provides an overview of the PlayRea",
+      "map_check": "PDF — PR_Dev_Clients_Part01_v2015.pdf"
+    },
+    {
+      "id": "PR029",
+      "category": "client",
+      "question": "According to the PlayReady document “PR Dev Clients Part02 v2015”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Dev_Clients_Part02_v2015.pdf.",
+      "must_any": [
+        "client authentication in",
+        "device keys",
+        "licensing process each",
+        "device porting kit"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Dev_Clients_Part02_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part02_v2015.pdf",
+      "kb_quote_hint": "Microsoft PlayReady Developing PlayReady Clients 12 Client Authentication In the context of content protection, client authentication may occur at two levels, the client device and the user. PlayReady",
+      "map_check": "PDF — PR_Dev_Clients_Part02_v2015.pdf"
+    },
+    {
+      "id": "PR030",
+      "category": "client",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Dev_Clients_Part02_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part02_v2015.pdf",
+      "kb_quote_hint": "Microsoft PlayReady Developing PlayReady Clients 12 Client Authentication In the context of content protection, client authentication may occur at two levels, the client device and the user. PlayReady",
+      "map_check": "PDF — PR_Dev_Clients_Part02_v2015.pdf"
+    },
+    {
+      "id": "PR031",
+      "category": "client",
+      "question": "What licensing or agreement terms are described in “PR Dev Clients Part02 v2015”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Dev_Clients_Part02_v2015.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Dev_Clients_Part02_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part02_v2015.pdf",
+      "kb_quote_hint": "Microsoft PlayReady Developing PlayReady Clients 12 Client Authentication In the context of content protection, client authentication may occur at two levels, the client device and the user. PlayReady",
+      "map_check": "PDF — PR_Dev_Clients_Part02_v2015.pdf"
+    },
+    {
+      "id": "PR032",
+      "category": "client",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Dev_Clients_Part02_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part02_v2015.pdf",
+      "kb_quote_hint": "Microsoft PlayReady Developing PlayReady Clients 12 Client Authentication In the context of content protection, client authentication may occur at two levels, the client device and the user. PlayReady",
+      "map_check": "PDF — PR_Dev_Clients_Part02_v2015.pdf"
+    },
+    {
+      "id": "PR033",
+      "category": "overview",
+      "question": "According to the PlayReady document “PR Development Overview”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Development_Overview.pdf.",
+      "must_any": [
+        "master agreement",
+        "intermediate product license",
+        "documentation pack",
+        "device porting kit"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Development_Overview.pdf",
+      "source_file": "PR_Development_Overview.pdf",
+      "kb_quote_hint": "Developing with PlayReady Developing a device or software application with support for PlayReady Begins with the development of an intermediate product (i.e. not end-user ready) that supports PlayRead",
+      "map_check": "PDF — PR_Development_Overview.pdf"
+    },
+    {
+      "id": "PR034",
+      "category": "overview",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Development_Overview.pdf",
+      "source_file": "PR_Development_Overview.pdf",
+      "kb_quote_hint": "Developing with PlayReady Developing a device or software application with support for PlayReady Begins with the development of an intermediate product (i.e. not end-user ready) that supports PlayRead",
+      "map_check": "PDF — PR_Development_Overview.pdf"
+    },
+    {
+      "id": "PR035",
+      "category": "overview",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Development_Overview.pdf",
+      "source_file": "PR_Development_Overview.pdf",
+      "kb_quote_hint": "Developing with PlayReady Developing a device or software application with support for PlayReady Begins with the development of an intermediate product (i.e. not end-user ready) that supports PlayRead",
+      "map_check": "PDF — PR_Development_Overview.pdf"
+    },
+    {
+      "id": "PR036",
+      "category": "overview",
+      "question": "What licensing or agreement terms are described in “PR Development Overview”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Development_Overview.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Development_Overview.pdf",
+      "source_file": "PR_Development_Overview.pdf",
+      "kb_quote_hint": "Developing with PlayReady Developing a device or software application with support for PlayReady Begins with the development of an intermediate product (i.e. not end-user ready) that supports PlayRead",
+      "map_check": "PDF — PR_Development_Overview.pdf"
+    },
+    {
+      "id": "PR037",
+      "category": "overview",
+      "question": "According to the PlayReady document “PR Distribution Overview”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Distribution_Overview.pdf.",
+      "must_any": [
+        "sl3000",
+        "sl2000",
+        "master agreement",
+        "final product license"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Distribution_Overview.pdf",
+      "source_file": "PR_Distribution_Overview.pdf",
+      "kb_quote_hint": "Distribution to end users with PlayReady Distributing a device or software application that supports PlayReady Agreements you must execute: Microsoft PlayReady Master Agreement (download (https://go.m",
+      "map_check": "PDF — PR_Distribution_Overview.pdf"
+    },
+    {
+      "id": "PR038",
+      "category": "overview",
+      "question": "Does “PR Distribution Overview” discuss PlayReady security levels (SL2000 / SL3000)?",
+      "expect_decision": "answer",
+      "expected_answer": "Yes — security levels are mentioned in this document.",
+      "must_any": [
+        "sl2000",
+        "sl3000"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Distribution_Overview.pdf",
+      "source_file": "PR_Distribution_Overview.pdf",
+      "kb_quote_hint": "Distribution to end users with PlayReady Distributing a device or software application that supports PlayReady Agreements you must execute: Microsoft PlayReady Master Agreement (download (https://go.m",
+      "map_check": "PDF — PR_Distribution_Overview.pdf"
+    },
+    {
+      "id": "PR039",
+      "category": "overview",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Distribution_Overview.pdf",
+      "source_file": "PR_Distribution_Overview.pdf",
+      "kb_quote_hint": "Distribution to end users with PlayReady Distributing a device or software application that supports PlayReady Agreements you must execute: Microsoft PlayReady Master Agreement (download (https://go.m",
+      "map_check": "PDF — PR_Distribution_Overview.pdf"
+    },
+    {
+      "id": "PR040",
+      "category": "overview",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Distribution_Overview.pdf",
+      "source_file": "PR_Distribution_Overview.pdf",
+      "kb_quote_hint": "Distribution to end users with PlayReady Distributing a device or software application that supports PlayReady Agreements you must execute: Microsoft PlayReady Master Agreement (download (https://go.m",
+      "map_check": "PDF — PR_Distribution_Overview.pdf"
+    },
+    {
+      "id": "PR041",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part01”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part01.pdf.",
+      "must_any": [
+        "ecosystem simple end",
+        "end system common",
+        "services packaging content security",
+        "security level output protection"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": "Tell us about your PDF experience. Microsoft PlayReady Microsoft PlayReady content access and protection technology is a set of technologies that can be used to distribute audio/video content more sec",
+      "map_check": "PDF — PR_Documentation_Part01.pdf"
+    },
+    {
+      "id": "PR042",
+      "category": "documentation",
+      "question": "What are PlayReady output protection levels (OPL)?",
+      "expect_decision": "answer",
+      "expected_answer": "OPL / output protection wording from compliance docs.",
+      "must_any": [
+        "output protection",
+        "opl",
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": "Tell us about your PDF experience. Microsoft PlayReady Microsoft PlayReady content access and protection technology is a set of technologies that can be used to distribute audio/video content more sec",
+      "map_check": "PDF — PR_Documentation_Part01.pdf"
+    },
+    {
+      "id": "PR043",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": "Tell us about your PDF experience. Microsoft PlayReady Microsoft PlayReady content access and protection technology is a set of technologies that can be used to distribute audio/video content more sec",
+      "map_check": "PDF — PR_Documentation_Part01.pdf"
+    },
+    {
+      "id": "PR044",
+      "category": "documentation",
+      "question": "What licensing or agreement terms are described in “PR Documentation Part01”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Documentation_Part01.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": "Tell us about your PDF experience. Microsoft PlayReady Microsoft PlayReady content access and protection technology is a set of technologies that can be used to distribute audio/video content more sec",
+      "map_check": "PDF — PR_Documentation_Part01.pdf"
+    },
+    {
+      "id": "PR045",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part02”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part02.pdf.",
+      "must_any": [
+        "sl3000",
+        "sl2000",
+        "secure stop",
+        "license acquisition article"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part02.pdf",
+      "source_file": "PR_Documentation_Part02.pdf",
+      "kb_quote_hint": "License Acquisition Article• 11/07/2018 To play protected content, a valid license for the content must be available. If there is no valid license for the content, the license must be acquired. During",
+      "map_check": "PDF — PR_Documentation_Part02.pdf"
+    },
+    {
+      "id": "PR046",
+      "category": "documentation",
+      "question": "Does “PR Documentation Part02” discuss PlayReady security levels (SL2000 / SL3000)?",
+      "expect_decision": "answer",
+      "expected_answer": "Yes — security levels are mentioned in this document.",
+      "must_any": [
+        "sl2000",
+        "sl3000"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part02.pdf",
+      "source_file": "PR_Documentation_Part02.pdf",
+      "kb_quote_hint": "License Acquisition Article• 11/07/2018 To play protected content, a valid license for the content must be available. If there is no valid license for the content, the license must be acquired. During",
+      "map_check": "PDF — PR_Documentation_Part02.pdf"
+    },
+    {
+      "id": "PR047",
+      "category": "documentation",
+      "question": "What is PlayReady Secure Stop?",
+      "expect_decision": "answer",
+      "expected_answer": "Secure Stop definition from the documentation.",
+      "must_any": [
+        "secure stop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part02.pdf",
+      "source_file": "PR_Documentation_Part02.pdf",
+      "kb_quote_hint": "License Acquisition Article• 11/07/2018 To play protected content, a valid license for the content must be available. If there is no valid license for the content, the license must be acquired. During",
+      "map_check": "PDF — PR_Documentation_Part02.pdf"
+    },
+    {
+      "id": "PR048",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part02.pdf",
+      "source_file": "PR_Documentation_Part02.pdf",
+      "kb_quote_hint": "License Acquisition Article• 11/07/2018 To play protected content, a valid license for the content must be available. If there is no valid license for the content, the license must be acquired. During",
+      "map_check": "PDF — PR_Documentation_Part02.pdf"
+    },
+    {
+      "id": "PR049",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part03”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part03.pdf.",
+      "must_any": [
+        "hdcp",
+        "opl",
+        "output protection levels article",
+        "compliance rules"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part03.pdf",
+      "source_file": "PR_Documentation_Part03.pdf",
+      "kb_quote_hint": "Output Protection Levels Article• 10/12/2022 Output protection levels (OPLs) are described in detail in the Compliance Rules for PlayReady Products. This topic describes some of the general behavior o",
+      "map_check": "PDF — PR_Documentation_Part03.pdf"
+    },
+    {
+      "id": "PR050",
+      "category": "documentation",
+      "question": "What does PR Documentation Part03 say about HDCP?",
+      "expect_decision": "answer",
+      "expected_answer": "HDCP-related requirements or guidance from the document.",
+      "must_any": [
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part03.pdf",
+      "source_file": "PR_Documentation_Part03.pdf",
+      "kb_quote_hint": "Output Protection Levels Article• 10/12/2022 Output protection levels (OPLs) are described in detail in the Compliance Rules for PlayReady Products. This topic describes some of the general behavior o",
+      "map_check": "PDF — PR_Documentation_Part03.pdf"
+    },
+    {
+      "id": "PR051",
+      "category": "documentation",
+      "question": "What are PlayReady output protection levels (OPL)?",
+      "expect_decision": "answer",
+      "expected_answer": "OPL / output protection wording from compliance docs.",
+      "must_any": [
+        "output protection",
+        "opl",
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part03.pdf",
+      "source_file": "PR_Documentation_Part03.pdf",
+      "kb_quote_hint": "Output Protection Levels Article• 10/12/2022 Output protection levels (OPLs) are described in detail in the Compliance Rules for PlayReady Products. This topic describes some of the general behavior o",
+      "map_check": "PDF — PR_Documentation_Part03.pdf"
+    },
+    {
+      "id": "PR052",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part03.pdf",
+      "source_file": "PR_Documentation_Part03.pdf",
+      "kb_quote_hint": "Output Protection Levels Article• 10/12/2022 Output protection levels (OPLs) are described in detail in the Compliance Rules for PlayReady Products. This topic describes some of the general behavior o",
+      "map_check": "PDF — PR_Documentation_Part03.pdf"
+    },
+    {
+      "id": "PR053",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part04”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part04.pdf.",
+      "must_any": [
+        "secure stop",
+        "services article",
+        "windows server",
+        "license server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part04.pdf",
+      "source_file": "PR_Documentation_Part04.pdf",
+      "kb_quote_hint": "PlayReady Products, Deliverables and Services Article• 11/07/2018 PlayReady is a very versatile technology that is designed to allow the development of clients on virtually any processor, any platform",
+      "map_check": "PDF — PR_Documentation_Part04.pdf"
+    },
+    {
+      "id": "PR054",
+      "category": "documentation",
+      "question": "What is PlayReady Secure Stop?",
+      "expect_decision": "answer",
+      "expected_answer": "Secure Stop definition from the documentation.",
+      "must_any": [
+        "secure stop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part04.pdf",
+      "source_file": "PR_Documentation_Part04.pdf",
+      "kb_quote_hint": "PlayReady Products, Deliverables and Services Article• 11/07/2018 PlayReady is a very versatile technology that is designed to allow the development of clients on virtually any processor, any platform",
+      "map_check": "PDF — PR_Documentation_Part04.pdf"
+    },
+    {
+      "id": "PR055",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part04.pdf",
+      "source_file": "PR_Documentation_Part04.pdf",
+      "kb_quote_hint": "PlayReady Products, Deliverables and Services Article• 11/07/2018 PlayReady is a very versatile technology that is designed to allow the development of clients on virtually any processor, any platform",
+      "map_check": "PDF — PR_Documentation_Part04.pdf"
+    },
+    {
+      "id": "PR056",
+      "category": "documentation",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part04.pdf",
+      "source_file": "PR_Documentation_Part04.pdf",
+      "kb_quote_hint": "PlayReady Products, Deliverables and Services Article• 11/07/2018 PlayReady is a very versatile technology that is designed to allow the development of clients on virtually any processor, any platform",
+      "map_check": "PDF — PR_Documentation_Part04.pdf"
+    },
+    {
+      "id": "PR057",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part05”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part05.pdf.",
+      "must_any": [
+        "sl2000",
+        "secure stop",
+        "product versions article",
+        "version what"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part05.pdf",
+      "source_file": "PR_Documentation_Part05.pdf",
+      "kb_quote_hint": "PlayReady Product Versions Article• 12/15/2022 The following table shows the feature availability for each version of the PlayReady products. Release date Version What's new PlayReady Server SDK (.NET",
+      "map_check": "PDF — PR_Documentation_Part05.pdf"
+    },
+    {
+      "id": "PR058",
+      "category": "documentation",
+      "question": "Does “PR Documentation Part05” discuss PlayReady security levels (SL2000 / SL3000)?",
+      "expect_decision": "answer",
+      "expected_answer": "Yes — security levels are mentioned in this document.",
+      "must_any": [
+        "sl2000"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part05.pdf",
+      "source_file": "PR_Documentation_Part05.pdf",
+      "kb_quote_hint": "PlayReady Product Versions Article• 12/15/2022 The following table shows the feature availability for each version of the PlayReady products. Release date Version What's new PlayReady Server SDK (.NET",
+      "map_check": "PDF — PR_Documentation_Part05.pdf"
+    },
+    {
+      "id": "PR059",
+      "category": "documentation",
+      "question": "What is PlayReady Secure Stop?",
+      "expect_decision": "answer",
+      "expected_answer": "Secure Stop definition from the documentation.",
+      "must_any": [
+        "secure stop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part05.pdf",
+      "source_file": "PR_Documentation_Part05.pdf",
+      "kb_quote_hint": "PlayReady Product Versions Article• 12/15/2022 The following table shows the feature availability for each version of the PlayReady products. Release date Version What's new PlayReady Server SDK (.NET",
+      "map_check": "PDF — PR_Documentation_Part05.pdf"
+    },
+    {
+      "id": "PR060",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part05.pdf",
+      "source_file": "PR_Documentation_Part05.pdf",
+      "kb_quote_hint": "PlayReady Product Versions Article• 12/15/2022 The following table shows the feature availability for each version of the PlayReady products. Release date Version What's new PlayReady Server SDK (.NET",
+      "map_check": "PDF — PR_Documentation_Part05.pdf"
+    },
+    {
+      "id": "PR061",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part06”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part06.pdf.",
+      "must_any": [
+        "secure clock services",
+        "clients article",
+        "test server article",
+        "test server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part06.pdf",
+      "source_file": "PR_Documentation_Part06.pdf",
+      "kb_quote_hint": "PlayReady Secure Clock Services for PlayReady Clients Article• 11/07/2018 Microsoft operates a service to which a PlayReady Client can connect to acquire the current time and set their trusted clocks.",
+      "map_check": "PDF — PR_Documentation_Part06.pdf"
+    },
+    {
+      "id": "PR062",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part06.pdf",
+      "source_file": "PR_Documentation_Part06.pdf",
+      "kb_quote_hint": "PlayReady Secure Clock Services for PlayReady Clients Article• 11/07/2018 Microsoft operates a service to which a PlayReady Client can connect to acquire the current time and set their trusted clocks.",
+      "map_check": "PDF — PR_Documentation_Part06.pdf"
+    },
+    {
+      "id": "PR063",
+      "category": "documentation",
+      "question": "What licensing or agreement terms are described in “PR Documentation Part06”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Documentation_Part06.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part06.pdf",
+      "source_file": "PR_Documentation_Part06.pdf",
+      "kb_quote_hint": "PlayReady Secure Clock Services for PlayReady Clients Article• 11/07/2018 Microsoft operates a service to which a PlayReady Client can connect to acquire the current time and set their trusted clocks.",
+      "map_check": "PDF — PR_Documentation_Part06.pdf"
+    },
+    {
+      "id": "PR064",
+      "category": "documentation",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part06.pdf",
+      "source_file": "PR_Documentation_Part06.pdf",
+      "kb_quote_hint": "PlayReady Secure Clock Services for PlayReady Clients Article• 11/07/2018 Microsoft operates a service to which a PlayReady Client can connect to acquire the current time and set their trusted clocks.",
+      "map_check": "PDF — PR_Documentation_Part06.pdf"
+    },
+    {
+      "id": "PR065",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part07”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part07.pdf.",
+      "must_any": [
+        "content encryption article",
+        "message authentication codes",
+        "note see glossary",
+        "common encryption"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part07.pdf",
+      "source_file": "PR_Documentation_Part07.pdf",
+      "kb_quote_hint": "PlayReady Content Encryption Article• 11/07/2018 This topic provides an overview of the encryption algorithms used to protect content in the PlayReady ecosystem. Symmetric key cryptography is the simp",
+      "map_check": "PDF — PR_Documentation_Part07.pdf"
+    },
+    {
+      "id": "PR066",
+      "category": "documentation",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part07.pdf",
+      "source_file": "PR_Documentation_Part07.pdf",
+      "kb_quote_hint": "PlayReady Content Encryption Article• 11/07/2018 This topic provides an overview of the encryption algorithms used to protect content in the PlayReady ecosystem. Symmetric key cryptography is the simp",
+      "map_check": "PDF — PR_Documentation_Part07.pdf"
+    },
+    {
+      "id": "PR067",
+      "category": "documentation",
+      "question": "What licensing or agreement terms are described in “PR Documentation Part07”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Documentation_Part07.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part07.pdf",
+      "source_file": "PR_Documentation_Part07.pdf",
+      "kb_quote_hint": "PlayReady Content Encryption Article• 11/07/2018 This topic provides an overview of the encryption algorithms used to protect content in the PlayReady ecosystem. Symmetric key cryptography is the simp",
+      "map_check": "PDF — PR_Documentation_Part07.pdf"
+    },
+    {
+      "id": "PR068",
+      "category": "documentation",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part07.pdf",
+      "source_file": "PR_Documentation_Part07.pdf",
+      "kb_quote_hint": "PlayReady Content Encryption Article• 11/07/2018 This topic provides an overview of the encryption algorithms used to protect content in the PlayReady ecosystem. Symmetric key cryptography is the simp",
+      "map_check": "PDF — PR_Documentation_Part07.pdf"
+    },
+    {
+      "id": "PR069",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part08”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part08.pdf.",
+      "must_any": [
+        "header article",
+        "header specification",
+        "license server",
+        "key management system"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part08.pdf",
+      "source_file": "PR_Documentation_Part08.pdf",
+      "kb_quote_hint": "How to generate a PlayReady Header Article• 02/12/2021 The packager needs to include a PlayReady Header in the encrypted content. For a detailed description of the PlayReady Header and the PlayReady O",
+      "map_check": "PDF — PR_Documentation_Part08.pdf"
+    },
+    {
+      "id": "PR070",
+      "category": "documentation",
+      "question": "What licensing or agreement terms are described in “PR Documentation Part08”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Documentation_Part08.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part08.pdf",
+      "source_file": "PR_Documentation_Part08.pdf",
+      "kb_quote_hint": "How to generate a PlayReady Header Article• 02/12/2021 The packager needs to include a PlayReady Header in the encrypted content. For a detailed description of the PlayReady Header and the PlayReady O",
+      "map_check": "PDF — PR_Documentation_Part08.pdf"
+    },
+    {
+      "id": "PR071",
+      "category": "documentation",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part08.pdf",
+      "source_file": "PR_Documentation_Part08.pdf",
+      "kb_quote_hint": "How to generate a PlayReady Header Article• 02/12/2021 The packager needs to include a PlayReady Header in the encrypted content. For a detailed description of the PlayReady Header and the PlayReady O",
+      "map_check": "PDF — PR_Documentation_Part08.pdf"
+    },
+    {
+      "id": "PR072",
+      "category": "documentation",
+      "question": "What does “PR Documentation Part08” say about: Header in the encrypted content.",
+      "expect_decision": "answer",
+      "expected_answer": "Header in the encrypted content.",
+      "must_any": [
+        "header article",
+        "header specification",
+        "license server",
+        "key management system"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part08.pdf",
+      "source_file": "PR_Documentation_Part08.pdf",
+      "kb_quote_hint": "How to generate a PlayReady Header Article• 02/12/2021 The packager needs to include a PlayReady Header in the encrypted content. For a detailed description of the PlayReady Header and the PlayReady O",
+      "map_check": "PDF — PR_Documentation_Part08.pdf"
+    },
+    {
+      "id": "PR073",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part09”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part09.pdf.",
+      "must_any": [
+        "license server article",
+        "license server",
+        "server software development kit",
+        "windows server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part09.pdf",
+      "source_file": "PR_Documentation_Part09.pdf",
+      "kb_quote_hint": "PlayReady License Server Article• 02/12/2021 The process of obtaining a license to play back PlayReady protected content is handled by a PlayReady License Server. The PlayReady Server contains the han",
+      "map_check": "PDF — PR_Documentation_Part09.pdf"
+    },
+    {
+      "id": "PR074",
+      "category": "documentation",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part09.pdf",
+      "source_file": "PR_Documentation_Part09.pdf",
+      "kb_quote_hint": "PlayReady License Server Article• 02/12/2021 The process of obtaining a license to play back PlayReady protected content is handled by a PlayReady License Server. The PlayReady Server contains the han",
+      "map_check": "PDF — PR_Documentation_Part09.pdf"
+    },
+    {
+      "id": "PR075",
+      "category": "documentation",
+      "question": "What licensing or agreement terms are described in “PR Documentation Part09”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Documentation_Part09.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part09.pdf",
+      "source_file": "PR_Documentation_Part09.pdf",
+      "kb_quote_hint": "PlayReady License Server Article• 02/12/2021 The process of obtaining a license to play back PlayReady protected content is handled by a PlayReady License Server. The PlayReady Server contains the han",
+      "map_check": "PDF — PR_Documentation_Part09.pdf"
+    },
+    {
+      "id": "PR076",
+      "category": "documentation",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part09.pdf",
+      "source_file": "PR_Documentation_Part09.pdf",
+      "kb_quote_hint": "PlayReady License Server Article• 02/12/2021 The process of obtaining a license to play back PlayReady protected content is handled by a PlayReady License Server. The PlayReady Server contains the han",
+      "map_check": "PDF — PR_Documentation_Part09.pdf"
+    },
+    {
+      "id": "PR077",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part10”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part10.pdf.",
+      "must_any": [
+        "sl3000",
+        "security level",
+        "clients article",
+        "final products"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part10.pdf",
+      "source_file": "PR_Documentation_Part10.pdf",
+      "kb_quote_hint": "Developing PlayReady Security Level 3000 Clients Article• 03/06/2021 This page is intended to serve as a step-by-step guide for PlayReady Licensees seeking SL3000 Compliance for PlayReady Intermediate",
+      "map_check": "PDF — PR_Documentation_Part10.pdf"
+    },
+    {
+      "id": "PR078",
+      "category": "documentation",
+      "question": "Does “PR Documentation Part10” discuss PlayReady security levels (SL2000 / SL3000)?",
+      "expect_decision": "answer",
+      "expected_answer": "Yes — security levels are mentioned in this document.",
+      "must_any": [
+        "sl3000"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part10.pdf",
+      "source_file": "PR_Documentation_Part10.pdf",
+      "kb_quote_hint": "Developing PlayReady Security Level 3000 Clients Article• 03/06/2021 This page is intended to serve as a step-by-step guide for PlayReady Licensees seeking SL3000 Compliance for PlayReady Intermediate",
+      "map_check": "PDF — PR_Documentation_Part10.pdf"
+    },
+    {
+      "id": "PR079",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part10.pdf",
+      "source_file": "PR_Documentation_Part10.pdf",
+      "kb_quote_hint": "Developing PlayReady Security Level 3000 Clients Article• 03/06/2021 This page is intended to serve as a step-by-step guide for PlayReady Licensees seeking SL3000 Compliance for PlayReady Intermediate",
+      "map_check": "PDF — PR_Documentation_Part10.pdf"
+    },
+    {
+      "id": "PR080",
+      "category": "documentation",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part10.pdf",
+      "source_file": "PR_Documentation_Part10.pdf",
+      "kb_quote_hint": "Developing PlayReady Security Level 3000 Clients Article• 03/06/2021 This page is intended to serve as a step-by-step guide for PlayReady Licensees seeking SL3000 Compliance for PlayReady Intermediate",
+      "map_check": "PDF — PR_Documentation_Part10.pdf"
+    },
+    {
+      "id": "PR081",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part11”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part11.pdf.",
+      "must_any": [
+        "secure stop",
+        "client initialization article",
+        "client initialization",
+        "client decryption module"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part11.pdf",
+      "source_file": "PR_Documentation_Part11.pdf",
+      "kb_quote_hint": "PlayReady Client Initialization Article• 01/06/2023 PlayReady Client Initialization is the process of updating the PlayReady runtime on the client, allowing licenses to be bound to the client. It may ",
+      "map_check": "PDF — PR_Documentation_Part11.pdf"
+    },
+    {
+      "id": "PR082",
+      "category": "documentation",
+      "question": "What is PlayReady Secure Stop?",
+      "expect_decision": "answer",
+      "expected_answer": "Secure Stop definition from the documentation.",
+      "must_any": [
+        "secure stop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part11.pdf",
+      "source_file": "PR_Documentation_Part11.pdf",
+      "kb_quote_hint": "PlayReady Client Initialization Article• 01/06/2023 PlayReady Client Initialization is the process of updating the PlayReady runtime on the client, allowing licenses to be bound to the client. It may ",
+      "map_check": "PDF — PR_Documentation_Part11.pdf"
+    },
+    {
+      "id": "PR083",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part11.pdf",
+      "source_file": "PR_Documentation_Part11.pdf",
+      "kb_quote_hint": "PlayReady Client Initialization Article• 01/06/2023 PlayReady Client Initialization is the process of updating the PlayReady runtime on the client, allowing licenses to be bound to the client. It may ",
+      "map_check": "PDF — PR_Documentation_Part11.pdf"
+    },
+    {
+      "id": "PR084",
+      "category": "documentation",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part11.pdf",
+      "source_file": "PR_Documentation_Part11.pdf",
+      "kb_quote_hint": "PlayReady Client Initialization Article• 01/06/2023 PlayReady Client Initialization is the process of updating the PlayReady runtime on the client, allowing licenses to be bound to the client. It may ",
+      "map_check": "PDF — PR_Documentation_Part11.pdf"
+    },
+    {
+      "id": "PR085",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part12”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part12.pdf.",
+      "must_any": [
+        "sl3000",
+        "sl2000",
+        "secure stop",
+        "secure stop article"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part12.pdf",
+      "source_file": "PR_Documentation_Part12.pdf",
+      "kb_quote_hint": "PlayReady Secure Stop Article• 10/12/2022 Introduced in PlayReady version 3.0, PlayReady Secure Stop is a feature that provides the means for a PlayReady device to confidently assert to a media stream",
+      "map_check": "PDF — PR_Documentation_Part12.pdf"
+    },
+    {
+      "id": "PR086",
+      "category": "documentation",
+      "question": "Does “PR Documentation Part12” discuss PlayReady security levels (SL2000 / SL3000)?",
+      "expect_decision": "answer",
+      "expected_answer": "Yes — security levels are mentioned in this document.",
+      "must_any": [
+        "sl2000",
+        "sl3000"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part12.pdf",
+      "source_file": "PR_Documentation_Part12.pdf",
+      "kb_quote_hint": "PlayReady Secure Stop Article• 10/12/2022 Introduced in PlayReady version 3.0, PlayReady Secure Stop is a feature that provides the means for a PlayReady device to confidently assert to a media stream",
+      "map_check": "PDF — PR_Documentation_Part12.pdf"
+    },
+    {
+      "id": "PR087",
+      "category": "documentation",
+      "question": "What is PlayReady Secure Stop?",
+      "expect_decision": "answer",
+      "expected_answer": "Secure Stop definition from the documentation.",
+      "must_any": [
+        "secure stop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part12.pdf",
+      "source_file": "PR_Documentation_Part12.pdf",
+      "kb_quote_hint": "PlayReady Secure Stop Article• 10/12/2022 Introduced in PlayReady version 3.0, PlayReady Secure Stop is a feature that provides the means for a PlayReady device to confidently assert to a media stream",
+      "map_check": "PDF — PR_Documentation_Part12.pdf"
+    },
+    {
+      "id": "PR088",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part12.pdf",
+      "source_file": "PR_Documentation_Part12.pdf",
+      "kb_quote_hint": "PlayReady Secure Stop Article• 10/12/2022 Introduced in PlayReady version 3.0, PlayReady Secure Stop is a feature that provides the means for a PlayReady device to confidently assert to a media stream",
+      "map_check": "PDF — PR_Documentation_Part12.pdf"
+    },
+    {
+      "id": "PR089",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part13”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part13.pdf.",
+      "must_any": [
+        "licenses restricted",
+        "binding policy article",
+        "license server",
+        "client certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part13.pdf",
+      "source_file": "PR_Documentation_Part13.pdf",
+      "kb_quote_hint": "Licenses Restricted by Binding Policy Article• 11/07/2018 Licenses may be bound to entities such as a client or a domain. Client binding—that is, machine-binding, binding a license to a personal compu",
+      "map_check": "PDF — PR_Documentation_Part13.pdf"
+    },
+    {
+      "id": "PR090",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part13.pdf",
+      "source_file": "PR_Documentation_Part13.pdf",
+      "kb_quote_hint": "Licenses Restricted by Binding Policy Article• 11/07/2018 Licenses may be bound to entities such as a client or a domain. Client binding—that is, machine-binding, binding a license to a personal compu",
+      "map_check": "PDF — PR_Documentation_Part13.pdf"
+    },
+    {
+      "id": "PR091",
+      "category": "documentation",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part13.pdf",
+      "source_file": "PR_Documentation_Part13.pdf",
+      "kb_quote_hint": "Licenses Restricted by Binding Policy Article• 11/07/2018 Licenses may be bound to entities such as a client or a domain. Client binding—that is, machine-binding, binding a license to a personal compu",
+      "map_check": "PDF — PR_Documentation_Part13.pdf"
+    },
+    {
+      "id": "PR092",
+      "category": "documentation",
+      "question": "What licensing or agreement terms are described in “PR Documentation Part13”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Documentation_Part13.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part13.pdf",
+      "source_file": "PR_Documentation_Part13.pdf",
+      "kb_quote_hint": "Licenses Restricted by Binding Policy Article• 11/07/2018 Licenses may be bound to entities such as a client or a domain. Client binding—that is, machine-binding, binding a license to a personal compu",
+      "map_check": "PDF — PR_Documentation_Part13.pdf"
+    },
+    {
+      "id": "PR093",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part14”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part14.pdf.",
+      "must_any": [
+        "hdcp",
+        "version license service",
+        "public test server",
+        "query string syntax"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part14.pdf",
+      "source_file": "PR_Documentation_Part14.pdf",
+      "kb_quote_hint": "How to Test PlayReady Clients with Versions of the PlayReady Server SDK Article• 02/21/2020 The PlayReady testing website contains a set of license services that use current and legacy versions of the",
+      "map_check": "PDF — PR_Documentation_Part14.pdf"
+    },
+    {
+      "id": "PR094",
+      "category": "documentation",
+      "question": "What does PR Documentation Part14 say about HDCP?",
+      "expect_decision": "answer",
+      "expected_answer": "HDCP-related requirements or guidance from the document.",
+      "must_any": [
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part14.pdf",
+      "source_file": "PR_Documentation_Part14.pdf",
+      "kb_quote_hint": "How to Test PlayReady Clients with Versions of the PlayReady Server SDK Article• 02/21/2020 The PlayReady testing website contains a set of license services that use current and legacy versions of the",
+      "map_check": "PDF — PR_Documentation_Part14.pdf"
+    },
+    {
+      "id": "PR095",
+      "category": "documentation",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part14.pdf",
+      "source_file": "PR_Documentation_Part14.pdf",
+      "kb_quote_hint": "How to Test PlayReady Clients with Versions of the PlayReady Server SDK Article• 02/21/2020 The PlayReady testing website contains a set of license services that use current and legacy versions of the",
+      "map_check": "PDF — PR_Documentation_Part14.pdf"
+    },
+    {
+      "id": "PR096",
+      "category": "documentation",
+      "question": "What licensing or agreement terms are described in “PR Documentation Part14”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Documentation_Part14.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part14.pdf",
+      "source_file": "PR_Documentation_Part14.pdf",
+      "kb_quote_hint": "How to Test PlayReady Clients with Versions of the PlayReady Server SDK Article• 02/21/2020 The PlayReady testing website contains a set of license services that use current and legacy versions of the",
+      "map_check": "PDF — PR_Documentation_Part14.pdf"
+    },
+    {
+      "id": "PR097",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part15”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part15.pdf.",
+      "must_any": [
+        "secure stop",
+        "opl",
+        "android specification article",
+        "version change may"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part15.pdf",
+      "source_file": "PR_Documentation_Part15.pdf",
+      "kb_quote_hint": "PlayReady Plugin for Android Specification Article• 11/07/2018 This specification establishes guidance for OEMs to implement PlayReady 4.0 based digital rights management (DRM) plug-ins on Android. Fo",
+      "map_check": "PDF — PR_Documentation_Part15.pdf"
+    },
+    {
+      "id": "PR098",
+      "category": "documentation",
+      "question": "What is PlayReady Secure Stop?",
+      "expect_decision": "answer",
+      "expected_answer": "Secure Stop definition from the documentation.",
+      "must_any": [
+        "secure stop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part15.pdf",
+      "source_file": "PR_Documentation_Part15.pdf",
+      "kb_quote_hint": "PlayReady Plugin for Android Specification Article• 11/07/2018 This specification establishes guidance for OEMs to implement PlayReady 4.0 based digital rights management (DRM) plug-ins on Android. Fo",
+      "map_check": "PDF — PR_Documentation_Part15.pdf"
+    },
+    {
+      "id": "PR099",
+      "category": "documentation",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part15.pdf",
+      "source_file": "PR_Documentation_Part15.pdf",
+      "kb_quote_hint": "PlayReady Plugin for Android Specification Article• 11/07/2018 This specification establishes guidance for OEMs to implement PlayReady 4.0 based digital rights management (DRM) plug-ins on Android. Fo",
+      "map_check": "PDF — PR_Documentation_Part15.pdf"
+    },
+    {
+      "id": "PR100",
+      "category": "documentation",
+      "question": "What licensing or agreement terms are described in “PR Documentation Part15”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Documentation_Part15.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part15.pdf",
+      "source_file": "PR_Documentation_Part15.pdf",
+      "kb_quote_hint": "PlayReady Plugin for Android Specification Article• 11/07/2018 This specification establishes guidance for OEMs to implement PlayReady 4.0 based digital rights management (DRM) plug-ins on Android. Fo",
+      "map_check": "PDF — PR_Documentation_Part15.pdf"
+    },
+    {
+      "id": "PR101",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part16”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part16.pdf.",
+      "must_any": [
+        "content protection",
+        "implementing content protection",
+        "demand profiles",
+        "dynamic adaptive streaming"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part16.pdf",
+      "source_file": "PR_Documentation_Part16.pdf",
+      "kb_quote_hint": "DASH Content Protection using Microsoft PlayReady Article• 03/12/2021 Implementing Content Protection for Live and On-Demand Profiles of Dynamic Adaptive Streaming over HTTP (ISO/IEC 23009-1) using Co",
+      "map_check": "PDF — PR_Documentation_Part16.pdf"
+    },
+    {
+      "id": "PR102",
+      "category": "documentation",
+      "question": "What licensing or agreement terms are described in “PR Documentation Part16”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Documentation_Part16.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part16.pdf",
+      "source_file": "PR_Documentation_Part16.pdf",
+      "kb_quote_hint": "DASH Content Protection using Microsoft PlayReady Article• 03/12/2021 Implementing Content Protection for Live and On-Demand Profiles of Dynamic Adaptive Streaming over HTTP (ISO/IEC 23009-1) using Co",
+      "map_check": "PDF — PR_Documentation_Part16.pdf"
+    },
+    {
+      "id": "PR103",
+      "category": "documentation",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part16.pdf",
+      "source_file": "PR_Documentation_Part16.pdf",
+      "kb_quote_hint": "DASH Content Protection using Microsoft PlayReady Article• 03/12/2021 Implementing Content Protection for Live and On-Demand Profiles of Dynamic Adaptive Streaming over HTTP (ISO/IEC 23009-1) using Co",
+      "map_check": "PDF — PR_Documentation_Part16.pdf"
+    },
+    {
+      "id": "PR104",
+      "category": "documentation",
+      "question": "What does “PR Documentation Part16” say about: History for more information.",
+      "expect_decision": "answer",
+      "expected_answer": "History for more information.",
+      "must_any": [
+        "content protection",
+        "implementing content protection",
+        "demand profiles",
+        "dynamic adaptive streaming"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part16.pdf",
+      "source_file": "PR_Documentation_Part16.pdf",
+      "kb_quote_hint": "DASH Content Protection using Microsoft PlayReady Article• 03/12/2021 Implementing Content Protection for Live and On-Demand Profiles of Dynamic Adaptive Streaming over HTTP (ISO/IEC 23009-1) using Co",
+      "map_check": "PDF — PR_Documentation_Part16.pdf"
+    },
+    {
+      "id": "PR105",
+      "category": "documentation",
+      "question": "According to the PlayReady document “PR Documentation Part17”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Documentation_Part17.pdf.",
+      "must_any": [
+        "additional information article",
+        "test server",
+        "product home page additional",
+        "whitepapers documentation"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part17.pdf",
+      "source_file": "PR_Documentation_Part17.pdf",
+      "kb_quote_hint": "Additional Information Article• 10/12/2022 In addition to the pages on this website, the PlayReady team provides the following documentation: PlayReady for Windows 10 Documentation PlayReady for Windo",
+      "map_check": "PDF — PR_Documentation_Part17.pdf"
+    },
+    {
+      "id": "PR106",
+      "category": "documentation",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part17.pdf",
+      "source_file": "PR_Documentation_Part17.pdf",
+      "kb_quote_hint": "Additional Information Article• 10/12/2022 In addition to the pages on this website, the PlayReady team provides the following documentation: PlayReady for Windows 10 Documentation PlayReady for Windo",
+      "map_check": "PDF — PR_Documentation_Part17.pdf"
+    },
+    {
+      "id": "PR107",
+      "category": "documentation",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part17.pdf",
+      "source_file": "PR_Documentation_Part17.pdf",
+      "kb_quote_hint": "Additional Information Article• 10/12/2022 In addition to the pages on this website, the PlayReady team provides the following documentation: PlayReady for Windows 10 Documentation PlayReady for Windo",
+      "map_check": "PDF — PR_Documentation_Part17.pdf"
+    },
+    {
+      "id": "PR108",
+      "category": "documentation",
+      "question": "What licensing or agreement terms are described in “PR Documentation Part17”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Documentation_Part17.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Documentation_Part17.pdf",
+      "source_file": "PR_Documentation_Part17.pdf",
+      "kb_quote_hint": "Additional Information Article• 10/12/2022 In addition to the pages on this website, the PlayReady team provides the following documentation: PlayReady for Windows 10 Documentation PlayReady for Windo",
+      "map_check": "PDF — PR_Documentation_Part17.pdf"
+    },
+    {
+      "id": "PR109",
+      "category": "certificates",
+      "question": "According to the PlayReady document “PR EV Certificate Instructions”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_EV_Certificate_Instructions.pdf.",
+      "must_any": [
+        "server agreement",
+        "extended validation code signing",
+        "code signing certificate",
+        "extended validation"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_EV_Certificate_Instructions.pdf",
+      "source_file": "PR_EV_Certificate_Instructions.pdf",
+      "kb_quote_hint": "Thank you for your interest in Microsoft Technologies. Before Microsoft can provide you with a Microsoft PlayReady Server Agreement, you are required to provide IP Licensing with an Extended Validatio",
+      "map_check": "PDF — PR_EV_Certificate_Instructions.pdf"
+    },
+    {
+      "id": "PR110",
+      "category": "certificates",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_EV_Certificate_Instructions.pdf",
+      "source_file": "PR_EV_Certificate_Instructions.pdf",
+      "kb_quote_hint": "Thank you for your interest in Microsoft Technologies. Before Microsoft can provide you with a Microsoft PlayReady Server Agreement, you are required to provide IP Licensing with an Extended Validatio",
+      "map_check": "PDF — PR_EV_Certificate_Instructions.pdf"
+    },
+    {
+      "id": "PR111",
+      "category": "certificates",
+      "question": "What licensing or agreement terms are described in “PR EV Certificate Instructions”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_EV_Certificate_Instructions.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_EV_Certificate_Instructions.pdf",
+      "source_file": "PR_EV_Certificate_Instructions.pdf",
+      "kb_quote_hint": "Thank you for your interest in Microsoft Technologies. Before Microsoft can provide you with a Microsoft PlayReady Server Agreement, you are required to provide IP Licensing with an Extended Validatio",
+      "map_check": "PDF — PR_EV_Certificate_Instructions.pdf"
+    },
+    {
+      "id": "PR112",
+      "category": "certificates",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_EV_Certificate_Instructions.pdf",
+      "source_file": "PR_EV_Certificate_Instructions.pdf",
+      "kb_quote_hint": "Thank you for your interest in Microsoft Technologies. Before Microsoft can provide you with a Microsoft PlayReady Server Agreement, you are required to provide IP Licensing with an Extended Validatio",
+      "map_check": "PDF — PR_EV_Certificate_Instructions.pdf"
+    },
+    {
+      "id": "PR113",
+      "category": "licensing",
+      "question": "According to the PlayReady document “PR Final Product License Sample v2018”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Final_Product_License_Sample_v2018.pdf.",
+      "must_any": [
+        "final product license document",
+        "tracking number",
+        "agreement number",
+        "effective date"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 12.12.2018 Microsoft PlayReady Final Product License Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number: <<TAG: AgrNum>> Effectiv",
+      "map_check": "PDF — PR_Final_Product_License_Sample_v2018.pdf"
+    },
+    {
+      "id": "PR114",
+      "category": "licensing",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 12.12.2018 Microsoft PlayReady Final Product License Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number: <<TAG: AgrNum>> Effectiv",
+      "map_check": "PDF — PR_Final_Product_License_Sample_v2018.pdf"
+    },
+    {
+      "id": "PR115",
+      "category": "licensing",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 12.12.2018 Microsoft PlayReady Final Product License Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number: <<TAG: AgrNum>> Effectiv",
+      "map_check": "PDF — PR_Final_Product_License_Sample_v2018.pdf"
+    },
+    {
+      "id": "PR116",
+      "category": "licensing",
+      "question": "What licensing or agreement terms are described in “PR Final Product License Sample v2018”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Final_Product_License_Sample_v2018.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 12.12.2018 Microsoft PlayReady Final Product License Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number: <<TAG: AgrNum>> Effectiv",
+      "map_check": "PDF — PR_Final_Product_License_Sample_v2018.pdf"
+    },
+    {
+      "id": "PR117",
+      "category": "licensing",
+      "question": "According to the PlayReady document “PR IPLA Licensing Portal FAQ”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_IPLA_Licensing_Portal_FAQ.pdf.",
+      "must_any": [
+        "licensing administration portal step",
+        "windows media",
+        "account creation",
+        "licensing administration licensing portal"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "source_file": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "kb_quote_hint": " Signing into The IP Licensing Administration Portal Step 1 – Click on the Sign In button when you are ready to log into the licensee portal. This licensee portal at wmlalicensing.com supports program",
+      "map_check": "PDF — PR_IPLA_Licensing_Portal_FAQ.pdf"
+    },
+    {
+      "id": "PR118",
+      "category": "licensing",
+      "question": "What licensing or agreement terms are described in “PR IPLA Licensing Portal FAQ”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_IPLA_Licensing_Portal_FAQ.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "source_file": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "kb_quote_hint": " Signing into The IP Licensing Administration Portal Step 1 – Click on the Sign In button when you are ready to log into the licensee portal. This licensee portal at wmlalicensing.com supports program",
+      "map_check": "PDF — PR_IPLA_Licensing_Portal_FAQ.pdf"
+    },
+    {
+      "id": "PR119",
+      "category": "licensing",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "source_file": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "kb_quote_hint": " Signing into The IP Licensing Administration Portal Step 1 – Click on the Sign In button when you are ready to log into the licensee portal. This licensee portal at wmlalicensing.com supports program",
+      "map_check": "PDF — PR_IPLA_Licensing_Portal_FAQ.pdf"
+    },
+    {
+      "id": "PR120",
+      "category": "licensing",
+      "question": "According to the PlayReady document “PR Intermediate Product License Sample v2016”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Intermediate_Product_License_Sample_v2016.pdf.",
+      "must_any": [
+        "intermediate product license form",
+        "document tracking number",
+        "agreement number",
+        "effective date"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 06.02.16a Microsoft PlayReady Intermediate Product License Form 2.8.<<CurrentTemplateRev>> Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agre",
+      "map_check": "PDF — PR_Intermediate_Product_License_Sample_v2016.pdf"
+    },
+    {
+      "id": "PR121",
+      "category": "licensing",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 06.02.16a Microsoft PlayReady Intermediate Product License Form 2.8.<<CurrentTemplateRev>> Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agre",
+      "map_check": "PDF — PR_Intermediate_Product_License_Sample_v2016.pdf"
+    },
+    {
+      "id": "PR122",
+      "category": "licensing",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 06.02.16a Microsoft PlayReady Intermediate Product License Form 2.8.<<CurrentTemplateRev>> Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agre",
+      "map_check": "PDF — PR_Intermediate_Product_License_Sample_v2016.pdf"
+    },
+    {
+      "id": "PR123",
+      "category": "licensing",
+      "question": "What licensing or agreement terms are described in “PR Intermediate Product License Sample v2016”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Intermediate_Product_License_Sample_v2016.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 06.02.16a Microsoft PlayReady Intermediate Product License Form 2.8.<<CurrentTemplateRev>> Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agre",
+      "map_check": "PDF — PR_Intermediate_Product_License_Sample_v2016.pdf"
+    },
+    {
+      "id": "PR124",
+      "category": "live_tv",
+      "question": "According to the PlayReady document “PR LiveTV Protection Part01 v2015”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_LiveTV_Protection_Part01_v2015.pdf.",
+      "must_any": [
+        "opl",
+        "protecting premium live",
+        "legal notice",
+        "internet web"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_LiveTV_Protection_Part01_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "kb_quote_hint": " Protecting Premium Live TV Services with PlayReady April 2015 Abstract Microsoft® PlayReady® is the premier platform for the protection and distribution of digital content. This white paper discusses",
+      "map_check": "PDF — PR_LiveTV_Protection_Part01_v2015.pdf"
+    },
+    {
+      "id": "PR125",
+      "category": "live_tv",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_LiveTV_Protection_Part01_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "kb_quote_hint": " Protecting Premium Live TV Services with PlayReady April 2015 Abstract Microsoft® PlayReady® is the premier platform for the protection and distribution of digital content. This white paper discusses",
+      "map_check": "PDF — PR_LiveTV_Protection_Part01_v2015.pdf"
+    },
+    {
+      "id": "PR126",
+      "category": "live_tv",
+      "question": "How does PlayReady protect Live TV content?",
+      "expect_decision": "answer",
+      "expected_answer": "Live TV protection guidance from the LiveTV docs.",
+      "must_any": [
+        "live"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_LiveTV_Protection_Part01_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "kb_quote_hint": " Protecting Premium Live TV Services with PlayReady April 2015 Abstract Microsoft® PlayReady® is the premier platform for the protection and distribution of digital content. This white paper discusses",
+      "map_check": "PDF — PR_LiveTV_Protection_Part01_v2015.pdf"
+    },
+    {
+      "id": "PR127",
+      "category": "live_tv",
+      "question": "What licensing or agreement terms are described in “PR LiveTV Protection Part01 v2015”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_LiveTV_Protection_Part01_v2015.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_LiveTV_Protection_Part01_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "kb_quote_hint": " Protecting Premium Live TV Services with PlayReady April 2015 Abstract Microsoft® PlayReady® is the premier platform for the protection and distribution of digital content. This white paper discusses",
+      "map_check": "PDF — PR_LiveTV_Protection_Part01_v2015.pdf"
+    },
+    {
+      "id": "PR128",
+      "category": "live_tv",
+      "question": "According to the PlayReady document “PR LiveTV Protection Part02 v2015”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_LiveTV_Protection_Part02_v2015.pdf.",
+      "must_any": [
+        "sl2000",
+        "protecting premium live",
+        "communication paths",
+        "ad insertion in"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_LiveTV_Protection_Part02_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part02_v2015.pdf",
+      "kb_quote_hint": "Microsoft PlayReady Protecting Premium Live TV Services with PlayReady 20 The following diagram illustrates the sequence of steps and communication paths for the scenario. Figure 7 – Sequence of Steps",
+      "map_check": "PDF — PR_LiveTV_Protection_Part02_v2015.pdf"
+    },
+    {
+      "id": "PR129",
+      "category": "live_tv",
+      "question": "How does PlayReady protect Live TV content?",
+      "expect_decision": "answer",
+      "expected_answer": "Live TV protection guidance from the LiveTV docs.",
+      "must_any": [
+        "live"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_LiveTV_Protection_Part02_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part02_v2015.pdf",
+      "kb_quote_hint": "Microsoft PlayReady Protecting Premium Live TV Services with PlayReady 20 The following diagram illustrates the sequence of steps and communication paths for the scenario. Figure 7 – Sequence of Steps",
+      "map_check": "PDF — PR_LiveTV_Protection_Part02_v2015.pdf"
+    },
+    {
+      "id": "PR130",
+      "category": "live_tv",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_LiveTV_Protection_Part02_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part02_v2015.pdf",
+      "kb_quote_hint": "Microsoft PlayReady Protecting Premium Live TV Services with PlayReady 20 The following diagram illustrates the sequence of steps and communication paths for the scenario. Figure 7 – Sequence of Steps",
+      "map_check": "PDF — PR_LiveTV_Protection_Part02_v2015.pdf"
+    },
+    {
+      "id": "PR131",
+      "category": "live_tv",
+      "question": "What licensing or agreement terms are described in “PR LiveTV Protection Part02 v2015”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_LiveTV_Protection_Part02_v2015.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_LiveTV_Protection_Part02_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part02_v2015.pdf",
+      "kb_quote_hint": "Microsoft PlayReady Protecting Premium Live TV Services with PlayReady 20 The following diagram illustrates the sequence of steps and communication paths for the scenario. Figure 7 – Sequence of Steps",
+      "map_check": "PDF — PR_LiveTV_Protection_Part02_v2015.pdf"
+    },
+    {
+      "id": "PR132",
+      "category": "licensing",
+      "question": "According to the PlayReady document “PR Master Agreement Sample v2013”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Master_Agreement_Sample_v2013.pdf.",
+      "must_any": [
+        "master agreement form",
+        "document tracking number",
+        "agreement number",
+        "effective date"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Master_Agreement_Sample_v2013.pdf",
+      "source_file": "PR_Master_Agreement_Sample_v2013.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 12.04.13a Microsoft PlayReady Master Agreement Form 2.8.<<CurrentTemplateRev>> Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number",
+      "map_check": "PDF — PR_Master_Agreement_Sample_v2013.pdf"
+    },
+    {
+      "id": "PR133",
+      "category": "licensing",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Master_Agreement_Sample_v2013.pdf",
+      "source_file": "PR_Master_Agreement_Sample_v2013.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 12.04.13a Microsoft PlayReady Master Agreement Form 2.8.<<CurrentTemplateRev>> Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number",
+      "map_check": "PDF — PR_Master_Agreement_Sample_v2013.pdf"
+    },
+    {
+      "id": "PR134",
+      "category": "licensing",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Master_Agreement_Sample_v2013.pdf",
+      "source_file": "PR_Master_Agreement_Sample_v2013.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 12.04.13a Microsoft PlayReady Master Agreement Form 2.8.<<CurrentTemplateRev>> Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number",
+      "map_check": "PDF — PR_Master_Agreement_Sample_v2013.pdf"
+    },
+    {
+      "id": "PR135",
+      "category": "licensing",
+      "question": "What licensing or agreement terms are described in “PR Master Agreement Sample v2013”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Master_Agreement_Sample_v2013.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Master_Agreement_Sample_v2013.pdf",
+      "source_file": "PR_Master_Agreement_Sample_v2013.pdf",
+      "kb_quote_hint": " CONFIDENTIAL<<VerFT>> 12.04.13a Microsoft PlayReady Master Agreement Form 2.8.<<CurrentTemplateRev>> Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number",
+      "map_check": "PDF — PR_Master_Agreement_Sample_v2013.pdf"
+    },
+    {
+      "id": "PR136",
+      "category": "security_level",
+      "question": "According to the PlayReady document “PR SL3000 Playbook”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_SL3000_Playbook.pdf.",
+      "must_any": [
+        "sl3000",
+        "sl2000",
+        "playbook",
+        "playbook table"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": "© 2016 Microsoft Corporation. All rights reserved. 20 February 2016 PlayReady® SL3000 Playbook Microsoft Corporation © 2016 Microsoft Corporation. All rights reserved. 20 February 2016 PlayReady SL300",
+      "map_check": "PDF — PR_SL3000_Playbook.pdf"
+    },
+    {
+      "id": "PR137",
+      "category": "security_level",
+      "question": "What is the difference between PlayReady SL2000 and SL3000?",
+      "expect_decision": "answer",
+      "expected_answer": "Differences as stated in the SL3000 playbook.",
+      "must_any": [
+        "sl2000",
+        "sl3000"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": "© 2016 Microsoft Corporation. All rights reserved. 20 February 2016 PlayReady® SL3000 Playbook Microsoft Corporation © 2016 Microsoft Corporation. All rights reserved. 20 February 2016 PlayReady SL300",
+      "map_check": "PDF — PR_SL3000_Playbook.pdf"
+    },
+    {
+      "id": "PR138",
+      "category": "security_level",
+      "question": "What does PlayReady SL3000 require or enable according to the playbook?",
+      "expect_decision": "answer",
+      "expected_answer": "SL3000 requirements / capabilities from the playbook.",
+      "must_any": [
+        "sl3000"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": "© 2016 Microsoft Corporation. All rights reserved. 20 February 2016 PlayReady® SL3000 Playbook Microsoft Corporation © 2016 Microsoft Corporation. All rights reserved. 20 February 2016 PlayReady SL300",
+      "map_check": "PDF — PR_SL3000_Playbook.pdf"
+    },
+    {
+      "id": "PR139",
+      "category": "security_level",
+      "question": "What are PlayReady output protection levels (OPL)?",
+      "expect_decision": "answer",
+      "expected_answer": "OPL / output protection wording from compliance docs.",
+      "must_any": [
+        "output protection",
+        "opl",
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": "© 2016 Microsoft Corporation. All rights reserved. 20 February 2016 PlayReady® SL3000 Playbook Microsoft Corporation © 2016 Microsoft Corporation. All rights reserved. 20 February 2016 PlayReady SL300",
+      "map_check": "PDF — PR_SL3000_Playbook.pdf"
+    },
+    {
+      "id": "PR140",
+      "category": "server",
+      "question": "According to the PlayReady document “PR Server Agreement Sample v2019”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Server_Agreement_Sample_v2019.pdf.",
+      "must_any": [
+        "server agreement",
+        "this agreement",
+        "effective date",
+        "washington state"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Server_Agreement_Sample_v2019.pdf",
+      "source_file": "PR_Server_Agreement_Sample_v2019.pdf",
+      "kb_quote_hint": " Page 1 of 11 Microsoft Confidential Microsoft PlayReady Server Agreement v. August 1, 2019 MICROSOFT PLAYREADY SERVER AGREEMENT This Microsoft PlayReady Server Agreement (the “Agreement”) is between ",
+      "map_check": "PDF — PR_Server_Agreement_Sample_v2019.pdf"
+    },
+    {
+      "id": "PR141",
+      "category": "server",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Server_Agreement_Sample_v2019.pdf",
+      "source_file": "PR_Server_Agreement_Sample_v2019.pdf",
+      "kb_quote_hint": " Page 1 of 11 Microsoft Confidential Microsoft PlayReady Server Agreement v. August 1, 2019 MICROSOFT PLAYREADY SERVER AGREEMENT This Microsoft PlayReady Server Agreement (the “Agreement”) is between ",
+      "map_check": "PDF — PR_Server_Agreement_Sample_v2019.pdf"
+    },
+    {
+      "id": "PR142",
+      "category": "server",
+      "question": "What licensing or agreement terms are described in “PR Server Agreement Sample v2019”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Server_Agreement_Sample_v2019.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Server_Agreement_Sample_v2019.pdf",
+      "source_file": "PR_Server_Agreement_Sample_v2019.pdf",
+      "kb_quote_hint": " Page 1 of 11 Microsoft Confidential Microsoft PlayReady Server Agreement v. August 1, 2019 MICROSOFT PLAYREADY SERVER AGREEMENT This Microsoft PlayReady Server Agreement (the “Agreement”) is between ",
+      "map_check": "PDF — PR_Server_Agreement_Sample_v2019.pdf"
+    },
+    {
+      "id": "PR143",
+      "category": "server",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_Server_Agreement_Sample_v2019.pdf",
+      "source_file": "PR_Server_Agreement_Sample_v2019.pdf",
+      "kb_quote_hint": " Page 1 of 11 Microsoft Confidential Microsoft PlayReady Server Agreement v. August 1, 2019 MICROSOFT PLAYREADY SERVER AGREEMENT This Microsoft PlayReady Server Agreement (the “Agreement”) is between ",
+      "map_check": "PDF — PR_Server_Agreement_Sample_v2019.pdf"
+    },
+    {
+      "id": "PR144",
+      "category": "server",
+      "question": "According to the PlayReady document “PR Server Overview”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_Server_Overview.pdf.",
+      "must_any": [
+        "azure media services",
+        "server agreement",
+        "documentation pack",
+        "server software development kit"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": "PlayReady server Developing server applications To develop a PlayReady server application on your own servers (virtual or on premises). You will need to take a direct license agreement (if you don’t w",
+      "map_check": "PDF — PR_Server_Overview.pdf"
+    },
+    {
+      "id": "PR145",
+      "category": "server",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": "PlayReady server Developing server applications To develop a PlayReady server application on your own servers (virtual or on premises). You will need to take a direct license agreement (if you don’t w",
+      "map_check": "PDF — PR_Server_Overview.pdf"
+    },
+    {
+      "id": "PR146",
+      "category": "server",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": "PlayReady server Developing server applications To develop a PlayReady server application on your own servers (virtual or on premises). You will need to take a direct license agreement (if you don’t w",
+      "map_check": "PDF — PR_Server_Overview.pdf"
+    },
+    {
+      "id": "PR147",
+      "category": "server",
+      "question": "What licensing or agreement terms are described in “PR Server Overview”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_Server_Overview.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": "PlayReady server Developing server applications To develop a PlayReady server application on your own servers (virtual or on premises). You will need to take a direct license agreement (if you don’t w",
+      "map_check": "PDF — PR_Server_Overview.pdf"
+    },
+    {
+      "id": "PR148",
+      "category": "whats_new",
+      "question": "According to the PlayReady document “PR WhatsNew v4.2”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_WhatsNew_v4.2.pdf.",
+      "must_any": [
+        "sl2000",
+        "secure stop",
+        "general changes",
+        "device porting kit version"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.2.pdf",
+      "source_file": "PR_WhatsNew_v4.2.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.2 Article• 03/05/2021 This page contains an overview of the most significant changes between PlayReady version 4.0 and PlayReady version 4.2. The SecureStop2 feature ",
+      "map_check": "PDF — PR_WhatsNew_v4.2.pdf"
+    },
+    {
+      "id": "PR149",
+      "category": "whats_new",
+      "question": "Does “PR WhatsNew v4.2” discuss PlayReady security levels (SL2000 / SL3000)?",
+      "expect_decision": "answer",
+      "expected_answer": "Yes — security levels are mentioned in this document.",
+      "must_any": [
+        "sl2000"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.2.pdf",
+      "source_file": "PR_WhatsNew_v4.2.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.2 Article• 03/05/2021 This page contains an overview of the most significant changes between PlayReady version 4.0 and PlayReady version 4.2. The SecureStop2 feature ",
+      "map_check": "PDF — PR_WhatsNew_v4.2.pdf"
+    },
+    {
+      "id": "PR150",
+      "category": "whats_new",
+      "question": "What are PlayReady output protection levels (OPL)?",
+      "expect_decision": "answer",
+      "expected_answer": "OPL / output protection wording from compliance docs.",
+      "must_any": [
+        "output protection",
+        "opl",
+        "hdcp"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.2.pdf",
+      "source_file": "PR_WhatsNew_v4.2.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.2 Article• 03/05/2021 This page contains an overview of the most significant changes between PlayReady version 4.0 and PlayReady version 4.2. The SecureStop2 feature ",
+      "map_check": "PDF — PR_WhatsNew_v4.2.pdf"
+    },
+    {
+      "id": "PR151",
+      "category": "whats_new",
+      "question": "What is PlayReady Secure Stop?",
+      "expect_decision": "answer",
+      "expected_answer": "Secure Stop definition from the documentation.",
+      "must_any": [
+        "secure stop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.2.pdf",
+      "source_file": "PR_WhatsNew_v4.2.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.2 Article• 03/05/2021 This page contains an overview of the most significant changes between PlayReady version 4.0 and PlayReady version 4.2. The SecureStop2 feature ",
+      "map_check": "PDF — PR_WhatsNew_v4.2.pdf"
+    },
+    {
+      "id": "PR152",
+      "category": "whats_new",
+      "question": "According to the PlayReady document “PR WhatsNew v4.3”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_WhatsNew_v4.3.pdf.",
+      "must_any": [
+        "product versions",
+        "general changes",
+        "whatsnew"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.3.pdf",
+      "source_file": "PR_WhatsNew_v4.3.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.3 Article• 03/05/2021 This page contains an overview of the most significant changes between PlayReady version 4.2 and PlayReady version 4.3. A PlayReady Server SDK b",
+      "map_check": "PDF — PR_WhatsNew_v4.3.pdf"
+    },
+    {
+      "id": "PR153",
+      "category": "whats_new",
+      "question": "What is new in PlayReady 4.3?",
+      "expect_decision": "answer",
+      "expected_answer": "Release notes from PR_WhatsNew_v4.3.pdf.",
+      "must_any": [
+        "4.3"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.3.pdf",
+      "source_file": "PR_WhatsNew_v4.3.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.3 Article• 03/05/2021 This page contains an overview of the most significant changes between PlayReady version 4.2 and PlayReady version 4.3. A PlayReady Server SDK b",
+      "map_check": "PDF — PR_WhatsNew_v4.3.pdf"
+    },
+    {
+      "id": "PR154",
+      "category": "whats_new",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.3.pdf",
+      "source_file": "PR_WhatsNew_v4.3.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.3 Article• 03/05/2021 This page contains an overview of the most significant changes between PlayReady version 4.2 and PlayReady version 4.3. A PlayReady Server SDK b",
+      "map_check": "PDF — PR_WhatsNew_v4.3.pdf"
+    },
+    {
+      "id": "PR155",
+      "category": "whats_new",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.3.pdf",
+      "source_file": "PR_WhatsNew_v4.3.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.3 Article• 03/05/2021 This page contains an overview of the most significant changes between PlayReady version 4.2 and PlayReady version 4.3. A PlayReady Server SDK b",
+      "map_check": "PDF — PR_WhatsNew_v4.3.pdf"
+    },
+    {
+      "id": "PR156",
+      "category": "whats_new",
+      "question": "According to the PlayReady document “PR WhatsNew v4.4”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_WhatsNew_v4.4.pdf.",
+      "must_any": [
+        "porting kit",
+        "determine what features",
+        "client supports",
+        "optimized content key"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.4.pdf",
+      "source_file": "PR_WhatsNew_v4.4.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.4 Article• 10/12/2022 This page contains an overview of the most significant changes between PlayReady version 4.3 and PlayReady version 4.4. The ability to determine",
+      "map_check": "PDF — PR_WhatsNew_v4.4.pdf"
+    },
+    {
+      "id": "PR157",
+      "category": "whats_new",
+      "question": "What is new in PlayReady 4.4?",
+      "expect_decision": "answer",
+      "expected_answer": "Release notes from PR_WhatsNew_v4.4.pdf.",
+      "must_any": [
+        "4.4"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.4.pdf",
+      "source_file": "PR_WhatsNew_v4.4.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.4 Article• 10/12/2022 This page contains an overview of the most significant changes between PlayReady version 4.3 and PlayReady version 4.4. The ability to determine",
+      "map_check": "PDF — PR_WhatsNew_v4.4.pdf"
+    },
+    {
+      "id": "PR158",
+      "category": "whats_new",
+      "question": "What licensing or agreement terms are described in “PR WhatsNew v4.4”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_WhatsNew_v4.4.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.4.pdf",
+      "source_file": "PR_WhatsNew_v4.4.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.4 Article• 10/12/2022 This page contains an overview of the most significant changes between PlayReady version 4.3 and PlayReady version 4.4. The ability to determine",
+      "map_check": "PDF — PR_WhatsNew_v4.4.pdf"
+    },
+    {
+      "id": "PR159",
+      "category": "whats_new",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.4.pdf",
+      "source_file": "PR_WhatsNew_v4.4.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.4 Article• 10/12/2022 This page contains an overview of the most significant changes between PlayReady version 4.3 and PlayReady version 4.4. The ability to determine",
+      "map_check": "PDF — PR_WhatsNew_v4.4.pdf"
+    },
+    {
+      "id": "PR160",
+      "category": "whats_new",
+      "question": "According to the PlayReady document “PR WhatsNew v4.5”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_WhatsNew_v4.5.pdf.",
+      "must_any": [
+        "sl3000",
+        "server deployment certificate",
+        "secure time",
+        "trusted clocks"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.5.pdf",
+      "source_file": "PR_WhatsNew_v4.5.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.5 Article•11/02/2021 This page contains an overview of the most significant changes between PlayReady version 4.4 and PlayReady version 4.5. In previous versions of P",
+      "map_check": "PDF — PR_WhatsNew_v4.5.pdf"
+    },
+    {
+      "id": "PR161",
+      "category": "whats_new",
+      "question": "Does “PR WhatsNew v4.5” discuss PlayReady security levels (SL2000 / SL3000)?",
+      "expect_decision": "answer",
+      "expected_answer": "Yes — security levels are mentioned in this document.",
+      "must_any": [
+        "sl3000"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.5.pdf",
+      "source_file": "PR_WhatsNew_v4.5.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.5 Article•11/02/2021 This page contains an overview of the most significant changes between PlayReady version 4.4 and PlayReady version 4.5. In previous versions of P",
+      "map_check": "PDF — PR_WhatsNew_v4.5.pdf"
+    },
+    {
+      "id": "PR162",
+      "category": "whats_new",
+      "question": "What is new in PlayReady 4.5?",
+      "expect_decision": "answer",
+      "expected_answer": "Release notes from PR_WhatsNew_v4.5.pdf.",
+      "must_any": [
+        "4.5"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.5.pdf",
+      "source_file": "PR_WhatsNew_v4.5.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.5 Article•11/02/2021 This page contains an overview of the most significant changes between PlayReady version 4.4 and PlayReady version 4.5. In previous versions of P",
+      "map_check": "PDF — PR_WhatsNew_v4.5.pdf"
+    },
+    {
+      "id": "PR163",
+      "category": "whats_new",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.5.pdf",
+      "source_file": "PR_WhatsNew_v4.5.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.5 Article•11/02/2021 This page contains an overview of the most significant changes between PlayReady version 4.4 and PlayReady version 4.5. In previous versions of P",
+      "map_check": "PDF — PR_WhatsNew_v4.5.pdf"
+    },
+    {
+      "id": "PR164",
+      "category": "whats_new",
+      "question": "According to the PlayReady document “PR WhatsNew v4.6”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in PR_WhatsNew_v4.6.pdf.",
+      "must_any": [
+        "key exchange",
+        "core server",
+        "server certificate",
+        "general changes"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.6.pdf",
+      "source_file": "PR_WhatsNew_v4.6.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.6 Article• 12/15/2022 This page contains an overview of the most significant changes between PlayReady version 4.5 and PlayReady version 4.6. Starting with PlayReady ",
+      "map_check": "PDF — PR_WhatsNew_v4.6.pdf"
+    },
+    {
+      "id": "PR165",
+      "category": "whats_new",
+      "question": "What is new in PlayReady 4.6?",
+      "expect_decision": "answer",
+      "expected_answer": "Release notes from PR_WhatsNew_v4.6.pdf.",
+      "must_any": [
+        "4.6"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.6.pdf",
+      "source_file": "PR_WhatsNew_v4.6.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.6 Article• 12/15/2022 This page contains an overview of the most significant changes between PlayReady version 4.5 and PlayReady version 4.6. Starting with PlayReady ",
+      "map_check": "PDF — PR_WhatsNew_v4.6.pdf"
+    },
+    {
+      "id": "PR166",
+      "category": "whats_new",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.6.pdf",
+      "source_file": "PR_WhatsNew_v4.6.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.6 Article• 12/15/2022 This page contains an overview of the most significant changes between PlayReady version 4.5 and PlayReady version 4.6. Starting with PlayReady ",
+      "map_check": "PDF — PR_WhatsNew_v4.6.pdf"
+    },
+    {
+      "id": "PR167",
+      "category": "whats_new",
+      "question": "What licensing or agreement terms are described in “PR WhatsNew v4.6”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from PR_WhatsNew_v4.6.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__PR_WhatsNew_v4.6.pdf",
+      "source_file": "PR_WhatsNew_v4.6.pdf",
+      "kb_quote_hint": "What's New in PlayReady Version 4.6 Article• 12/15/2022 This page contains an overview of the most significant changes between PlayReady version 4.5 and PlayReady version 4.6. Starting with PlayReady ",
+      "map_check": "PDF — PR_WhatsNew_v4.6.pdf"
+    },
+    {
+      "id": "PR168",
+      "category": "robustness",
+      "question": "According to the PlayReady document “Robustness Rules For PlayReady Products”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in Robustness_Rules_For_PlayReady_Products.pdf.",
+      "must_any": [
+        "robustness rules",
+        "products",
+        "defined terms",
+        "compliance rules"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__Robustness_Rules_For_PlayReady_Products.pdf",
+      "source_file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "kb_quote_hint": " Robustness Rules for PlayReady Products Microsoft Corporation 1st November 2021 Robustness Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 1 1 November 2021 Contents 1",
+      "map_check": "PDF — Robustness_Rules_For_PlayReady_Products.pdf"
+    },
+    {
+      "id": "PR169",
+      "category": "robustness",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__Robustness_Rules_For_PlayReady_Products.pdf",
+      "source_file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "kb_quote_hint": " Robustness Rules for PlayReady Products Microsoft Corporation 1st November 2021 Robustness Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 1 1 November 2021 Contents 1",
+      "map_check": "PDF — Robustness_Rules_For_PlayReady_Products.pdf"
+    },
+    {
+      "id": "PR170",
+      "category": "robustness",
+      "question": "What are the EV certificate instructions for PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Certificate enrollment / EV instructions from the PDF.",
+      "must_any": [
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__Robustness_Rules_For_PlayReady_Products.pdf",
+      "source_file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "kb_quote_hint": " Robustness Rules for PlayReady Products Microsoft Corporation 1st November 2021 Robustness Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 1 1 November 2021 Contents 1",
+      "map_check": "PDF — Robustness_Rules_For_PlayReady_Products.pdf"
+    },
+    {
+      "id": "PR171",
+      "category": "robustness",
+      "question": "What licensing or agreement terms are described in “Robustness Rules For PlayReady Products”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from Robustness_Rules_For_PlayReady_Products.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Prod Normalised PDFs__Robustness_Rules_For_PlayReady_Products.pdf",
+      "source_file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "kb_quote_hint": " Robustness Rules for PlayReady Products Microsoft Corporation 1st November 2021 Robustness Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 1 1 November 2021 Contents 1",
+      "map_check": "PDF — Robustness_Rules_For_PlayReady_Products.pdf"
+    },
+    {
+      "id": "PR172",
+      "category": "licensing",
+      "question": "According to the PlayReady document “Sample Agreements - Microsoft PlayReady”, what topics does it cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Topics grounded in Sample Agreements - Microsoft PlayReady.pdf.",
+      "must_any": [
+        "server agreement under",
+        "server applications",
+        "master agreement known",
+        "intermediate product license under"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Sample Agreements - Microsoft PlayReady.pdf",
+      "source_file": "Sample Agreements - Microsoft PlayReady.pdf",
+      "kb_quote_hint": "Sample Agreements Microsoft PlayReady Server Agreement Under this license, Microsoft offers a PlayReady Server SDK and the necessary intellectual property rights to develop Server Applications and dep",
+      "map_check": "PDF — Sample Agreements - Microsoft PlayReady.pdf"
+    },
+    {
+      "id": "PR173",
+      "category": "licensing",
+      "question": "What are the robustness rules for PlayReady products?",
+      "expect_decision": "answer",
+      "expected_answer": "Robustness rules from the robustness / compliance PDF.",
+      "must_any": [
+        "robust"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Sample Agreements - Microsoft PlayReady.pdf",
+      "source_file": "Sample Agreements - Microsoft PlayReady.pdf",
+      "kb_quote_hint": "Sample Agreements Microsoft PlayReady Server Agreement Under this license, Microsoft offers a PlayReady Server SDK and the necessary intellectual property rights to develop Server Applications and dep",
+      "map_check": "PDF — Sample Agreements - Microsoft PlayReady.pdf"
+    },
+    {
+      "id": "PR174",
+      "category": "licensing",
+      "question": "What licensing or agreement terms are described in “Sample Agreements - Microsoft PlayReady”?",
+      "expect_decision": "answer",
+      "expected_answer": "Licensing/agreement points from Sample Agreements - Microsoft PlayReady.pdf.",
+      "must_any": [
+        "license",
+        "agreement",
+        "playready"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Sample Agreements - Microsoft PlayReady.pdf",
+      "source_file": "Sample Agreements - Microsoft PlayReady.pdf",
+      "kb_quote_hint": "Sample Agreements Microsoft PlayReady Server Agreement Under this license, Microsoft offers a PlayReady Server SDK and the necessary intellectual property rights to develop Server Applications and dep",
+      "map_check": "PDF — Sample Agreements - Microsoft PlayReady.pdf"
+    },
+    {
+      "id": "PR175",
+      "category": "licensing",
+      "question": "What does the PlayReady Server documentation cover?",
+      "expect_decision": "answer",
+      "expected_answer": "Server overview / agreement points from the server PDFs.",
+      "must_any": [
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Sample Agreements - Microsoft PlayReady.pdf",
+      "source_file": "Sample Agreements - Microsoft PlayReady.pdf",
+      "kb_quote_hint": "Sample Agreements Microsoft PlayReady Server Agreement Under this license, Microsoft offers a PlayReady Server SDK and the necessary intellectual property rights to develop Server Applications and dep",
+      "map_check": "PDF — Sample Agreements - Microsoft PlayReady.pdf"
+    },
+    {
+      "id": "PR176",
+      "category": "refuse",
+      "question": "What will Microsoft PlayReady stock price be next quarter?",
+      "expect_decision": "refuse",
+      "expected_answer": "Refuse — finance / not in product PDFs.",
+      "must_any": [],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Refuse — OOD"
+    },
+    {
+      "id": "PR177",
+      "category": "refuse",
+      "question": "What is the weather in Redmond tomorrow?",
+      "expect_decision": "refuse",
+      "expected_answer": "Refuse — out of knowledge base.",
+      "must_any": [],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Refuse — OOD"
+    },
+    {
+      "id": "PR178",
+      "category": "refuse",
+      "question": "What was PlayReady's exact revenue on 3 March 2011?",
+      "expect_decision": "refuse",
+      "expected_answer": "Refuse — invented financial metric.",
+      "must_any": [],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Refuse — OOD"
+    }
+  ]
+}

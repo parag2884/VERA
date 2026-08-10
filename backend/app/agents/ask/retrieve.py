@@ -72,7 +72,7 @@ async def gpt_search_terms(ctx: AgentContext, question: str) -> list[str]:
                         "Expand short acronyms from the question into full phrases when "
                         "obvious from the question text alone. "
                         "For narrative/book questions include character names, place names, "
-                        "and the work title (and obvious spelling variants like Tik-Tok/Tiktok). "
+                        "and the work title (plus hyphen/apostrophe spelling variants). "
                         "Do NOT include vague singleton words like about/team/page/"
                         "leadership/executive/home/menu. "
                         "Return JSON {terms: string[]}."

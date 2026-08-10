@@ -455,7 +455,7 @@ _WORK_TITLE_IN_Q = re.compile(
 
 
 def name_match_variants(name: str) -> list[str]:
-    """Expand hyphen/apostrophe proper names for matching (Tik-Tok↔Tiktok, Cap'n↔Capn)."""
+    """Expand hyphen/apostrophe proper names for matching (e.g. A-B ↔ AB, Cap'n ↔ Captain)."""
     raw = (name or "").strip()
     if len(raw) < 2:
         return []
@@ -476,7 +476,7 @@ def extract_proper_nouns(question: str) -> list[str]:
     """Capitalized person/place-like tokens from the question (not a brand lexicon)."""
     q = question or ""
     found: list[str] = []
-    # Hyphenated / apostrophe names: Tik-Tok, Cap'n Bill, Button-Bright
+    # Hyphenated / apostrophe / multi-word capitalized names from the question
     for m in re.finditer(
         r"\b([A-Z][A-Za-z]*['’][A-Za-z]+(?:\s+[A-Z][A-Za-z]+)?|"
         r"[A-Z][A-Za-z]+(?:-[A-Z][A-Za-z]+)+|"
@@ -500,7 +500,7 @@ def extract_proper_nouns(question: str) -> list[str]:
 
 
 def extract_work_title_hints(question: str) -> list[str]:
-    """Book/doc titles referenced in the question ('In The Emerald City of Oz…')."""
+    """Book/doc titles referenced in the question (e.g. 'In The …', 'According to …')."""
     q = question or ""
     hints: list[str] = []
     for m in _WORK_TITLE_IN_Q.finditer(q):
@@ -521,10 +521,7 @@ def narrative_search_terms(question: str) -> list[str]:
         out.append(hint)
         # Also add distinctive tokens from the work title
         for tok in re.findall(r"[A-Za-z][A-Za-z'’\-]{3,}", hint):
-            if tok.lower() not in _NARRATIVE_STOP and tok.lower() not in {
-                "oz",
-                "land",
-            }:
+            if tok.lower() not in _NARRATIVE_STOP:
                 out.append(tok)
     return normalize_terms(out)
 

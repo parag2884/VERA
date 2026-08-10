@@ -38,6 +38,8 @@ from app.agents.ask.relevance import (
     graph_quote_base,
     is_org_roster_question,
     is_officer_attribute_question,
+    narrative_entity_bonus,
+    narrative_search_terms,
     officer_role_evidence_bonus,
     person_title_names,
     question_term_overlap,
@@ -69,6 +71,8 @@ async def gpt_search_terms(ctx: AgentContext, question: str) -> list[str]:
                         "Include BOTH sides of a comparison when present. "
                         "Expand short acronyms from the question into full phrases when "
                         "obvious from the question text alone. "
+                        "For narrative/book questions include character names, place names, "
+                        "and the work title (and obvious spelling variants like Tik-Tok/Tiktok). "
                         "Do NOT include vague singleton words like about/team/page/"
                         "leadership/executive/home/menu. "
                         "Return JSON {terms: string[]}."
@@ -184,6 +188,10 @@ def required_terms(question: str, extra: list[str] | None = None) -> list[str]:
             for phrase in phrases:
                 if phrase not in {x.lower() for x in out}:
                     out.append(phrase)
+    # Narrative entities / work titles (characters, Cap'n, Tik-Tok, book names)
+    for t in narrative_search_terms(question or ""):
+        if t.lower() not in {x.lower() for x in out}:
+            out.append(t)
     # Keep multi-word phrases the user actually said (no invented brand lexicon)
     for phrase in (
         "transformation pathways",
@@ -293,10 +301,16 @@ def _score_chunk(
     hits = _term_hits(text, title, terms)
     sig = signals or {}
     # Contract-shaped passages may enter with weak term hits (list_people officers)
+    narr_bonus_preview = (
+        narrative_entity_bonus(question, title, text) if question else 0.0
+    )
     if not hits and not (
-        contract
-        and contract.shape == "list_people"
-        and (sig.get("has_person_role") or person_title_names(f"{title}\n{text}"))
+        (
+            contract
+            and contract.shape == "list_people"
+            and (sig.get("has_person_role") or person_title_names(f"{title}\n{text}"))
+        )
+        or narr_bonus_preview >= 6.0
     ):
         return base * 0.2
     score = base
@@ -335,6 +349,8 @@ def _score_chunk(
     score += recency_bonus(title, text)
     score += roster_evidence_bonus(question, title, text)
     score += officer_role_evidence_bonus(question, title, text)
+    if question:
+        score += narrative_entity_bonus(question, title, text)
 
     # Evidence-contract fit (primary smart ranking signal)
     if contract is not None:
@@ -492,6 +508,7 @@ async def retrieve_evidence_pack(
                 r"\b(capabilities|services|offerings?|solutions)\b", ql
             ) and service_support_hit(title, text):
                 shape_hit = True
+        narr_hit = bool(question) and narrative_entity_bonus(question, title, text) >= 6.0
         if not _term_hits(text, title, terms) and terms:
             # Contract: still consider passages that satisfy shape without soft terms
             if not (
@@ -503,9 +520,15 @@ async def retrieve_evidence_pack(
                     )
                 )
                 or shape_hit
+                or narr_hit
             ):
                 continue
-        add_chunk(ch, text, title, base=0.85 if shape_hit else 0.55)
+        add_chunk(
+            ch,
+            text,
+            title,
+            base=0.9 if narr_hit else (0.85 if shape_hit else 0.55),
+        )
 
     # 1b) Roster / list_people scan — surface officer-named passages
     if roster_q:

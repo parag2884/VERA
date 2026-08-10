@@ -337,6 +337,24 @@ export default function KnowledgeMap() {
       });
   }, [selected, baseData]);
 
+  /** Frame the graph in the canvas center and fill most of the viewport. */
+  const fitGraphToView = (pad = 40, bump = 1.1) => {
+    const fg = fgRef.current;
+    if (!fg) return;
+    try {
+      // Pull camera to simulation origin first (forces also pin layout here)
+      fg.centerAt?.(0, 0, 0);
+      fg.zoomToFit?.(480, pad);
+      const z = fg.zoom?.() ?? 1;
+      // Prefer filling the screen; clamp so huge graphs stay readable
+      const target = Math.min(Math.max(z * bump, 0.35), 2.4);
+      fg.zoom?.(target, 320);
+      fg.centerAt?.(0, 0, 320);
+    } catch {
+      /* ignore */
+    }
+  };
+
   useEffect(() => {
     fittedRef.current = false;
     const fg = fgRef.current;
@@ -350,35 +368,30 @@ export default function KnowledgeMap() {
     fg.d3Force?.("charge")?.strength?.(charge);
     const linkForce = fg.d3Force?.("link");
     linkForce?.distance?.(linkDist);
-    linkForce?.strength?.(0.28);
-    fg.d3Force?.("center")?.strength?.(0.02);
-    // Very light centering — let the graph occupy the viewport, not a center blob
-    fg.d3Force?.("x")?.strength?.(0.012);
-    fg.d3Force?.("y")?.strength?.(0.012);
+    linkForce?.strength?.(0.32);
+    // Keep the mass centered in simulation space (avoids “stuck at bottom”)
+    fg.d3Force?.("center")?.strength?.(0.14);
+    fg.d3Force?.("x")?.strength?.(0.055);
+    fg.d3Force?.("y")?.strength?.(0.055);
     fg.d3Force?.(
       "collide",
       forceCollide((node: GraphNode) => nodeRadius(node) + 12).iterations(2)
     );
     fg.d3ReheatSimulation?.();
 
-    const fit = (pad: number, bump = 1) => {
+    // Soft preview fit only — final fit happens on engine settle (see onEngineStop)
+    const tPreview = window.setTimeout(() => fitGraphToView(48, 1.05), 900);
+    // Gentle ambient motion so the map never feels frozen after cooldown
+    const tPulse = window.setInterval(() => {
       try {
-        fg.zoomToFit?.(520, pad);
-        if (bump > 1) {
-          const z = fg.zoom?.() ?? 1;
-          fg.zoom?.(z * bump, 280);
-        }
-        fittedRef.current = true;
+        fgRef.current?.d3ReheatSimulation?.();
       } catch {
         /* ignore */
       }
-    };
-    // Tight padding + slight zoom-in so the weave fills the canvas
-    const t1 = window.setTimeout(() => fit(36, 1.08), 700);
-    const t2 = window.setTimeout(() => fit(28, 1.12), 2000);
+    }, 4500);
     return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
+      window.clearTimeout(tPreview);
+      window.clearInterval(tPulse);
     };
   }, [data, size.w, size.h, lens]);
 
@@ -487,11 +500,9 @@ export default function KnowledgeMap() {
               type="button"
               className="map-fit-btn"
               onClick={() => {
+                fitGraphToView(36, 1.14);
                 try {
-                  const fg = fgRef.current;
-                  fg?.zoomToFit?.(500, 24);
-                  const z = fg?.zoom?.() ?? 1;
-                  fg?.zoom?.(z * 1.12, 280);
+                  fgRef.current?.d3ReheatSimulation?.();
                 } catch {
                   /* ignore */
                 }
@@ -565,23 +576,26 @@ export default function KnowledgeMap() {
                 fgRef.current?.d3ReheatSimulation?.();
               }}
               onEngineStop={() => {
-                if (fittedRef.current) return;
-                try {
-                  const fg = fgRef.current;
-                  fg?.zoomToFit?.(400, 36);
-                  const z = fg?.zoom?.() ?? 1;
-                  // Keep a readable floor so hub labels paint after fit
-                  fg?.zoom?.(Math.max(z * 1.25, 0.42), 220);
+                // Fit once the layout has actually settled — not mid-drift
+                if (!fittedRef.current) {
+                  fitGraphToView(40, 1.12);
                   fittedRef.current = true;
-                } catch {
-                  /* ignore */
                 }
+                // Keep a low simmer of motion (pulse interval also reheats)
+                window.setTimeout(() => {
+                  try {
+                    fgRef.current?.d3ReheatSimulation?.();
+                  } catch {
+                    /* ignore */
+                  }
+                }, 1600);
               }}
-              cooldownTicks={220}
-              cooldownTime={7000}
-              warmupTicks={60}
-              d3AlphaDecay={0.022}
-              d3VelocityDecay={0.35}
+              cooldownTicks={300}
+              cooldownTime={9000}
+              warmupTicks={80}
+              d3AlphaDecay={0.018}
+              d3AlphaMin={0.001}
+              d3VelocityDecay={0.32}
               enableNodeDrag
               nodeCanvasObject={(node: GraphNode, ctx, globalScale) => {
                 const rawName = node.name || "";

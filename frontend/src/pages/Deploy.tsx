@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api, formatApiError, type StudioDashboard } from "../api/client";
+import EmbedCodePanel from "../components/EmbedCodePanel";
 import { useWorkspace } from "../state";
 
 export default function Deploy() {
@@ -175,20 +176,31 @@ export default function Deploy() {
                   <span className={`ready-pill ${a.readiness}`}>{a.readiness}</span>
                 </div>
                 <p>{a.monetize_hint}</p>
-                {a.published && a.endpoints.widget_snippet ? (
+                {a.published && a.endpoints.widget_snippet && a.embed_key && a.endpoints.embed_url ? (
                   <>
-                    <label className="field">
-                      <span>Website snippet</span>
-                      <textarea readOnly rows={2} value={a.endpoints.widget_snippet} />
-                    </label>
-                    <div className="cta-row">
-                      <button
-                        className="btn btn-primary"
-                        type="button"
-                        onClick={() => void copy(`${a.id}-snip`, a.endpoints.widget_snippet || "")}
+                    <EmbedCodePanel
+                      agentName={a.name}
+                      embedKey={a.embed_key}
+                      embedUrl={a.endpoints.embed_url}
+                      widgetSnippet={a.endpoints.widget_snippet}
+                      widgetOrigin={dash?.widget_origin}
+                      apiBase={
+                        dash?.api_base?.startsWith("http")
+                          ? dash.api_base
+                          : `${dash?.widget_origin || window.location.origin}${
+                              dash?.api_base?.startsWith("/") ? dash.api_base : "/api"
+                            }`
+                      }
+                    />
+                    <div className="cta-row" style={{ marginTop: "0.75rem" }}>
+                      <a
+                        className="btn btn-accent"
+                        href={a.endpoints.embed_url || "#"}
+                        target="_blank"
+                        rel="noreferrer"
                       >
-                        {copied === `${a.id}-snip` ? "Copied" : "Copy snippet"}
-                      </button>
+                        Open live chat
+                      </a>
                       <button
                         className="btn btn-ghost"
                         type="button"
@@ -196,9 +208,6 @@ export default function Deploy() {
                       >
                         {copied === `${a.id}-url` ? "Copied" : "Copy embed URL"}
                       </button>
-                      <a className="btn btn-accent" href={a.endpoints.embed_url || "#"} target="_blank" rel="noreferrer">
-                        Open live chat
-                      </a>
                     </div>
                   </>
                 ) : (

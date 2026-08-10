@@ -407,3 +407,180 @@ def officer_role_evidence_bonus(question: str, title: str, text: str) -> float:
     if any(k in tl for k in ("insights", "blog", "news", "letter", "social-change", "report")):
         bonus -= 8.0
     return bonus
+
+
+# --- Narrative / fiction-friendly entity matching (domain-agnostic) ---
+
+_NARRATIVE_STOP = frozenset(
+    {
+        "the",
+        "and",
+        "who",
+        "what",
+        "when",
+        "where",
+        "which",
+        "with",
+        "from",
+        "into",
+        "this",
+        "that",
+        "according",
+        "about",
+        "after",
+        "before",
+        "became",
+        "become",
+        "happened",
+        "central",
+        "friend",
+        "helps",
+        "land",
+        "city",
+        "book",
+        "books",
+        "novel",
+        "story",
+        "series",
+        "document",
+        "knowledge",
+        "base",
+    }
+)
+
+_WORK_TITLE_IN_Q = re.compile(
+    r"\b(?:in|according\s+to|from|per)\s+"
+    r"(?:the\s+)?([A-Z][\w'’\-]+(?:\s+(?:of|the|and|in|a|an|to|&)?\s*[A-Z][\w'’\-]+){0,8})",
+)
+
+
+def name_match_variants(name: str) -> list[str]:
+    """Expand hyphen/apostrophe proper names for matching (Tik-Tok↔Tiktok, Cap'n↔Capn)."""
+    raw = (name or "").strip()
+    if len(raw) < 2:
+        return []
+    out: list[str] = [raw]
+    collapsed = re.sub(r"['’\-]+", "", raw)
+    if collapsed and collapsed.lower() != raw.lower():
+        out.append(collapsed)
+    spaced = re.sub(r"[\-]+", " ", raw)
+    if spaced and spaced.lower() not in {x.lower() for x in out}:
+        out.append(spaced)
+    # Cap'n → Captain (common narrative shortening)
+    if re.search(r"\bcap['’]?n\b", raw, re.I):
+        out.append(re.sub(r"\bcap['’]?n\b", "Captain", raw, flags=re.I))
+    return normalize_terms(out)
+
+
+def extract_proper_nouns(question: str) -> list[str]:
+    """Capitalized person/place-like tokens from the question (not a brand lexicon)."""
+    q = question or ""
+    found: list[str] = []
+    # Hyphenated / apostrophe names: Tik-Tok, Cap'n Bill, Button-Bright
+    for m in re.finditer(
+        r"\b([A-Z][A-Za-z]*['’][A-Za-z]+(?:\s+[A-Z][A-Za-z]+)?|"
+        r"[A-Z][A-Za-z]+(?:-[A-Z][A-Za-z]+)+|"
+        r"[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\b",
+        q,
+    ):
+        name = m.group(1).strip()
+        parts = [p for p in re.split(r"[\s\-]+", name) if p]
+        if all(p.lower() in _NARRATIVE_STOP for p in parts):
+            continue
+        if name.lower() in _NARRATIVE_STOP:
+            continue
+        found.append(name)
+    # Single unusual capitals mid-sentence after "who is/are"
+    for m in re.finditer(
+        r"\b(?:who\s+(?:is|are|was|were)|named|called)\s+([A-Z][\w'’\-]{2,40})\b",
+        q,
+    ):
+        found.append(m.group(1))
+    return normalize_terms(found)
+
+
+def extract_work_title_hints(question: str) -> list[str]:
+    """Book/doc titles referenced in the question ('In The Emerald City of Oz…')."""
+    q = question or ""
+    hints: list[str] = []
+    for m in _WORK_TITLE_IN_Q.finditer(q):
+        title = re.sub(r"\s+", " ", m.group(1)).strip(" ?.,;:")
+        if len(title) >= 6:
+            hints.append(title)
+    for m in re.finditer(r"[“\"]([^”\"]{6,80})[”\"]", q):
+        hints.append(m.group(1).strip())
+    return normalize_terms(hints)
+
+
+def narrative_search_terms(question: str) -> list[str]:
+    """Extra lexical terms for narrative/character questions (variants included)."""
+    out: list[str] = []
+    for name in extract_proper_nouns(question):
+        out.extend(name_match_variants(name))
+    for hint in extract_work_title_hints(question):
+        out.append(hint)
+        # Also add distinctive tokens from the work title
+        for tok in re.findall(r"[A-Za-z][A-Za-z'’\-]{3,}", hint):
+            if tok.lower() not in _NARRATIVE_STOP and tok.lower() not in {
+                "oz",
+                "land",
+            }:
+                out.append(tok)
+    return normalize_terms(out)
+
+
+def narrative_entity_bonus(question: str, title: str, text: str) -> float:
+    """Score delta when question entities / work titles appear in the passage."""
+    q = question or ""
+    if not q.strip():
+        return 0.0
+    # Skip when this is clearly an org-officer ask — roster/officer bonuses own that
+    if is_officer_attribute_question(q) or is_org_roster_question(q):
+        return 0.0
+    blob = f"{title or ''}\n{text or ''}"
+    bl = blob.lower()
+    tl = (title or "").lower()
+    bonus = 0.0
+
+    nouns = extract_proper_nouns(q)
+    hit_names = 0
+    for name in nouns:
+        variants = name_match_variants(name)
+        if any(v.lower() in bl for v in variants):
+            hit_names += 1
+            bonus += 6.0
+            # Stronger when the entity is near definitional phrasing
+            for v in variants:
+                if re.search(
+                    rf"\b{re.escape(v)}\b.{{0,60}}\b("
+                    r"is|was|are|were|named|called|known\s+as|became|who)\b|"
+                    rf"\b(is|was|are|were|named|called)\b.{{0,40}}\b{re.escape(v)}\b",
+                    blob,
+                    re.I,
+                ):
+                    bonus += 4.0
+                    break
+    if hit_names >= 2:
+        bonus += 5.0
+
+    for hint in extract_work_title_hints(q):
+        ht = hint.lower()
+        # Document title overlap with referenced work
+        hint_toks = [
+            t
+            for t in re.findall(r"[a-z0-9]{4,}", ht)
+            if t not in _NARRATIVE_STOP
+        ]
+        if hint_toks:
+            overlap = sum(1 for t in hint_toks if t in tl)
+            if overlap >= max(2, len(hint_toks) // 2):
+                bonus += 10.0
+            elif overlap >= 1 and any(t in bl[:800] for t in hint_toks):
+                bonus += 4.0
+        if ht in bl or ht in tl:
+            bonus += 6.0
+
+    # Who/what-is questions with at least one entity hit are high-value
+    if hit_names and re.search(r"\b(who|what)\s+(is|are|was|were|happened)\b", q, re.I):
+        bonus += 3.0
+    return bonus

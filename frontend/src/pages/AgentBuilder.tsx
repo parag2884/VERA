@@ -7,18 +7,20 @@ import {
 } from "../agentSettings";
 import ChatConsole from "../components/ChatConsole";
 import EditableText from "../components/EditableText";
+import EmbedCodePanel from "../components/EmbedCodePanel";
 import KnowledgeConnectPanel from "../components/KnowledgeConnectPanel";
 import { formatApiError } from "../api/client";
 import { defaultSamplesForAgent, parseSampleLines } from "../sampleQuestions";
 import { useWorkspace } from "../state";
 
-type BuilderTab = "setup" | "knowledge" | "voice" | "publish";
+type BuilderTab = "setup" | "knowledge" | "voice" | "publish" | "embed";
 
 const TABS: { id: BuilderTab; label: string; hint: string }[] = [
   { id: "setup", label: "Setup", hint: "Name & greeting" },
   { id: "knowledge", label: "Knowledge", hint: "Files, URL, SharePoint" },
   { id: "voice", label: "Voice", hint: "Tone & trust display" },
-  { id: "publish", label: "Publish", hint: "Embed & go live" },
+  { id: "publish", label: "Publish", hint: "Go live" },
+  { id: "embed", label: "Embed", hint: "HTML · Python · iframe" },
 ];
 
 export default function AgentBuilder() {
@@ -45,8 +47,6 @@ export default function AgentBuilder() {
   const [descDraft, setDescDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-
   useEffect(() => {
     setDescDraft(currentAgent?.description || "");
   }, [currentAgent?.id, currentAgent?.description]);
@@ -74,7 +74,8 @@ export default function AgentBuilder() {
     setMsg(null);
     try {
       await publishAgent();
-      setMsg("Published — copy the embed snippet for your site.");
+      setMsg("Published — open the Embed tab for HTML / Python / iframe code.");
+      setTab("embed");
     } catch (e) {
       setMsg(formatApiError(e));
     } finally {
@@ -92,13 +93,6 @@ export default function AgentBuilder() {
     } finally {
       setBusy(false);
     }
-  }
-
-  async function copySnippet() {
-    if (!publishInfo?.snippet) return;
-    await navigator.clipboard.writeText(publishInfo.snippet);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1600);
   }
 
   const docs = currentAgent?.counts?.documents ?? 0;
@@ -529,13 +523,13 @@ export default function AgentBuilder() {
                         Publish agent
                       </button>
                     )}
-                    {publishInfo && (
+                    {currentAgent.published && (
                       <button
                         className="btn btn-accent"
                         type="button"
-                        onClick={() => void copySnippet()}
+                        onClick={() => setTab("embed")}
                       >
-                        {copied ? "Copied" : "Copy embed snippet"}
+                        Open Embed code
                       </button>
                     )}
                   </div>
@@ -549,17 +543,9 @@ export default function AgentBuilder() {
                           onFocus={(e) => e.target.select()}
                         />
                       </label>
-                      <label className="field">
-                        <span>Website snippet</span>
-                        <textarea
-                          readOnly
-                          rows={3}
-                          value={publishInfo.snippet}
-                          onFocus={(e) => e.target.select()}
-                        />
-                      </label>
                       <p className="muted" style={{ fontSize: "0.75rem" }}>
-                        Embed key: <code>{publishInfo.key}</code>
+                        Embed key: <code>{publishInfo.key}</code> — full HTML / Python samples are on
+                        the <strong>Embed</strong> tab.
                       </p>
                     </div>
                   )}
@@ -570,6 +556,43 @@ export default function AgentBuilder() {
                   )}
                   <div className="builder-pane-foot">
                     <button type="button" className="btn btn-ghost" onClick={() => setTab("voice")}>
+                      Back
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {tab === "embed" && (
+                <div className="builder-pane">
+                  {!currentAgent.published || !publishInfo ? (
+                    <div className="builder-hint">
+                      <p>
+                        Publish this agent first to unlock ready-to-paste <strong>HTML</strong>,{" "}
+                        <strong>iframe</strong>, and <strong>Python</strong> integration code.
+                      </p>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        style={{ marginTop: "0.75rem" }}
+                        onClick={() => setTab("publish")}
+                      >
+                        Go to Publish
+                      </button>
+                    </div>
+                  ) : (
+                    <EmbedCodePanel
+                      agentName={currentAgent.name}
+                      embedKey={publishInfo.key}
+                      embedUrl={publishInfo.url}
+                      widgetSnippet={publishInfo.snippet}
+                    />
+                  )}
+                  <div className="builder-pane-foot">
+                    <button
+                      type="button"
+                      className="btn btn-ghost"
+                      onClick={() => setTab("publish")}
+                    >
                       Back
                     </button>
                   </div>

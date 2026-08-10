@@ -95,24 +95,36 @@ async def run_case(workspace_id: str, case: dict) -> dict:
 
     ok = True
     notes: list[str] = []
+    fail_kind = ""
     if expect == "either":
         if decision not in {"answer", "refuse", "clarify"}:
             ok = False
             notes.append(f"decision={decision}")
+            fail_kind = "bad_decision"
     elif decision != expect:
         ok = False
         notes.append(f"decision={decision} expected={expect}")
+        if expect == "answer" and decision == "refuse":
+            fail_kind = "refuse_wrong"
+        elif expect == "answer" and decision == "clarify":
+            fail_kind = "clarify_wrong"
+        elif expect == "refuse" and decision == "answer":
+            fail_kind = "should_refuse"
+        else:
+            fail_kind = "decision_mismatch"
 
     must_any = case.get("must_any") or []
     if must_any and expect == "answer" and decision == "answer":
         if not any(_norm(p) in ans_n for p in must_any):
             ok = False
             notes.append("missing must_any")
+            fail_kind = fail_kind or "must_any_miss"
 
     for phrase in case.get("forbid_any") or []:
         if _norm(phrase) and _norm(phrase) in ans_n:
             ok = False
             notes.append(f"forbid:{phrase}")
+            fail_kind = fail_kind or "forbid_hit"
             break
 
     cites = bag.get("citations") or bag.get("quote_citations") or []
@@ -128,10 +140,14 @@ async def run_case(workspace_id: str, case: dict) -> dict:
         if not any(_norm(p) in cite_blob for p in citation_any):
             notes.append("citation_soft_miss")
 
+    if ok:
+        fail_kind = ""
+
     return {
         "id": case["id"],
         "pass": ok,
         "decision": decision,
+        "fail_kind": fail_kind,
         "elapsed_s": elapsed,
         "question": case["question"],
         "expected_answer": case.get("expected_answer"),
@@ -207,6 +223,12 @@ async def main() -> int:
 
     passed = sum(1 for r in rows if r["pass"])
     suite_id = golden.get("suite_id") or suite_path.stem
+    fail_taxonomy: dict[str, int] = {}
+    for r in rows:
+        kind = (r.get("fail_kind") or "").strip()
+        if not kind:
+            continue
+        fail_taxonomy[kind] = fail_taxonomy.get(kind, 0) + 1
     summary = {
         "suite_id": suite_id,
         "source_kind": golden.get("source_kind"),
@@ -216,7 +238,9 @@ async def main() -> int:
         "workspace_id": workspace_id,
         "passed": passed,
         "total": len(rows),
+        "pass_rate": round(passed / max(len(rows), 1), 4),
         "fail_ids": [r["id"] for r in rows if not r["pass"]],
+        "fail_taxonomy": fail_taxonomy,
         "results": rows,
     }
     out_candidates = [
@@ -227,7 +251,18 @@ async def main() -> int:
     out.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(
         json.dumps(
-            {k: summary[k] for k in ("passed", "total", "fail_ids", "suite_id", "source_kind")},
+            {
+                k: summary[k]
+                for k in (
+                    "passed",
+                    "total",
+                    "pass_rate",
+                    "fail_taxonomy",
+                    "fail_ids",
+                    "suite_id",
+                    "source_kind",
+                )
+            },
             indent=2,
         )
     )

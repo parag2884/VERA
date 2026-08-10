@@ -32,10 +32,13 @@ from app.agents.ask.page_signals import (
     service_support_hit,
     triad_span_pos,
 )
+from app.knowledge.sources.web.path_policy import filename_term_bonus, path_rank_bonus
 from app.agents.ask.relevance import (
     boilerplate_penalty,
     graph_quote_base,
     is_org_roster_question,
+    is_officer_attribute_question,
+    officer_role_evidence_bonus,
     person_title_names,
     question_term_overlap,
     recency_bonus,
@@ -169,6 +172,18 @@ def required_terms(question: str, extra: list[str] | None = None) -> list[str]:
     for verb in ("renew", "renewal", "install", "configure", "enable", "disable"):
         if verb in q and verb not in {x.lower() for x in out}:
             out.append(verb)
+    # Officer acronyms → full titles (org charts rarely say "CEO", they spell it out)
+    _officer_expand = (
+        (r"\bceo\b", ("chief executive officer", "chief executive")),
+        (r"\bcfo\b", ("chief financial officer", "chief financial")),
+        (r"\bcto\b", ("chief technology officer", "chief technology")),
+        (r"\bcoo\b", ("chief operating officer", "chief operating")),
+    )
+    for pat, phrases in _officer_expand:
+        if re.search(pat, q):
+            for phrase in phrases:
+                if phrase not in {x.lower() for x in out}:
+                    out.append(phrase)
     # Keep multi-word phrases the user actually said (no invented brand lexicon)
     for phrase in (
         "transformation pathways",
@@ -209,6 +224,31 @@ def _window(text: str, terms: list[str], *, radius: int = 220, question: str = "
             if pos >= 0:
                 start = max(0, pos - 80)
                 end = min(len(text), pos + 480)
+                return re.sub(r"\s+", " ", text[start:end].strip())
+    # Single-role who-is: center on the role binding (not a mid-list slice)
+    if is_officer_attribute_question(question):
+        ql_w = (question or "").lower()
+        role_rx = None
+        if re.search(r"\b(ceo|chief\s+executive)\b", ql_w):
+            role_rx = re.compile(
+                r"(serves\s+as\s+chief\s+executive|chief\s+executive\s+officer)",
+                re.I,
+            )
+        elif re.search(r"\b(cfo|chief\s+financial)\b", ql_w):
+            role_rx = re.compile(
+                r"(serves\s+as\s+chief\s+financial|chief\s+financial\s+officer)",
+                re.I,
+            )
+        elif re.search(r"\b(cto|chief\s+technology)\b", ql_w):
+            role_rx = re.compile(
+                r"(serves\s+as\s+chief\s+technology|chief\s+technology\s+officer)",
+                re.I,
+            )
+        if role_rx:
+            m = role_rx.search(text)
+            if m:
+                start = max(0, m.start() - 100)
+                end = min(len(text), m.end() + 160)
                 return re.sub(r"\s+", " ", text[start:end].strip())
     ql = (question or "").lower()
     # Pathway / triad pages: center on any branded Word. Word. Word. strip
@@ -279,6 +319,11 @@ def _score_chunk(
     if title_hits:
         score += 2.5 * title_hits
 
+    # Site-agnostic path + filename/title overlap (PDFs + crawled URL titles)
+    if question:
+        score += path_rank_bonus(question, title)
+        score += filename_term_bonus(question, title, terms)
+
     # Generic quality: demote chrome, prefer dated materials when present
     chrome = float(sig.get("chrome_score") or 0.0)
     prose = float(sig.get("prose_score") or 0.0)
@@ -289,6 +334,7 @@ def _score_chunk(
         score -= 4.0 * boilerplate_penalty(blob)
     score += recency_bonus(title, text)
     score += roster_evidence_bonus(question, title, text)
+    score += officer_role_evidence_bonus(question, title, text)
 
     # Evidence-contract fit (primary smart ranking signal)
     if contract is not None:
@@ -296,11 +342,13 @@ def _score_chunk(
         score += 10.0 * fit
         if sig.get("doc_kind") == "spotlight" and contract.shape == "list_people":
             score -= 6.0
-        if sig.get("doc_kind") in {"press", "letter"} and contract.shape in {
-            "list_people",
-            "attribute",
-        }:
-            score += 3.0
+        # Press/letters help appointment news for rosters; for single-role who-is
+        # they often preserve former officers — demote when we have org-chart text.
+        if sig.get("doc_kind") in {"press", "letter"}:
+            if contract.shape == "list_people":
+                score += 3.0
+            elif contract.shape == "attribute" and is_officer_attribute_question(question):
+                score -= 6.0
 
     # Slight boost when many question terms co-occur (answer-shaped passage)
     if question:
@@ -474,6 +522,50 @@ async def retrieve_evidence_pack(
                 continue
             add_chunk(ch, text, title, base=0.7 + 0.05 * min(len(people) or 1, 6))
 
+    # 1b2) Single-role who-is (CEO/CFO/CTO) — prefer org-chart bindings over bios/letters
+    if is_officer_attribute_question(question):
+        ql_off = question.lower()
+        role_pats: list[re.Pattern[str]] = []
+        if re.search(r"\b(ceo|chief\s+executive)\b", ql_off):
+            role_pats.append(
+                re.compile(
+                    r"(serves\s+as\s+chief\s+executive|chief\s+executive\s+officer)",
+                    re.I,
+                )
+            )
+        if re.search(r"\b(cfo|chief\s+financial)\b", ql_off):
+            role_pats.append(
+                re.compile(
+                    r"(serves\s+as\s+chief\s+financial|chief\s+financial\s+officer)",
+                    re.I,
+                )
+            )
+        if re.search(r"\b(cto|chief\s+technology)\b", ql_off):
+            role_pats.append(
+                re.compile(
+                    r"(serves\s+as\s+chief\s+technology|chief\s+technology\s+officer)",
+                    re.I,
+                )
+            )
+        for ch in chunks:
+            text = ch.get("text") or ""
+            if len(text.strip()) < 20:
+                continue
+            title = docs.get(ch.get("canonical_document_id"), "") or "document"
+            blob = f"{title}\n{text}"
+            if not any(p.search(blob) for p in role_pats):
+                continue
+            # Need a person name near the role binding
+            if not person_title_names(blob) and not re.search(
+                r"\b[A-Z][a-z]+\s+[A-Z][a-z]+\b.{0,80}chief", blob
+            ):
+                continue
+            base = 1.4
+            tl = title.lower()
+            if "leaders" in tl:
+                base += 0.4
+            add_chunk(ch, text, title, base=base)
+
     # 1c) Define pathway / offerings — force triad & service-shaped pages into the pack
     if contract.shape == "define":
         ql = question.lower()
@@ -522,6 +614,10 @@ async def retrieve_evidence_pack(
     for pat, markers in section_hints:
         if re.search(pat, ql):
             active_markers.extend(markers)
+    if is_officer_attribute_question(question):
+        active_markers.extend(
+            ("_leaders", "/leaders", "about-us_leaders", "profiles_leaders")
+        )
     if active_markers:
         for ch in chunks:
             text = ch.get("text") or ""

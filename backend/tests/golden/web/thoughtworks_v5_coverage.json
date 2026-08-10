@@ -1,0 +1,186 @@
+{
+  "kb_pages": 137,
+  "covered_pages": 137,
+  "cases": 510,
+  "dense_pages_3plus_qs": 101,
+  "category_counts": {
+    "about": 129,
+    "dei": 34,
+    "people": 1,
+    "news": 1,
+    "partnerships": 196,
+    "alumni": 2,
+    "careers": 6,
+    "clients": 2,
+    "locale": 5,
+    "engineering": 2,
+    "index": 2,
+    "insights": 14,
+    "perspectives": 2,
+    "profiles": 20,
+    "radar": 9,
+    "un": 2,
+    "services": 80,
+    "refuse": 3
+  },
+  "section_page_counts": {
+    "about": 35,
+    "dei": 8,
+    "people": 1,
+    "news": 1,
+    "partnerships": 37,
+    "alumni": 1,
+    "careers": 2,
+    "clients": 1,
+    "locale": 5,
+    "engineering": 1,
+    "index": 1,
+    "insights": 13,
+    "perspectives": 1,
+    "profiles": 10,
+    "radar": 3,
+    "un": 1,
+    "services": 16
+  },
+  "questions_per_section": {
+    "about": 131,
+    "dei": 32,
+    "people": 1,
+    "news": 1,
+    "partnerships": 196,
+    "alumni": 2,
+    "careers": 6,
+    "clients": 2,
+    "locale": 5,
+    "engineering": 2,
+    "index": 2,
+    "insights": 14,
+    "perspectives": 2,
+    "profiles": 20,
+    "radar": 9,
+    "un": 2,
+    "services": 80
+  },
+  "top_dense_pages": [
+    [
+      "https://www.thoughtworks.com/about-us/partnerships",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/ai-works-aws-transform",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/aws-automotive-and-manufacturing",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/aws-funding-programs",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/aws-software-isv",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/financial-services",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/life-sciences",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/na-life-sciences",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/summits/aws-summits-nyc",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/microsoft/microsoft-funding-programs",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/technology/databricks",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/technology/databricks/databricks-data-ai-summit",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/technology/databricks/databricks-summit-reception",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/social-change/reports/our-purpose-in-action/beyond-diversity",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/building-the-agentic-enterprise-ecosystem",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/data-and-analytics",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/data-and-analytics/data-mesh-which-data-architecture-is-optimal-for-your-organization",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/data-and-analytics/datamesh-on-aws",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/healthcare",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/map-migration-modernization",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/public-sector",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/reinvent",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/summits",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/summits/aws-summits-hamburg",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/summits/aws-summits-london",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/summits/aws-summits-madrid",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/summits/aws-summits-toronto",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/google-cloud",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/google-cloud/next/engineering12",
+      5
+    ]
+  ]
+}

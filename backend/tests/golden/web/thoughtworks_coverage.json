@@ -1,0 +1,183 @@
+{
+  "kb_pages": 452,
+  "covered_pages": 452,
+  "cases": 752,
+  "dense_pages_3plus_qs": 88,
+  "category_counts": {
+    "about": 100,
+    "dei": 34,
+    "people": 4,
+    "news": 274,
+    "radar": 54,
+    "partnerships": 101,
+    "alumni": 2,
+    "careers": 3,
+    "clients": 2,
+    "locale": 7,
+    "engineering": 2,
+    "index": 2,
+    "insights": 80,
+    "perspectives": 2,
+    "un": 2,
+    "services": 80,
+    "refuse": 3
+  },
+  "section_page_counts": {
+    "about": 25,
+    "dei": 8,
+    "people": 1,
+    "news": 289,
+    "partnerships": 19,
+    "alumni": 1,
+    "careers": 1,
+    "clients": 1,
+    "locale": 7,
+    "engineering": 1,
+    "index": 1,
+    "insights": 77,
+    "perspectives": 1,
+    "radar": 3,
+    "un": 1,
+    "services": 16
+  },
+  "questions_per_section": {
+    "about": 102,
+    "dei": 32,
+    "people": 4,
+    "news": 319,
+    "partnerships": 101,
+    "alumni": 2,
+    "careers": 3,
+    "clients": 2,
+    "locale": 7,
+    "engineering": 2,
+    "index": 2,
+    "insights": 80,
+    "perspectives": 2,
+    "radar": 9,
+    "un": 2,
+    "services": 80
+  },
+  "top_dense_pages": [
+    [
+      "https://www.thoughtworks.com/about-us/partnerships",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/data-and-analytics/data-mesh-which-data-architecture-is-optimal-for-your-organization",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/data-and-analytics/datamesh-on-aws",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/financial-services",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/life-sciences",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/technology/Nvidia",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/technology/databricks",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/technology/databricks/databricks-summit-reception",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/social-change/reports/our-purpose-in-action/beyond-diversity",
+      6
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/data-and-analytics",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/healthcare",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/map-migration-modernization",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/public-sector",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/cloud/aws/reinvent",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/technology/Nvidia/nvidia-gpu-activation-services",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/partnerships/technology/databricks/data-platform-ebook-databricks",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/social-change/reports/global-impact-report-2025/leading-with-inclusion",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/social-change/reports/our-purpose-in-action/CEO-letter",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/about-us/social-change/reports/our-purpose-in-action/sustainability-and-climate-action",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/what-we-do/customer-experience",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/what-we-do/customer-experience/seamless-government-experience",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/what-we-do/customer-experience/single-identity",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/what-we-do/data-modernization",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/what-we-do/data-modernization/data-diagnostic",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/what-we-do/data-modernization/data-mesh",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/what-we-do/data-modernization/data-mesh/d2e-data-mesh-accelerator",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/what-we-do/enterprise-ai",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/what-we-do/enterprise-ai/ai-readiness",
+      5
+    ],
+    [
+      "https://www.thoughtworks.com/what-we-do/legacy-modernization",
+      5
+    ]
+  ]
+}

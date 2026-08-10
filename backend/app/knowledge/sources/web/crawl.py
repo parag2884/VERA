@@ -1,8 +1,22 @@
-"""Fetch website pages into AcquiredFile texts (Foundry-style URL knowledge source).
+"""Public URL knowledge crawl — site-agnostic standard pipeline.
 
-Captures publicly reachable HTML + common documents on the same host.
-Login-gated / 401-403 pages are skipped. HTML shells escalate to Playwright;
-thin pages after render are never stored as knowledge.
+Hook one URL. No brand-specific rules. Stages:
+
+1. **Discover** — seed URL + sitemap URLs + structural identity probes
+   (`IDENTITY_SEED_PATHS`) + links from each page.
+2. **Prioritize** — people/org-chart → core about/services/docs → other pages →
+   chronicle (news/blog) last. Skip locale mirrors (`xx-yy`) and long-tail
+   paths (jobs/clients/tags). Optional: skip chronicle via settings.
+3. **Fetch** — HTTP GET; docs (PDF/Office) kept as bytes; HTML assessed for
+   thin/chrome shells.
+4. **Render** — escalate thin/chrome/seed pages to Playwright (scroll + consent).
+5. **Extract** — `html_extract` strips chrome, harvests org-chart people from
+   img alt / profile links (including noscript), emits markdown.
+6. **Quality gate** — refuse thin/SPA shells; keep real people bios even when
+   link-dense; never store cookie shells as knowledge.
+
+Ask ranking (separate) demotes chronicle and boosts people/core so GPT answers
+from the right quotes — crawl stays broad; retrieval stays selective.
 """
 
 from __future__ import annotations
@@ -23,6 +37,15 @@ from app.config import get_settings
 from app.knowledge.contracts import AcquiredFile
 from app.knowledge.sources.web.browser_render import BrowserRenderer
 from app.knowledge.sources.web.html_extract import extract_html_text
+from app.knowledge.sources.web.path_policy import (
+    CHRONICLE_PATH_MARKERS,
+    IDENTITY_SEED_PATHS,
+    is_alternate_locale,
+    is_chronicle_path,
+    is_core_path,
+    is_people_path,
+    is_skipped_path,
+)
 from app.knowledge.sources.web.quality import (
     assess_page_quality,
     topic_coverage_weak,
@@ -73,71 +96,42 @@ def _clean_url(url: str) -> str:
     return parsed._replace(fragment="", query="").geturl()
 
 
-# Long-tail paths we never ingest — frees the page budget for About/Leaders/News/etc.
-_SKIP_PATH_MARKERS = (
-    "/clients/",
-    "/client/",
-    "/case-stud",
-    "/case_stud",
-    "/customer-stor",
-    "/success-stor",
-    "/decoder",
-    "/glossary",
-    "/tag/",
-    "/tags/",
-    "/category/",
-    "/careers/jobs",
-    "/job/",
-    "/jobs/",
-    "/events/",
-    "/webinar",
-    "/podcast",
-)
-
-
-def _url_skipped(url: str) -> bool:
-    """True for case studies / job boards / glossary long-tails — not crawled."""
-    path = (urlparse(url).path or "/").lower()
-    return any(x in path for x in _SKIP_PATH_MARKERS)
+def _url_skipped(url: str, *, seed: str | None = None) -> bool:
+    """True for long-tails / optional chronicle skip — not crawled."""
+    if is_skipped_path(url):
+        return True
+    # Optional: keep index lean for Ask accuracy (news/blog/insights out of crawl)
+    try:
+        if get_settings().vera_crawl_skip_chronicle and is_chronicle_path(url):
+            return True
+    except Exception:  # noqa: BLE001
+        pass
+    # Locale mirrors burn page budget before officer profiles — skip by default
+    if seed and is_alternate_locale(url, seed):
+        return True
+    return False
 
 
 def _url_priority(url: str) -> int:
-    """Lower = crawl sooner. Prefer corporate/identity pages."""
+    """Lower = crawl sooner. Prefer people/core facts over locale mirrors & news."""
     path = (urlparse(url).path or "/").lower()
-    if _url_skipped(url):
-        return 999
-    # Must-have for officer / company Ask (check before shallow-path heuristic)
-    boost = (
-        "/about",
-        "/leader",
-        "/leadership",
-        "/our-team",
-        "/team/",
-        "/company",
-        "/who-we-are",
-        "/our-story",
-        "/management",
-        "/executives",
-        "/board",
-        "/investors",
-        "/press",
-        "/news",
-        "/what-we-do",
-        "/services",
-        "/solutions",
-        "/offerings",
-        "/capabilities",
-        "/products",
-        "/platform",
-        "/partnerships",
-        "/partners",
-        "/careers",
-        "/radar",
-    )
-    if any(x in path for x in boost):
-        return 10
-    if path in {"", "/"} or path.count("/") <= 1:
-        return 5  # homepage / shallow roots after seed
+    # Chronicle first — /about-us/news must not inherit /about core boost
+    if is_chronicle_path(url) or any(x in path for x in CHRONICLE_PATH_MARKERS):
+        return 80
+    # Officer / board profiles first
+    if is_people_path(url):
+        return 3
+    if is_core_path(url):
+        return 6
+    # Other /profiles/* (alphabet directories, alumni) — after core identity pages
+    if "/profiles/" in path or "/profile/" in path:
+        return 45
+    if path in {"", "/"}:
+        return 12
+    if path.count("/") <= 1:
+        return 18  # shallow marketing roots after identity pages
+    if any(x in path for x in ("/careers", "/investors", "/radar")):
+        return 25
     return 40
 
 
@@ -255,13 +249,18 @@ async def fetch_website(
     def _enqueue(url: str, depth: int, *, force_pri: int | None = None) -> None:
         nonlocal seq
         key = _clean_url(url)
-        if key in seen or _url_skipped(key):
+        if key in seen or _url_skipped(key, seed=start):
             return
         pri = force_pri if force_pri is not None else _url_priority(key)
         heapq.heappush(heap, (pri, seq, key, depth))
         seq += 1
 
     _enqueue(start, 0, force_pri=0)
+    # Structural identity probes (site-agnostic CMS shapes). Missing paths 404
+    # and are skipped — cheap insurance when sitemaps flood with /profiles/* .
+    origin = f"{urlparse(start).scheme}://{urlparse(start).netloc}"
+    for rel in IDENTITY_SEED_PATHS:
+        _enqueue(origin + rel, 0, force_pri=1)
     checked = 0
     rendered_js = 0
     skipped_thin = 0
@@ -303,7 +302,7 @@ async def fetch_website(
             while heap and len(files) < max_pages:
                 _pri, _seq, url, depth = heapq.heappop(heap)
                 key = _clean_url(url)
-                if key in seen or _url_skipped(key):
+                if key in seen or _url_skipped(key, seed=start):
                     continue
                 seen.add(key)
                 checked += 1
@@ -400,13 +399,19 @@ async def fetch_website(
                                 quality = r_quality
                                 unique_body = r_unique
 
-                    still_weak = topic_coverage_weak(final_url, unique_body)
+                    # Use full extract (includes title) — person names often only in <title>
+                    still_weak = topic_coverage_weak(final_url, text)
+                    # People profiles: keep real bios even when link-dense chrome marks thin,
+                    # or when structural slug tokens (profiles/leaders) miss the body.
+                    people_keep = (
+                        is_people_path(final_url) and quality.unique_prose_chars >= 400
+                    )
                     # Trust rule: never store seed/topic pages that still lack path topics
                     # after JS (cookie shells, empty SPAs).
                     if (
-                        quality.thin
+                        (quality.thin and not people_keep)
                         or len(text.strip()) < 40
-                        or (still_weak and (is_seed or need_js))
+                        or (still_weak and (is_seed or need_js) and not people_keep)
                     ):
                         skipped_thin += 1
                         logger.warning(
@@ -419,7 +424,15 @@ async def fetch_website(
                         # Still discover links from best HTML we have
                         if depth < max_depth:
                             for link in _page_links(html, final_url):
-                                if _same_host(start, link):
+                                if not _same_host(start, link):
+                                    continue
+                                if is_people_path(link):
+                                    _enqueue(link, depth + 1, force_pri=2)
+                                elif is_core_path(link) and (
+                                    is_seed or is_core_path(final_url)
+                                ):
+                                    _enqueue(link, depth + 1, force_pri=4)
+                                else:
                                     _enqueue(link, depth + 1)
                         await _emit(final_url)
                         continue
@@ -435,7 +448,18 @@ async def fetch_website(
                     )
                     if depth < max_depth:
                         for link in _page_links(html, final_url):
-                            if _same_host(start, link):
+                            if not _same_host(start, link):
+                                continue
+                            # From any page: pull org-chart + core hubs early.
+                            # From the seed homepage: treat discovered core/people
+                            # links as first-class (nav is the best site map).
+                            if is_people_path(link):
+                                _enqueue(link, depth + 1, force_pri=2)
+                            elif is_core_path(link) and (
+                                is_seed or is_core_path(final_url)
+                            ):
+                                _enqueue(link, depth + 1, force_pri=4)
+                            else:
                                 _enqueue(link, depth + 1)
                     await _emit(final_url)
                 except Exception as exc:  # noqa: BLE001
@@ -455,7 +479,3 @@ async def fetch_website(
         checked,
     )
     return files
-
-
-def describe_web_job(url: str, count: int) -> dict[str, Any]:
-    return {"source": "website", "start_url": url, "pages_acquired": count}

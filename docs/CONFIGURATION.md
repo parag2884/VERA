@@ -71,6 +71,7 @@ See [`backend/app/knowledge/ROADMAP.md`](../backend/app/knowledge/ROADMAP.md) fo
 | `VERA_URL_MAX_PAGES` | `500` |
 | `VERA_URL_MAX_DEPTH` | `4` |
 | `VERA_URL_HARD_MAX_PAGES` | `2000` |
+| `VERA_CRAWL_SKIP_CHRONICLE` | `false` (Foundry-style default: keep news/blog in the index; Ask demotes them unless the question asks). Set `true` only if you must save page budget on huge sites. |
 
 ---
 

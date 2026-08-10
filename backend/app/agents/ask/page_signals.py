@@ -26,21 +26,6 @@ SERVICE_PATH_MARKERS = (
     "_platform",
 )
 
-ABOUT_PATH_MARKERS = (
-    "/about",
-    "_about",
-    "/leaders",
-    "_leaders",
-    "/leadership",
-    "_leadership",
-    "/our-team",
-    "_our-team",
-    "/company",
-    "_company",
-    "/who-we-are",
-    "_who-we-are",
-)
-
 # Career / L&D pathway pages — not product transformation pathways
 CAREER_PATHWAY_MARKERS = (
     "leadership-pathway",
@@ -108,11 +93,6 @@ def is_service_page(title: str) -> bool:
     return any(m in t for m in SERVICE_PATH_MARKERS)
 
 
-def is_about_page(title: str) -> bool:
-    t = path_blob(title)
-    return any(m in t for m in ABOUT_PATH_MARKERS)
-
-
 def is_career_pathway_page(title: str) -> bool:
     t = path_blob(title)
     return any(m in t for m in CAREER_PATHWAY_MARKERS)
@@ -125,13 +105,6 @@ def is_insight_chrome_page(title: str) -> bool:
 
 def has_transformation_triad(text: str) -> bool:
     return bool(_TRIAD_RE.search(text or ""))
-
-
-def triad_labels(text: str) -> list[str]:
-    m = _TRIAD_RE.search(text or "")
-    if not m:
-        return []
-    return [m.group(1), m.group(2), m.group(3)]
 
 
 def triad_span_pos(text: str) -> int:

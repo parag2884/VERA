@@ -45,6 +45,8 @@ class Settings(BaseSettings):
     vera_crawl_js_timeout_ms: int = 20000
     vera_crawl_js_concurrency: int = 2
     vera_crawl_min_prose_chars: int = 400
+    # When true, skip news/blog/insights/press paths so page budget stays on core docs.
+    vera_crawl_skip_chronicle: bool = False
     vera_ms_tenant_id: str = ""
     vera_ms_client_id: str = ""
     vera_ms_client_secret: str = ""
@@ -80,6 +82,7 @@ class Settings(BaseSettings):
         "vera_mock_llm",
         "vera_public_require_origin",
         "vera_crawl_js_enabled",
+        "vera_crawl_skip_chronicle",
         mode="before",
     )
     @classmethod

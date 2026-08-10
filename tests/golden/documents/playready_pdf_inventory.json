@@ -1,0 +1,355 @@
+{
+  "pdfs": [
+    {
+      "file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "category": "compliance",
+      "chars": 14358,
+      "kb_title": "Prod Normalised PDFs__PR_Compliance_Rules_Part01_v2021.pdf",
+      "snippet": " Compliance Rules for PlayReady® Products Microsoft Corporation 1st November 2021 Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 1 November 2021 Contents 1 Introduction ................................ ................................ ."
+    },
+    {
+      "file": "PR_Compliance_Rules_Part02_v2021.pdf",
+      "category": "compliance",
+      "chars": 12791,
+      "kb_title": "Prod Normalised PDFs__PR_Compliance_Rules_Part02_v2021.pdf",
+      "snippet": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 5 1 November 2021 3 Passing A/V Content A PlayReady Product must comply with this Section 3 (Passing A/V Content) when Passing decrypted A/V Content. 3.1 Playback A PlayReady Product may Pa"
+    },
+    {
+      "file": "PR_Compliance_Rules_Part03_v2021.pdf",
+      "category": "compliance",
+      "chars": 12040,
+      "kb_title": "Prod Normalised PDFs__PR_Compliance_Rules_Part03_v2021.pdf",
+      "snippet": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 23 1 November 2021 6 Creating PlayReady Licenses A PlayReady Product may create PlayReady Licenses only if all requirements in this Section 6 (Creating PlayReady Licenses) are met. 6.1 Exte"
+    },
+    {
+      "file": "PR_Compliance_Rules_Part04_v2021.pdf",
+      "category": "compliance",
+      "chars": 13250,
+      "kb_title": "Prod Normalised PDFs__PR_Compliance_Rules_Part04_v2021.pdf",
+      "snippet": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 41 1 November 2021 8 Creating WMDRM-ND Licenses A PlayReady Product may create WMDRM-ND Licenses only if all requirements in this Section 8 (Creating WMDRM-ND Licenses) are met. 8.1 Extensi"
+    },
+    {
+      "file": "PR_Compliance_Rules_Part05_v2021.pdf",
+      "category": "compliance",
+      "chars": 12837,
+      "kb_title": "Prod Normalised PDFs__PR_Compliance_Rules_Part05_v2021.pdf",
+      "snippet": "Compliance Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 60 1 November 2021 11 Transmitting to PlayReady-ND Receiver A PlayReady Product must comply with this Section 11 (Transmitting to PlayReady-ND Receiver) when Transmitting to a PlayReady-ND "
+    },
+    {
+      "file": "PR_Content_Protection_Whitepaper_v2015.pdf",
+      "category": "protection",
+      "chars": 12737,
+      "kb_title": "Prod Normalised PDFs__PR_Content_Protection_Whitepaper_v2015.pdf",
+      "snippet": " Content Protection Technology April 2015 Abstract Microsoft® PlayReady® is the premier platform for protection and distribution of digital content. This white paper provides an overview of Microsoft PlayReady — it outlines challenges in the digital media ecosystem, how PlayReady"
+    },
+    {
+      "file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "category": "client",
+      "chars": 13173,
+      "kb_title": "Prod Normalised PDFs__PR_Dev_Clients_Part01_v2015.pdf",
+      "snippet": " Developing PlayReady Clients April 2015 Abstract Microsoft® PlayReady® is the premier platform for protection and distribution of digital content. This white paper provides an overview of the PlayReady product suite and discusses PlayReady client technologies in terms of key con"
+    },
+    {
+      "file": "PR_Dev_Clients_Part02_v2015.pdf",
+      "category": "client",
+      "chars": 12537,
+      "kb_title": "Prod Normalised PDFs__PR_Dev_Clients_Part02_v2015.pdf",
+      "snippet": "Microsoft PlayReady Developing PlayReady Clients 12 Client Authentication In the context of content protection, client authentication may occur at two levels, the client device and the user. PlayReady handles device authentication automatically through its use of device keys when"
+    },
+    {
+      "file": "PR_Development_Overview.pdf",
+      "category": "overview",
+      "chars": 2880,
+      "kb_title": "Prod Normalised PDFs__PR_Development_Overview.pdf",
+      "snippet": "Developing with PlayReady Developing a device or software application with support for PlayReady Begins with the development of an intermediate product (i.e. not end-user ready) that supports PlayReady. Agreements you must execute: Microsoft PlayReady Master Agreement (download ("
+    },
+    {
+      "file": "PR_Distribution_Overview.pdf",
+      "category": "overview",
+      "chars": 2666,
+      "kb_title": "PR_Distribution_Overview.pdf",
+      "snippet": "Distribution to end users with PlayReady Distributing a device or software application that supports PlayReady Agreements you must execute: Microsoft PlayReady Master Agreement (download (https://go.microsoft.com/fwlink/?LinkID=122670) sample) Microsoft PlayReady Final Product Li"
+    },
+    {
+      "file": "PR_Documentation_Part01.pdf",
+      "category": "documentation",
+      "chars": 13338,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part01.pdf",
+      "snippet": "Tell us about your PDF experience. Microsoft PlayReady Microsoft PlayReady content access and protection technology is a set of technologies that can be used to distribute audio/video content more securely over a network, and help prevent the unauthorized use of this content. Abo"
+    },
+    {
+      "file": "PR_Documentation_Part02.pdf",
+      "category": "documentation",
+      "chars": 12587,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part02.pdf",
+      "snippet": "License Acquisition Article• 11/07/2018 To play protected content, a valid license for the content must be available. If there is no valid license for the content, the license must be acquired. During license acquisition, a client acquires its license from a License Server or fro"
+    },
+    {
+      "file": "PR_Documentation_Part03.pdf",
+      "category": "documentation",
+      "chars": 13116,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part03.pdf",
+      "snippet": "Output Protection Levels Article• 10/12/2022 Output protection levels (OPLs) are described in detail in the Compliance Rules for PlayReady Products. This topic describes some of the general behavior of OPLs. OPLs create layers of rights protection in order to associate types of c"
+    },
+    {
+      "file": "PR_Documentation_Part04.pdf",
+      "category": "documentation",
+      "chars": 12686,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part04.pdf",
+      "snippet": "PlayReady Products, Deliverables and Services Article• 11/07/2018 PlayReady is a very versatile technology that is designed to allow the development of clients on virtually any processor, any platform, any operating system (OS), and any environment, and develop and deploy clients"
+    },
+    {
+      "file": "PR_Documentation_Part05.pdf",
+      "category": "documentation",
+      "chars": 10271,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part05.pdf",
+      "snippet": "PlayReady Product Versions Article• 12/15/2022 The following table shows the feature availability for each version of the PlayReady products. Release date Version What's new PlayReady Server SDK (.NET Legacy) PlayReady Server SDK (.NET Core) PlayReady Device Porting Kit PlayReady"
+    },
+    {
+      "file": "PR_Documentation_Part06.pdf",
+      "category": "documentation",
+      "chars": 13321,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part06.pdf",
+      "snippet": "PlayReady Secure Clock Services for PlayReady Clients Article• 11/07/2018 Microsoft operates a service to which a PlayReady Client can connect to acquire the current time and set their trusted clocks. Their trusted clock is used to enforce PlayReady time-based policies, such as c"
+    },
+    {
+      "file": "PR_Documentation_Part07.pdf",
+      "category": "documentation",
+      "chars": 12001,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part07.pdf",
+      "snippet": "PlayReady Content Encryption Article• 11/07/2018 This topic provides an overview of the encryption algorithms used to protect content in the PlayReady ecosystem. Symmetric key cryptography is the simplest type of encryption. With symmetric key cryptography, the same key is used t"
+    },
+    {
+      "file": "PR_Documentation_Part08.pdf",
+      "category": "documentation",
+      "chars": 12876,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part08.pdf",
+      "snippet": "How to generate a PlayReady Header Article• 02/12/2021 The packager needs to include a PlayReady Header in the encrypted content. For a detailed description of the PlayReady Header and the PlayReady Object, see the PlayReady Header Specification. The PlayReady Header contains inf"
+    },
+    {
+      "file": "PR_Documentation_Part09.pdf",
+      "category": "documentation",
+      "chars": 12834,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part09.pdf",
+      "snippet": "PlayReady License Server Article• 02/12/2021 The process of obtaining a license to play back PlayReady protected content is handled by a PlayReady License Server. The PlayReady Server contains the handler that authorizes playback of PlayReady protected client. It does this by pro"
+    },
+    {
+      "file": "PR_Documentation_Part10.pdf",
+      "category": "documentation",
+      "chars": 12218,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part10.pdf",
+      "snippet": "Developing PlayReady Security Level 3000 Clients Article• 03/06/2021 This page is intended to serve as a step-by-step guide for PlayReady Licensees seeking SL3000 Compliance for PlayReady Intermediate or Final Products. The document outlines the end-to-end process for Intermediat"
+    },
+    {
+      "file": "PR_Documentation_Part11.pdf",
+      "category": "documentation",
+      "chars": 12168,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part11.pdf",
+      "snippet": "PlayReady Client Initialization Article• 01/06/2023 PlayReady Client Initialization is the process of updating the PlayReady runtime on the client, allowing licenses to be bound to the client. It may be called different names on different clients: CDM init, for Client Decryption "
+    },
+    {
+      "file": "PR_Documentation_Part12.pdf",
+      "category": "documentation",
+      "chars": 12334,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part12.pdf",
+      "snippet": "PlayReady Secure Stop Article• 10/12/2022 Introduced in PlayReady version 3.0, PlayReady Secure Stop is a feature that provides the means for a PlayReady device to confidently assert to a media streaming service that media playback has stopped for any given piece of content. This"
+    },
+    {
+      "file": "PR_Documentation_Part13.pdf",
+      "category": "documentation",
+      "chars": 12126,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part13.pdf",
+      "snippet": "Licenses Restricted by Binding Policy Article• 11/07/2018 Licenses may be bound to entities such as a client or a domain. Client binding—that is, machine-binding, binding a license to a personal computer, a smartTV, a mobile phone, or any other connected device—is the simplest fo"
+    },
+    {
+      "file": "PR_Documentation_Part14.pdf",
+      "category": "documentation",
+      "chars": 12295,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part14.pdf",
+      "snippet": "How to Test PlayReady Clients with Versions of the PlayReady Server SDK Article• 02/21/2020 The PlayReady testing website contains a set of license services that use current and legacy versions of the Server SDK. These license services can be used to assist in the testing of clie"
+    },
+    {
+      "file": "PR_Documentation_Part15.pdf",
+      "category": "documentation",
+      "chars": 12024,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part15.pdf",
+      "snippet": "PlayReady Plugin for Android Specification Article• 11/07/2018 This specification establishes guidance for OEMs to implement PlayReady 4.0 based digital rights management (DRM) plug-ins on Android. For reference see https://developer.android.com/reference/android/media/MediaDrm.h"
+    },
+    {
+      "file": "PR_Documentation_Part16.pdf",
+      "category": "documentation",
+      "chars": 13219,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part16.pdf",
+      "snippet": "DASH Content Protection using Microsoft PlayReady Article• 03/12/2021 Implementing Content Protection for Live and On-Demand Profiles of Dynamic Adaptive Streaming over HTTP (ISO/IEC 23009-1) using Common Encryption (ISO/IEC 23001-7) and Microsoft PlayReady. Current Version The c"
+    },
+    {
+      "file": "PR_Documentation_Part17.pdf",
+      "category": "documentation",
+      "chars": 12033,
+      "kb_title": "Prod Normalised PDFs__PR_Documentation_Part17.pdf",
+      "snippet": "Additional Information Article• 10/12/2022 In addition to the pages on this website, the PlayReady team provides the following documentation: PlayReady for Windows 10 Documentation PlayReady for Windows 8.1 Documentation PlayReady Test Server with a test license server and test c"
+    },
+    {
+      "file": "PR_EV_Certificate_Instructions.pdf",
+      "category": "certificates",
+      "chars": 3143,
+      "kb_title": "Prod Normalised PDFs__PR_EV_Certificate_Instructions.pdf",
+      "snippet": "Thank you for your interest in Microsoft Technologies. Before Microsoft can provide you with a Microsoft PlayReady Server Agreement, you are required to provide IP Licensing with an Extended Validation Code Signing Certificate (EV Certificate). This is for company verification on"
+    },
+    {
+      "file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "category": "licensing",
+      "chars": 18533,
+      "kb_title": "Prod Normalised PDFs__PR_Final_Product_License_Sample_v2018.pdf",
+      "snippet": " CONFIDENTIAL<<VerFT>> 12.12.2018 Microsoft PlayReady Final Product License Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number: <<TAG: AgrNum>> Effective Date: <<TAG: EffDate>> Expiration Date: <<TAG: EndDate>> MICROSOFT PLAYREADY F"
+    },
+    {
+      "file": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "category": "licensing",
+      "chars": 3279,
+      "kb_title": "Prod Normalised PDFs__PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "snippet": " Signing into The IP Licensing Administration Portal Step 1 – Click on the Sign In button when you are ready to log into the licensee portal. This licensee portal at wmlalicensing.com supports programs such as PlayReady, Windows Media, and ExFat. Step 2 – First time users will ne"
+    },
+    {
+      "file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "category": "licensing",
+      "chars": 18467,
+      "kb_title": "Prod Normalised PDFs__PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "snippet": " CONFIDENTIAL<<VerFT>> 06.02.16a Microsoft PlayReady Intermediate Product License Form 2.8.<<CurrentTemplateRev>> Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number: <<TAG: AgrNum>> Effective Date: <<TAG: EffDate>> Expiration Date: "
+    },
+    {
+      "file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "category": "live_tv",
+      "chars": 12863,
+      "kb_title": "Prod Normalised PDFs__PR_LiveTV_Protection_Part01_v2015.pdf",
+      "snippet": " Protecting Premium Live TV Services with PlayReady April 2015 Abstract Microsoft® PlayReady® is the premier platform for the protection and distribution of digital content. This white paper discusses PlayReady features that provide highly scalable, studio- grade protection of Li"
+    },
+    {
+      "file": "PR_LiveTV_Protection_Part02_v2015.pdf",
+      "category": "live_tv",
+      "chars": 13540,
+      "kb_title": "Prod Normalised PDFs__PR_LiveTV_Protection_Part02_v2015.pdf",
+      "snippet": "Microsoft PlayReady Protecting Premium Live TV Services with PlayReady 20 The following diagram illustrates the sequence of steps and communication paths for the scenario. Figure 7 – Sequence of Steps and Communication Paths for Ad Insertion In the diagram, the primary steps are:"
+    },
+    {
+      "file": "PR_Master_Agreement_Sample_v2013.pdf",
+      "category": "licensing",
+      "chars": 16036,
+      "kb_title": "Prod Normalised PDFs__PR_Master_Agreement_Sample_v2013.pdf",
+      "snippet": " CONFIDENTIAL<<VerFT>> 12.04.13a Microsoft PlayReady Master Agreement Form 2.8.<<CurrentTemplateRev>> Document Tracking Number: <<NumberandRev>> COMPANY Name: <<TAG: COMPANY NAME>> MS Agreement Number: <<TAG: AgrNum>> Effective Date: <<TAG: EffDate>> Expiration Date: Perpetual MI"
+    },
+    {
+      "file": "PR_SL3000_Playbook.pdf",
+      "category": "security_level",
+      "chars": 12755,
+      "kb_title": "Prod Normalised PDFs__PR_SL3000_Playbook.pdf",
+      "snippet": "© 2016 Microsoft Corporation. All rights reserved. 20 February 2016 PlayReady® SL3000 Playbook Microsoft Corporation © 2016 Microsoft Corporation. All rights reserved. 20 February 2016 PlayReady SL3000 Playbook Table of Contents 1. Introduction ..................................."
+    },
+    {
+      "file": "PR_Server_Agreement_Sample_v2019.pdf",
+      "category": "server",
+      "chars": 17417,
+      "kb_title": "Prod Normalised PDFs__PR_Server_Agreement_Sample_v2019.pdf",
+      "snippet": " Page 1 of 11 Microsoft Confidential Microsoft PlayReady Server Agreement v. August 1, 2019 MICROSOFT PLAYREADY SERVER AGREEMENT This Microsoft PlayReady Server Agreement (the “Agreement”) is between Microsoft Corporation, a Washington company, on behalf of itself and its Affilia"
+    },
+    {
+      "file": "PR_Server_Overview.pdf",
+      "category": "server",
+      "chars": 2337,
+      "kb_title": "PR_Server_Overview.pdf",
+      "snippet": "PlayReady server Developing server applications To develop a PlayReady server application on your own servers (virtual or on premises). You will need to take a direct license agreement (if you don’t want to use Azure Media Services for PlayReady or a PlayReady Partner). Agreement"
+    },
+    {
+      "file": "PR_WhatsNew_v4.2.pdf",
+      "category": "whats_new",
+      "chars": 3453,
+      "kb_title": "Prod Normalised PDFs__PR_WhatsNew_v4.2.pdf",
+      "snippet": "What's New in PlayReady Version 4.2 Article• 03/05/2021 This page contains an overview of the most significant changes between PlayReady version 4.0 and PlayReady version 4.2. The SecureStop2 feature is added. This provides a higher level of security than the previously-extant Se"
+    },
+    {
+      "file": "PR_WhatsNew_v4.3.pdf",
+      "category": "whats_new",
+      "chars": 737,
+      "kb_title": "Prod Normalised PDFs__PR_WhatsNew_v4.3.pdf",
+      "snippet": "What's New in PlayReady Version 4.3 Article• 03/05/2021 This page contains an overview of the most significant changes between PlayReady version 4.2 and PlayReady version 4.3. A PlayReady Server SDK built on .NETCore was released. This SDK can be installed on Linux machines in ad"
+    },
+    {
+      "file": "PR_WhatsNew_v4.4.pdf",
+      "category": "whats_new",
+      "chars": 3239,
+      "kb_title": "Prod Normalised PDFs__PR_WhatsNew_v4.4.pdf",
+      "snippet": "What's New in PlayReady Version 4.4 Article• 10/12/2022 This page contains an overview of the most significant changes between PlayReady version 4.3 and PlayReady version 4.4. The ability to determine what features a given Porting Kit implementation supports is added on both clie"
+    },
+    {
+      "file": "PR_WhatsNew_v4.5.pdf",
+      "category": "whats_new",
+      "chars": 11558,
+      "kb_title": "Prod Normalised PDFs__PR_WhatsNew_v4.5.pdf",
+      "snippet": "What's New in PlayReady Version 4.5 Article•11/02/2021 This page contains an overview of the most significant changes between PlayReady version 4.4 and PlayReady version 4.5. In previous versions of PlayReady, license acquisition and other client challenges are always privacy- en"
+    },
+    {
+      "file": "PR_WhatsNew_v4.6.pdf",
+      "category": "whats_new",
+      "chars": 3315,
+      "kb_title": "Prod Normalised PDFs__PR_WhatsNew_v4.6.pdf",
+      "snippet": "What's New in PlayReady Version 4.6 Article• 12/15/2022 This page contains an overview of the most significant changes between PlayReady version 4.5 and PlayReady version 4.6. Starting with PlayReady 4.6, a single Key Exchange license can include multiple keys with different algo"
+    },
+    {
+      "file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "category": "robustness",
+      "chars": 12854,
+      "kb_title": "Prod Normalised PDFs__Robustness_Rules_For_PlayReady_Products.pdf",
+      "snippet": " Robustness Rules for PlayReady Products Microsoft Corporation 1st November 2021 Robustness Rules for PlayReady Products © 2021 Microsoft Corporation. All rights reserved. 1 1 November 2021 Contents 1 CONSTRUCTION .................................................................."
+    },
+    {
+      "file": "Sample Agreements - Microsoft PlayReady.pdf",
+      "category": "licensing",
+      "chars": 2774,
+      "kb_title": "Sample Agreements - Microsoft PlayReady.pdf",
+      "snippet": "Sample Agreements Microsoft PlayReady Server Agreement Under this license, Microsoft offers a PlayReady Server SDK and the necessary intellectual property rights to develop Server Applications and deploy first and third party services to end-users using PlayReady. (Download (http"
+    }
+  ],
+  "kb_titles": [
+    "Prod Normalised PDFs__Robustness_Rules_For_PlayReady_Products.pdf",
+    "Prod Normalised PDFs__PR_WhatsNew_v4.6.pdf",
+    "Prod Normalised PDFs__PR_WhatsNew_v4.5.pdf",
+    "Prod Normalised PDFs__PR_WhatsNew_v4.4.pdf",
+    "Prod Normalised PDFs__PR_WhatsNew_v4.3.pdf",
+    "Prod Normalised PDFs__PR_WhatsNew_v4.2.pdf",
+    "Prod Normalised PDFs__PR_SL3000_Playbook.pdf",
+    "Prod Normalised PDFs__PR_Server_Agreement_Sample_v2019.pdf",
+    "Prod Normalised PDFs__PR_Master_Agreement_Sample_v2013.pdf",
+    "Prod Normalised PDFs__PR_LiveTV_Protection_Part02_v2015.pdf",
+    "Prod Normalised PDFs__PR_LiveTV_Protection_Part01_v2015.pdf",
+    "Prod Normalised PDFs__PR_IPLA_Licensing_Portal_FAQ.pdf",
+    "Prod Normalised PDFs__PR_Intermediate_Product_License_Sample_v2016.pdf",
+    "Prod Normalised PDFs__PR_Final_Product_License_Sample_v2018.pdf",
+    "Prod Normalised PDFs__PR_EV_Certificate_Instructions.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part17.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part16.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part15.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part14.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part13.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part12.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part11.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part10.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part09.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part08.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part07.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part06.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part05.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part04.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part03.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part02.pdf",
+    "Prod Normalised PDFs__PR_Documentation_Part01.pdf",
+    "Prod Normalised PDFs__PR_Dev_Clients_Part02_v2015.pdf",
+    "Prod Normalised PDFs__PR_Dev_Clients_Part01_v2015.pdf",
+    "Prod Normalised PDFs__PR_Development_Overview.pdf",
+    "Prod Normalised PDFs__PR_Content_Protection_Whitepaper_v2015.pdf",
+    "Prod Normalised PDFs__PR_Compliance_Rules_Part05_v2021.pdf",
+    "Prod Normalised PDFs__PR_Compliance_Rules_Part04_v2021.pdf",
+    "Prod Normalised PDFs__PR_Compliance_Rules_Part03_v2021.pdf",
+    "Prod Normalised PDFs__PR_Compliance_Rules_Part02_v2021.pdf",
+    "Prod Normalised PDFs__PR_Compliance_Rules_Part01_v2021.pdf"
+  ]
+}

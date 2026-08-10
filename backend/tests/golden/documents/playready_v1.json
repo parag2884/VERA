@@ -1,7 +1,7 @@
 {
   "suite_id": "playready_docs_v1",
   "source_kind": "documents",
-  "agent_name": "PlayReady",
+  "agent_name": "PlayReady Assistant",
   "kb_notes": [
     "Upload PlayReady PDFs / playbooks / compliance docs before running.",
     "Draft and verify every must_any by searching inside the listed source_document (or the matching title in Fleet → Knowledge).",
@@ -19,9 +19,17 @@
       "question": "What is the difference between SL2000 and SL3000?",
       "expect_decision": "answer",
       "expected_answer": "Differences as stated in the SL2000/SL3000 PlayReady docs in the KB.",
-      "must_any": ["sl2000", "sl3000"],
+      "must_any": [
+        "sl2000",
+        "sl3000"
+      ],
       "forbid_any": [],
-      "citation_any": ["sl3000", "sl2000", "playbook", "documentation"],
+      "citation_any": [
+        "sl3000",
+        "sl2000",
+        "playbook",
+        "documentation"
+      ],
       "source_document": "SL3000 / SL2000 playbook or comparison PDF in KB",
       "kb_quote_hint": "SL3000"
     },
@@ -31,8 +39,15 @@
       "question": "Can you compare PlayReady SL3000 and SL2000?",
       "expect_decision": "answer",
       "expected_answer": "Same corpus as PR01 — comparison from uploaded docs only.",
-      "must_any": ["sl2000", "sl3000"],
-      "citation_any": ["sl3000", "documentation", "playbook"],
+      "must_any": [
+        "sl2000",
+        "sl3000"
+      ],
+      "citation_any": [
+        "sl3000",
+        "documentation",
+        "playbook"
+      ],
       "source_document": "SL3000 / SL2000 playbook or comparison PDF in KB",
       "kb_quote_hint": "SL2000"
     },
@@ -42,8 +57,17 @@
       "question": "What are PlayReady output protection levels?",
       "expect_decision": "answer",
       "expected_answer": "OPL / output protection levels as listed in compliance docs.",
-      "must_any": ["output protection", "opl", "hdcp", "analog"],
-      "citation_any": ["compliance", "protection", "documentation"],
+      "must_any": [
+        "output protection",
+        "opl",
+        "hdcp",
+        "analog"
+      ],
+      "citation_any": [
+        "compliance",
+        "protection",
+        "documentation"
+      ],
       "source_document": "Output protection / compliance PDF",
       "kb_quote_hint": "output protection"
     },
@@ -53,8 +77,13 @@
       "question": "What is HDCP in PlayReady compliance?",
       "expect_decision": "answer",
       "expected_answer": "HDCP wording from compliance materials in the KB.",
-      "must_any": ["hdcp"],
-      "citation_any": ["hdcp", "compliance"],
+      "must_any": [
+        "hdcp"
+      ],
+      "citation_any": [
+        "hdcp",
+        "compliance"
+      ],
       "source_document": "Compliance / HDCP section in uploaded docs",
       "kb_quote_hint": "HDCP"
     },
@@ -64,8 +93,12 @@
       "question": "What are the robustness rules for PlayReady products?",
       "expect_decision": "answer",
       "expected_answer": "Robustness rules from the robustness / compliance PDF.",
-      "must_any": ["robust"],
-      "citation_any": ["robustness"],
+      "must_any": [
+        "robust"
+      ],
+      "citation_any": [
+        "robustness"
+      ],
       "source_document": "Robustness rules PDF",
       "kb_quote_hint": "robustness"
     },
@@ -75,8 +108,13 @@
       "question": "What is PlayReady Secure Stop?",
       "expect_decision": "answer",
       "expected_answer": "Secure Stop definition from the feature doc in the KB.",
-      "must_any": ["secure stop"],
-      "citation_any": ["secure", "documentation"],
+      "must_any": [
+        "secure stop"
+      ],
+      "citation_any": [
+        "secure",
+        "documentation"
+      ],
       "source_document": "Secure Stop documentation",
       "kb_quote_hint": "Secure Stop"
     },
@@ -86,8 +124,13 @@
       "question": "What does PlayReady Live TV protection cover?",
       "expect_decision": "answer",
       "expected_answer": "Live TV protection coverage from the LiveTV doc.",
-      "must_any": ["live"],
-      "citation_any": ["livetv", "live"],
+      "must_any": [
+        "live"
+      ],
+      "citation_any": [
+        "livetv",
+        "live"
+      ],
       "source_document": "Live TV protection doc",
       "kb_quote_hint": "Live"
     },
@@ -97,8 +140,14 @@
       "question": "What is an EV certificate in PlayReady?",
       "expect_decision": "answer",
       "expected_answer": "EV certificate meaning from licensing / cert docs.",
-      "must_any": ["certificate", "ev"],
-      "citation_any": ["ev", "certificate"],
+      "must_any": [
+        "certificate",
+        "ev"
+      ],
+      "citation_any": [
+        "ev",
+        "certificate"
+      ],
       "source_document": "EV certificate / licensing FAQ",
       "kb_quote_hint": "EV"
     },
@@ -108,8 +157,13 @@
       "question": "What is license chaining in PlayReady?",
       "expect_decision": "answer",
       "expected_answer": "License chaining as described in the chaining doc.",
-      "must_any": ["chain"],
-      "citation_any": ["chain", "documentation"],
+      "must_any": [
+        "chain"
+      ],
+      "citation_any": [
+        "chain",
+        "documentation"
+      ],
       "source_document": "License chaining documentation",
       "kb_quote_hint": "chain"
     },
@@ -119,8 +173,13 @@
       "question": "What is a PlayReady subscription license?",
       "expect_decision": "answer",
       "expected_answer": "Subscription license definition from licensing docs.",
-      "must_any": ["subscription"],
-      "citation_any": ["subscription", "license"],
+      "must_any": [
+        "subscription"
+      ],
+      "citation_any": [
+        "subscription",
+        "license"
+      ],
       "source_document": "Subscription license documentation",
       "kb_quote_hint": "subscription"
     },
@@ -131,7 +190,12 @@
       "expect_decision": "refuse",
       "expected_answer": "Must refuse — not in PlayReady PDFs.",
       "must_any": [],
-      "forbid_any": ["sunny", "fahrenheit", "celsius", "rain"],
+      "forbid_any": [
+        "sunny",
+        "fahrenheit",
+        "celsius",
+        "rain"
+      ],
       "source_document": null,
       "kb_quote_hint": null
     }

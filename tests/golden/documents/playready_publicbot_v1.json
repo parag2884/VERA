@@ -1,0 +1,2723 @@
+{
+  "suite_id": "playready_publicbot_v1",
+  "source_kind": "documents",
+  "agent_name": "PlayReady Assistant",
+  "kb_notes": [
+    "Imported from PublicBot-Questions.xlsx (legacy public-bot question set).",
+    "source_file is a heuristic PDF mapping into Prod Normalised PDFs — verify in the document.",
+    "must_any is derived from the question; tighten after a first eval pass."
+  ],
+  "source_xlsx": "PublicBot-Questions.xlsx",
+  "question_count": 135,
+  "cases": [
+    {
+      "id": "PB001",
+      "category": "licensing",
+      "question": "What agreements must I execute to develop a PlayReady intermediate product?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "intermediate product",
+        "agreements",
+        "execute"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB002",
+      "category": "licensing",
+      "question": "What do I receive after executing a PlayReady intermediate product license?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "intermediate product",
+        "receive",
+        "executing"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB003",
+      "category": "licensing",
+      "question": "What agreements are required to distribute PlayReady final products to end users?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Final_Product_License_Sample_v2018.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "final product",
+        "agreements",
+        "required"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB004",
+      "category": "licensing",
+      "question": "What certificate do final product licensees receive after executing their agreement?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Final_Product_License_Sample_v2018.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "final product",
+        "certificate",
+        "final",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB005",
+      "category": "licensing",
+      "question": "What agreement is required to develop a PlayReady server application on your own servers?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "agreement",
+        "required",
+        "develop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB006",
+      "category": "licensing",
+      "question": "Are there Microsoft fees for the PlayReady Server Agreement?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "server agreement",
+        "there",
+        "fees"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB007",
+      "category": "licensing",
+      "question": "What is the PlayReady Master Agreement also known as?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Master_Agreement_Sample_v2013.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "master agreement",
+        "master",
+        "agreement"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Master_Agreement_Sample_v2013.pdf",
+      "source_file": "PR_Master_Agreement_Sample_v2013.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB008",
+      "category": "licensing",
+      "question": "What does the PlayReady Intermediate Product License provide?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "intermediate product",
+        "intermediate",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB009",
+      "category": "licensing",
+      "question": "What does the PlayReady Final Product License allow?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Final_Product_License_Sample_v2018.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "final product",
+        "final",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB010",
+      "category": "general",
+      "question": "Where should I go for the PlayReady licensing process?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_IPLA_Licensing_Portal_FAQ.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "licensing",
+        "process"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "source_file": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB011",
+      "category": "licensing",
+      "question": "Can intermediate product licensees distribute source code implementations of PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "intermediate product",
+        "intermediate",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB012",
+      "category": "licensing",
+      "question": "Can intermediate product licensees distribute final products directly to end customers?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "intermediate product",
+        "final product",
+        "intermediate",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB013",
+      "category": "licensing",
+      "question": "Do I need a PlayReady license to develop clients for Windows 8, Windows Phone, Xbox, or Silverlight?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Dev_Clients_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "need",
+        "license",
+        "develop"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB014",
+      "category": "licensing",
+      "question": "How can I evaluate PlayReady before purchasing a license?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "evaluate",
+        "purchasing",
+        "license"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB015",
+      "category": "licensing",
+      "question": "What email should I use if I cannot create an Azure B2C account for the licensee portal?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_IPLA_Licensing_Portal_FAQ.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "email",
+        "cannot",
+        "create",
+        "azure"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "source_file": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB016",
+      "category": "general",
+      "question": "Who should I contact for PlayReady licensing questions?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "contact",
+        "licensing",
+        "questions"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB017",
+      "category": "general",
+      "question": "Who handles PlayReady technical questions?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "handles",
+        "technical",
+        "questions"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB018",
+      "category": "licensing",
+      "question": "Who should I contact for royalty reporting technical support?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_IPLA_Licensing_Portal_FAQ.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "contact",
+        "royalty",
+        "reporting",
+        "technical"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "source_file": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB019",
+      "category": "licensing",
+      "question": "Why is an Extended Validation Code Signing Certificate required for a PlayReady Server Agreement?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_EV_Certificate_Instructions.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "server agreement",
+        "extended",
+        "validation"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_EV_Certificate_Instructions.pdf",
+      "source_file": "PR_EV_Certificate_Instructions.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB020",
+      "category": "general",
+      "question": "What two files are needed to sign the EV certificate for PlayReady licensing?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_EV_Certificate_Instructions.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "ev certificate",
+        "files",
+        "needed"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_EV_Certificate_Instructions.pdf",
+      "source_file": "PR_EV_Certificate_Instructions.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB021",
+      "category": "general",
+      "question": "Where should I send the signed OCX file after obtaining an EV certificate?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_EV_Certificate_Instructions.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "ev certificate",
+        "send",
+        "signed",
+        "file"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_EV_Certificate_Instructions.pdf",
+      "source_file": "PR_EV_Certificate_Instructions.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB022",
+      "category": "general",
+      "question": "Should I digitally sign an .exe file when submitting my EV certificate to Microsoft?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_EV_Certificate_Instructions.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "ev certificate",
+        "digitally",
+        "sign",
+        "file"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_EV_Certificate_Instructions.pdf",
+      "source_file": "PR_EV_Certificate_Instructions.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB023",
+      "category": "general",
+      "question": "What are the two main components in the PlayReady ecosystem?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "main",
+        "components",
+        "ecosystem"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB024",
+      "category": "release_notes",
+      "question": "What types of servers are built on the PlayReady Server SDK?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "types",
+        "servers",
+        "built"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB025",
+      "category": "server",
+      "question": "Does PlayReady require a specialized web server for content storage and distribution?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Distribution_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "require",
+        "specialized",
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Distribution_Overview.pdf",
+      "source_file": "PR_Distribution_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB026",
+      "category": "architecture",
+      "question": "What is a Key ID (KID) in PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Documentation_Part01.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "kid"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB027",
+      "category": "general",
+      "question": "Can copying a PlayReady-protected file to a friend allow them to play it?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "copying",
+        "playready-protected",
+        "file"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB028",
+      "category": "architecture",
+      "question": "What does PlayReady use to encrypt content files?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Documentation_Part01.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "encrypt",
+        "content",
+        "files"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB029",
+      "category": "general",
+      "question": "What business models does PlayReady support?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "business",
+        "models",
+        "support"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB030",
+      "category": "general",
+      "question": "What distribution options does PlayReady support?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Distribution_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "distribution",
+        "options",
+        "support"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Distribution_Overview.pdf",
+      "source_file": "PR_Distribution_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB031",
+      "category": "general",
+      "question": "What audio codecs does PlayReady commonly support?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "audio",
+        "codecs",
+        "commonly"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB032",
+      "category": "general",
+      "question": "What video codecs does PlayReady commonly support?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "video",
+        "codecs",
+        "commonly"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB033",
+      "category": "architecture",
+      "question": "What is a PlayReady domain?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "domain"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB034",
+      "category": "architecture",
+      "question": "Is a PlayReady domain the same as a network or web domain?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "domain",
+        "same",
+        "network"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB035",
+      "category": "architecture",
+      "question": "What is PlayReady metering used for?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Documentation_Part01.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "metering",
+        "used"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB036",
+      "category": "general",
+      "question": "What is PlayReady ND designed for?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "designed"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB037",
+      "category": "client",
+      "question": "What does the Device Porting Kit include?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Dev_Clients_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "device",
+        "porting",
+        "include"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB038",
+      "category": "release_notes",
+      "question": "Which iOS versions does the PlayReady Client SDK for iOS support?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Dev_Clients_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "versions",
+        "client",
+        "support"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB039",
+      "category": "client",
+      "question": "Does Xbox natively support PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Dev_Clients_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "xbox",
+        "natively",
+        "support"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB040",
+      "category": "client",
+      "question": "What email should I use for Xbox app inquiries?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Dev_Clients_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "email",
+        "xbox",
+        "inquiries"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB041",
+      "category": "licensing",
+      "question": "What is included in the Microsoft PlayReady Final Product License package?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Final_Product_License_Sample_v2018.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "final product",
+        "included",
+        "final"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB042",
+      "category": "licensing",
+      "question": "What is included in the Microsoft PlayReady Intermediate Product License package?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "intermediate product",
+        "included",
+        "intermediate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB043",
+      "category": "licensing",
+      "question": "What deliverables does a PlayReady server licensee receive after agreement execution?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "deliverables",
+        "server",
+        "licensee"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB044",
+      "category": "licensing",
+      "question": "Can final product licensees distribute object code to intermediate product licensees?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "intermediate product",
+        "final product",
+        "final",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB045",
+      "category": "licensing",
+      "question": "What scenarios does the Final Product License support?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Final_Product_License_Sample_v2018.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "final product",
+        "scenarios",
+        "final",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB046",
+      "category": "general",
+      "question": "Describe the seven-step content consumption model in PlayReady.",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "seven-step",
+        "content",
+        "consumption"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB047",
+      "category": "general",
+      "question": "How does PlayReady support subscription business models?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "support",
+        "subscription",
+        "business"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB048",
+      "category": "client",
+      "question": "How does PlayReady support rental scenarios?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Dev_Clients_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "support",
+        "rental",
+        "scenarios"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB049",
+      "category": "general",
+      "question": "What is the difference between basic download and progressive download in PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "difference",
+        "basic",
+        "download"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB050",
+      "category": "general",
+      "question": "What future shifts does the PlayReady whitepaper identify for content protection?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Content_Protection_Whitepaper_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "future",
+        "shifts",
+        "whitepaper"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Content_Protection_Whitepaper_v2015.pdf",
+      "source_file": "PR_Content_Protection_Whitepaper_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB051",
+      "category": "general",
+      "question": "What organizations have approved PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Content_Protection_Whitepaper_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "organizations",
+        "approved"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Content_Protection_Whitepaper_v2015.pdf",
+      "source_file": "PR_Content_Protection_Whitepaper_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB052",
+      "category": "architecture",
+      "question": "How does domain join work in PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Documentation_Part01.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "domain",
+        "join",
+        "work"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB053",
+      "category": "architecture",
+      "question": "What is domain renewability in PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Documentation_Part01.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "domain",
+        "renewability"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB054",
+      "category": "architecture",
+      "question": "How does the metering process work in PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Documentation_Part01.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "metering",
+        "process",
+        "work"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB055",
+      "category": "client",
+      "question": "What happens when a PlayReady client is revoked?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Documentation_Part01.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "happens",
+        "client",
+        "revoked"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB056",
+      "category": "live_tv",
+      "question": "What Live TV features does PlayReady provide?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_LiveTV_Protection_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "live tv",
+        "live",
+        "features"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB057",
+      "category": "live_tv",
+      "question": "What industry trends drove PlayReady Live TV feature design?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_LiveTV_Protection_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "live tv",
+        "industry",
+        "trends"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB058",
+      "category": "general",
+      "question": "What was the estimated revenue loss from pirated 2014 FIFA World Cup streams?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_LiveTV_Protection_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "estimated",
+        "revenue",
+        "loss",
+        "pirated"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB059",
+      "category": "client",
+      "question": "What standards does PlayReady support for client development?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "standards",
+        "support",
+        "client"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB060",
+      "category": "release_notes",
+      "question": "What is the foundation for all PlayReady client SDKs?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Dev_Clients_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "foundation",
+        "client",
+        "sdks"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB061",
+      "category": "architecture",
+      "question": "What are the steps in the basic PlayReady encryption and licensing process?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_IPLA_Licensing_Portal_FAQ.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "steps",
+        "basic",
+        "encryption"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "source_file": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB062",
+      "category": "compliance",
+      "question": "What do Compliance and Robustness Rules govern?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer Robustness_Rules_For_PlayReady_Products.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "robustness",
+        "compliance",
+        "rules",
+        "govern"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "source_file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB063",
+      "category": "security_level",
+      "question": "What is PlayReady Security Level 3000 (SL3000) designed for?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_SL3000_Playbook.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "sl3000",
+        "security",
+        "level"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB064",
+      "category": "security_level",
+      "question": "Who conducts the SL3000 security review for intermediate products?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "sl3000",
+        "intermediate product",
+        "conducts",
+        "security"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB065",
+      "category": "security_level",
+      "question": "Are Final Products required to have third-party SL3000 review?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Final_Product_License_Sample_v2018.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "sl3000",
+        "final product",
+        "final",
+        "products"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB066",
+      "category": "security_level",
+      "question": "What is Certificate Security Level (CSL)?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_SL3000_Playbook.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "certificate",
+        "security",
+        "level"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB067",
+      "category": "general",
+      "question": "What is an Intermediate Product in PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "intermediate product",
+        "intermediate",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB068",
+      "category": "general",
+      "question": "What is a Final Product in PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Final_Product_License_Sample_v2018.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "final product",
+        "final",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB069",
+      "category": "release_notes",
+      "question": "What is SecureStop2 in PlayReady 4.2?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.2.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "securestop2"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.2.pdf",
+      "source_file": "PR_WhatsNew_v4.2.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB070",
+      "category": "release_notes",
+      "question": "What CBCS support was added in PlayReady 4.2?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.2.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "cbcs",
+        "support",
+        "added"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.2.pdf",
+      "source_file": "PR_WhatsNew_v4.2.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB071",
+      "category": "release_notes",
+      "question": "What .NET platform was introduced in PlayReady 4.3 Server SDK?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "platform",
+        "introduced",
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB072",
+      "category": "release_notes",
+      "question": "What revocation feature was added in PlayReady 4.3?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.3.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "revocation",
+        "feature",
+        "added"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.3.pdf",
+      "source_file": "PR_WhatsNew_v4.3.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB073",
+      "category": "release_notes",
+      "question": "What is Optimized Content Key 2 in PlayReady 4.4?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.4.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "optimized",
+        "content"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.4.pdf",
+      "source_file": "PR_WhatsNew_v4.4.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB074",
+      "category": "release_notes",
+      "question": "What feature detection was added in PlayReady 4.4?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.4.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "feature",
+        "detection",
+        "added"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.4.pdf",
+      "source_file": "PR_WhatsNew_v4.4.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB075",
+      "category": "release_notes",
+      "question": "How does challenge encryption change in PlayReady 4.5?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.5.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "challenge",
+        "encryption",
+        "change"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.5.pdf",
+      "source_file": "PR_WhatsNew_v4.5.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB076",
+      "category": "release_notes",
+      "question": "How does Secure Time change in PlayReady 4.5?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.5.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "secure",
+        "time",
+        "change"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.5.pdf",
+      "source_file": "PR_WhatsNew_v4.5.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB077",
+      "category": "release_notes",
+      "question": "What is Key Exchange in PlayReady 4.5?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.5.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "exchange"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.5.pdf",
+      "source_file": "PR_WhatsNew_v4.5.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB078",
+      "category": "release_notes",
+      "question": "What SDK does Microsoft recommend migrating to in PlayReady 4.5?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.5.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "recommend",
+        "migrating"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.5.pdf",
+      "source_file": "PR_WhatsNew_v4.5.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB079",
+      "category": "release_notes",
+      "question": "What .NET version was the .NET Core SDK migrated to in PlayReady 4.6?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "version",
+        "core",
+        "migrated"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB080",
+      "category": "release_notes",
+      "question": "What Key Exchange enhancement was added in PlayReady 4.6?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.5.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "exchange",
+        "enhancement",
+        "added"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.5.pdf",
+      "source_file": "PR_WhatsNew_v4.5.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB081",
+      "category": "general",
+      "question": "What is the No Circumvention requirement for PlayReady Products?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer Robustness_Rules_For_PlayReady_Products.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "circumvention",
+        "requirement",
+        "products"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "source_file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB082",
+      "category": "licensing",
+      "question": "What happens when a PlayReady License has Must Understand set and Best Effort not set for a policy object?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Compliance_Rules_Part01_v2021.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "happens",
+        "license",
+        "understand"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB083",
+      "category": "licensing",
+      "question": "How must a PlayReady Final Product handle content with different License Security Levels?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Final_Product_License_Sample_v2018.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "final product",
+        "final",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB084",
+      "category": "general",
+      "question": "What Root Public Keys must PlayReady Products use for certificate chain verification?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Compliance_Rules_Part01_v2021.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "root",
+        "public",
+        "keys"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB085",
+      "category": "licensing",
+      "question": "How should PlayReady Products handle unspecified policy in licenses?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "products",
+        "handle",
+        "unspecified"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB086",
+      "category": "general",
+      "question": "What privacy requirement applies to all PlayReady Products?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "privacy",
+        "requirement",
+        "applies"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB087",
+      "category": "licensing",
+      "question": "What happens when Must Understand and Best Effort are both set on a PlayReady License policy object?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Compliance_Rules_Part01_v2021.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "happens",
+        "understand",
+        "best"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB088",
+      "category": "compliance",
+      "question": "What must PlayReady Products resist regarding secrets per Robustness Rules Section 1.2?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer Robustness_Rules_For_PlayReady_Products.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "robustness",
+        "products",
+        "resist"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "source_file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB089",
+      "category": "licensing",
+      "question": "What are the content accessibility requirements at License Security Level 2000?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_SL3000_Playbook.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "content",
+        "accessibility",
+        "requirements",
+        "license"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB090",
+      "category": "licensing",
+      "question": "What TEE requirement applies at License Security Level 3000 or higher?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_SL3000_Playbook.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "tee",
+        "requirement",
+        "applies",
+        "license"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB091",
+      "category": "security_level",
+      "question": "What robustness level is required for SL2000 products against Widely Available Tools?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_SL3000_Playbook.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "sl2000",
+        "robustness",
+        "level",
+        "required"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB092",
+      "category": "security_level",
+      "question": "What robustness level is required for SL3000 products against software tools?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_SL3000_Playbook.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "sl3000",
+        "robustness",
+        "level",
+        "required"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB093",
+      "category": "general",
+      "question": "What must PlayReady Products resist regarding Root Public Keys?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Compliance_Rules_Part01_v2021.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "products",
+        "resist",
+        "regarding"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB094",
+      "category": "security_level",
+      "question": "What security applies to decrypted A/V content on user accessible buses at SL2000?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_SL3000_Playbook.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "sl2000",
+        "security",
+        "applies",
+        "decrypted"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_SL3000_Playbook.pdf",
+      "source_file": "PR_SL3000_Playbook.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB095",
+      "category": "licensing",
+      "question": "Explain the license acquisition flow including authentication in a PlayReady video service.",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "license",
+        "acquisition",
+        "flow"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB096",
+      "category": "architecture",
+      "question": "How does renewability differ from revocation in PlayReady domains?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "domain",
+        "renewability",
+        "differ"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB097",
+      "category": "architecture",
+      "question": "What economic incentive does metering provide for music subscription services?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Documentation_Part01.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "metering",
+        "economic",
+        "incentive",
+        "provide"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB098",
+      "category": "release_notes",
+      "question": "What are the four key differences between .NET Framework and .NET Standard PlayReady Server SDKs in 4.5?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "four",
+        "differences",
+        "framework"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB099",
+      "category": "licensing",
+      "question": "What new license classes were added in PlayReady 4.5 Server SDK?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "license",
+        "classes",
+        "added"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB100",
+      "category": "licensing",
+      "question": "What API change was made to LicenseServerTime in PlayReady 4.6?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "change",
+        "made",
+        "licenseservertime"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB101",
+      "category": "release_notes",
+      "question": "What memory allocation change was made in PlayReady 4.6 Device Porting Kit?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.6.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "memory",
+        "allocation",
+        "change"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.6.pdf",
+      "source_file": "PR_WhatsNew_v4.6.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB102",
+      "category": "release_notes",
+      "question": "What was restored in PlayReady 4.6 for .NET Core Server SDK?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "restored",
+        "core",
+        "server"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB103",
+      "category": "security_level",
+      "question": "Why must IPLs provide SL3000 test report checklists to FPLs?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "sl3000",
+        "ipls",
+        "provide",
+        "test"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB104",
+      "category": "general",
+      "question": "What is Enhanced Content Protection (ECP) in PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "ecp",
+        "enhanced",
+        "content"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB105",
+      "category": "live_tv",
+      "question": "How does PlayReady key rotation work for Live TV?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_LiveTV_Protection_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "live tv",
+        "rotation",
+        "work"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB106",
+      "category": "live_tv",
+      "question": "What design goal drove PlayReady Live TV features for network operators?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_LiveTV_Protection_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "live tv",
+        "design",
+        "goal"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB107",
+      "category": "architecture",
+      "question": "How can web browsers consume PlayReady-encrypted content?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Documentation_Part01.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "browsers",
+        "consume",
+        "playready-encrypted"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Documentation_Part01.pdf",
+      "source_file": "PR_Documentation_Part01.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB108",
+      "category": "release_notes",
+      "question": "What Android features does the PlayReady Client SDK for Android support?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Dev_Clients_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "android",
+        "features",
+        "client"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Dev_Clients_Part01_v2015.pdf",
+      "source_file": "PR_Dev_Clients_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB109",
+      "category": "general",
+      "question": "Compare Intermediate vs Final Product distribution rights for object code.",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Final_Product_License_Sample_v2018.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "final product",
+        "intermediate",
+        "final",
+        "product"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Final_Product_License_Sample_v2018.pdf",
+      "source_file": "PR_Final_Product_License_Sample_v2018.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB110",
+      "category": "licensing",
+      "question": "What is the complete EV certificate submission process for PlayReady Server Agreement?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_EV_Certificate_Instructions.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "ev certificate",
+        "server agreement",
+        "certificate"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_EV_Certificate_Instructions.pdf",
+      "source_file": "PR_EV_Certificate_Instructions.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB111",
+      "category": "general",
+      "question": "What two things must content protection systems do according to PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "things",
+        "content",
+        "protection"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB112",
+      "category": "general",
+      "question": "What is breach response in PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "breach",
+        "response"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB113",
+      "category": "client",
+      "question": "What platforms does PlayReady support for clients?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "platforms",
+        "support",
+        "clients"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB114",
+      "category": "licensing",
+      "question": "How do I change license agreement contact permissions in the IPLA portal?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Intermediate_Product_License_Sample_v2016.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "ipla",
+        "change",
+        "license",
+        "agreement"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "source_file": "PR_Intermediate_Product_License_Sample_v2016.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB115",
+      "category": "licensing",
+      "question": "What portal URL supports PlayReady licensing sign-in?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_IPLA_Licensing_Portal_FAQ.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "portal",
+        "supports",
+        "licensing"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "source_file": "PR_IPLA_Licensing_Portal_FAQ.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB116",
+      "category": "compliance",
+      "question": "What sections of Compliance Rules apply to all PlayReady Products?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Compliance_Rules_Part01_v2021.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "compliance",
+        "sections",
+        "rules"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB117",
+      "category": "general",
+      "question": "What must PlayReady Products do when implementing WMDRM?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Compliance_Rules_Part01_v2021.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "products",
+        "implementing",
+        "wmdrm"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "source_file": "PR_Compliance_Rules_Part01_v2021.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB118",
+      "category": "release_notes",
+      "question": "What term replacement occurred in PlayReady 4.2 Device Porting Kit?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.2.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "term",
+        "replacement",
+        "occurred"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.2.pdf",
+      "source_file": "PR_WhatsNew_v4.2.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB119",
+      "category": "release_notes",
+      "question": "What tools were removed in PlayReady 4.2?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.2.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "tools",
+        "removed"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.2.pdf",
+      "source_file": "PR_WhatsNew_v4.2.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB120",
+      "category": "release_notes",
+      "question": "What CDMI change was made in PlayReady 4.4?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.4.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "cdmi",
+        "change",
+        "made"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.4.pdf",
+      "source_file": "PR_WhatsNew_v4.4.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB121",
+      "category": "release_notes",
+      "question": "What IServerAuthorization addition was made in PlayReady 4.6?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "iserverauthorization",
+        "addition",
+        "made"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB122",
+      "category": "release_notes",
+      "question": "What tool was added in PlayReady 4.6 Device Porting Kit?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.6.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "tool",
+        "added",
+        "device"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.6.pdf",
+      "source_file": "PR_WhatsNew_v4.6.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB123",
+      "category": "licensing",
+      "question": "What alternatives exist to a direct PlayReady Server Agreement?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "server agreement",
+        "alternatives",
+        "exist"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB124",
+      "category": "licensing",
+      "question": "What does the PlayReady Server Agreement provide?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "server agreement",
+        "server",
+        "agreement"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB125",
+      "category": "general",
+      "question": "What content types can PlayReady protect?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "content",
+        "types",
+        "protect"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB126",
+      "category": "compliance",
+      "question": "What PII protection is required by Robustness Rules?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer Robustness_Rules_For_PlayReady_Products.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "robustness",
+        "protection",
+        "required",
+        "rules"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "source_file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB127",
+      "category": "compliance",
+      "question": "What happens under New Circumstances in Robustness Rules?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer Robustness_Rules_For_PlayReady_Products.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "robustness",
+        "happens",
+        "circumstances",
+        "rules"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "source_file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB128",
+      "category": "general",
+      "question": "Does PlayReady provide user authentication technology?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "provide",
+        "user",
+        "authentication"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB129",
+      "category": "general",
+      "question": "Does PlayReady provide the key management system?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "provide",
+        "management",
+        "system"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB130",
+      "category": "release_notes",
+      "question": "What SecureStop API changes occurred between .NET Framework and Standard SDKs in 4.5?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_Server_Overview.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "securestop",
+        "changes",
+        "occurred",
+        "framework"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_Server_Overview.pdf",
+      "source_file": "PR_Server_Overview.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB131",
+      "category": "release_notes",
+      "question": "What bug fix was made in PlayReady 4.6 Device Porting Kit?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_WhatsNew_v4.6.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "made",
+        "device",
+        "porting"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_WhatsNew_v4.6.pdf",
+      "source_file": "PR_WhatsNew_v4.6.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB132",
+      "category": "general",
+      "question": "What are Content Protection Functions in PlayReady?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "content",
+        "protection",
+        "functions"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB133",
+      "category": "general",
+      "question": "What are Device Secrets in PlayReady terminology?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer Robustness_Rules_For_PlayReady_Products.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "device",
+        "secrets",
+        "terminology"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "source_file": "Robustness_Rules_For_PlayReady_Products.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB134",
+      "category": "live_tv",
+      "question": "What Live TV business scenarios does the Live TV whitepaper describe?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs (prefer PR_LiveTV_Protection_Part01_v2015.pdf). Cross-check in source_document / source_file.",
+      "must_any": [
+        "live tv",
+        "live",
+        "business",
+        "scenarios"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "source_file": "PR_LiveTV_Protection_Part01_v2015.pdf",
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB135",
+      "category": "client",
+      "question": "What release requirements apply to PlayReady client development?",
+      "expect_decision": "answer",
+      "expected_answer": "Answer from PlayReady Prod Normalised PDFs. Cross-check in source_document / source_file.",
+      "must_any": [
+        "playready",
+        "release",
+        "requirements",
+        "apply"
+      ],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Imported from PublicBot-Questions.xlsx",
+      "origin": "PublicBot-Questions.xlsx"
+    },
+    {
+      "id": "PB136",
+      "category": "refuse",
+      "question": "What will PlayReady stock price be next quarter?",
+      "expect_decision": "refuse",
+      "expected_answer": "Refuse — not in product docs.",
+      "must_any": [],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Refuse — OOD",
+      "origin": "added_refuse"
+    },
+    {
+      "id": "PB137",
+      "category": "refuse",
+      "question": "What is the weather in Redmond tomorrow?",
+      "expect_decision": "refuse",
+      "expected_answer": "Refuse — OOD.",
+      "must_any": [],
+      "forbid_any": [],
+      "citation_any": [],
+      "source_document": null,
+      "source_file": null,
+      "kb_quote_hint": null,
+      "map_check": "Refuse — OOD",
+      "origin": "added_refuse"
+    }
+  ]
+}

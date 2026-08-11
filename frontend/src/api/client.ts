@@ -106,7 +106,12 @@ export type StudioDashboard = {
       asks_sampled: number;
       status: "trusted" | "review" | "building";
     };
-    findings: Array<{ kind: "ok" | "warn" | "info"; text: string }>;
+    findings: Array<{
+      id?: string;
+      kind: "ok" | "warn" | "info";
+      text: string;
+      drillable?: boolean;
+    }>;
     graph: {
       health_score: number;
       most_connected: string;
@@ -116,6 +121,32 @@ export type StudioDashboard = {
       relationships: number;
     };
   };
+};
+
+export type FindingProofKind =
+  | "compliance"
+  | "concepts"
+  | "relationships"
+  | "conflicts"
+  | "unsupported";
+
+export type FindingProofItem = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  detail?: string;
+  agent_name?: string;
+  workspace_id?: string;
+  meta?: Record<string, unknown>;
+};
+
+export type FindingProof = {
+  kind: string;
+  title: string;
+  total: number;
+  showing: number;
+  items: FindingProofItem[];
+  map_hint?: string;
 };
 export type Job = {
   id: string;
@@ -383,6 +414,8 @@ export const api = {
       `/api/sources/cleanstack/${workspaceId}`
     ),
   dashboard: () => req<StudioDashboard>("/api/studio/dashboard"),
+  findingProof: (kind: FindingProofKind | string, limit = 50) =>
+    req<FindingProof>(`/api/studio/findings/${encodeURIComponent(kind)}?limit=${limit}`),
   listAgents: () => req<Agent[]>("/api/agents"),
   createAgent: (name: string, description = "") =>
     req<Agent>("/api/agents", {

@@ -182,8 +182,10 @@ class TrustCenter(BaseModel):
 
 
 class AiFinding(BaseModel):
+    id: str = ""
     kind: Literal["ok", "warn", "info"] = "ok"
     text: str
+    drillable: bool = False
 
 
 class GraphInsights(BaseModel):
@@ -193,6 +195,25 @@ class GraphInsights(BaseModel):
     top_agent_asks: int = 0
     concepts: int = 0
     relationships: int = 0
+
+
+class FindingProofItem(BaseModel):
+    id: str = ""
+    title: str
+    subtitle: str = ""
+    detail: str = ""
+    agent_name: str = ""
+    workspace_id: str = ""
+    meta: dict[str, Any] = Field(default_factory=dict)
+
+
+class FindingProofOut(BaseModel):
+    kind: str
+    title: str
+    total: int = 0
+    showing: int = 0
+    items: list[FindingProofItem] = Field(default_factory=list)
+    map_hint: str = "Open Maps to inspect these nodes and edges in context."
 
 
 class PlatformIntelligence(BaseModel):

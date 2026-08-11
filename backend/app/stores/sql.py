@@ -1136,49 +1136,69 @@ class WorkspaceStore:
         )
         discovered_rels = int((await cur.fetchone())["c"] or 0)
 
-        findings: list[dict[str, str]] = []
+        findings: list[dict[str, Any]] = []
         if compliance_n:
             findings.append(
                 {
+                    "id": "compliance",
                     "kind": "ok",
                     "text": f"Identified {compliance_n} compliance / obligation concepts",
+                    "drillable": True,
                 }
             )
         if concepts:
             findings.append(
-                {"kind": "ok", "text": f"Extracted {concepts:,} key concepts across agents"}
+                {
+                    "id": "concepts",
+                    "kind": "ok",
+                    "text": f"Extracted {concepts:,} key concepts across agents",
+                    "drillable": True,
+                }
             )
         if discovered_rels:
             findings.append(
                 {
+                    "id": "relationships",
                     "kind": "ok",
                     "text": f"Bound {discovered_rels:,} evidence-linked relationships",
+                    "drillable": True,
                 }
             )
         if conflicts:
             findings.append(
                 {
+                    "id": "conflicts",
                     "kind": "warn",
                     "text": f"Detected {conflicts} conflicting statements in the graph",
+                    "drillable": True,
                 }
             )
         if unsupported:
             findings.append(
                 {
+                    "id": "unsupported",
                     "kind": "warn",
                     "text": f"{unsupported} unsupported claims flagged in recent answers",
+                    "drillable": True,
                 }
             )
         if not findings:
             if docs == 0:
                 findings.append(
-                    {"kind": "info", "text": "Connect a knowledge base to start discovering evidence"}
+                    {
+                        "id": "empty",
+                        "kind": "info",
+                        "text": "Connect a knowledge base to start discovering evidence",
+                        "drillable": False,
+                    }
                 )
             else:
                 findings.append(
                     {
+                        "id": "warming",
                         "kind": "info",
                         "text": "Graph is warming — Ask questions to surface trust trails",
+                        "drillable": False,
                     }
                 )
 
@@ -1232,6 +1252,253 @@ class WorkspaceStore:
                 "concepts": concepts,
                 "relationships": edges,
             },
+        }
+
+    async def studio_finding_proof(self, kind: str, *, limit: int = 50) -> dict[str, Any]:
+        """Drill-down rows that prove a Home AI Finding (platform-wide)."""
+        kind = (kind or "").strip().lower()
+        limit = max(1, min(int(limit or 50), 200))
+        titles = {
+            "compliance": "Compliance / obligation concepts",
+            "concepts": "Top concepts by connectivity",
+            "relationships": "Evidence-linked relationships",
+            "conflicts": "Conflicting statements",
+            "unsupported": "Unsupported claims in recent answers",
+        }
+        if kind not in titles:
+            return {
+                "kind": kind,
+                "title": "Unknown finding",
+                "total": 0,
+                "showing": 0,
+                "items": [],
+                "map_hint": "",
+            }
+
+        items: list[dict[str, Any]] = []
+        total = 0
+        map_hint = "Open Maps to inspect these nodes and edges in context."
+
+        if kind in ("compliance", "concepts"):
+            compliance_sql = """
+                 AND (
+                   lower(n.type) LIKE '%compliance%'
+                   OR lower(n.type) LIKE '%obligation%'
+                   OR lower(n.type) LIKE '%rule%'
+                   OR lower(n.type) LIKE '%policy%'
+                   OR lower(n.name) LIKE '%compliance%'
+                   OR lower(n.name) LIKE '%obligation%'
+                 )""" if kind == "compliance" else ""
+            cur = await self.conn.execute(
+                f"""SELECT COUNT(*) AS c FROM kg_nodes n
+                    WHERE n.type NOT IN ('Document', 'Chunk', 'Section')
+                    {compliance_sql}"""
+            )
+            total = int((await cur.fetchone())["c"] or 0)
+            cur = await self.conn.execute(
+                f"""SELECT n.id, n.name, n.type, n.workspace_id,
+                           COALESCE(a.name, '') AS agent_name,
+                           (SELECT COUNT(*) FROM kg_edges e
+                             WHERE e.workspace_id = n.workspace_id AND e.status = 'active'
+                               AND (e.src = n.id OR e.dst = n.id)) AS degree
+                    FROM kg_nodes n
+                    LEFT JOIN assistants a ON a.workspace_id = n.workspace_id
+                    WHERE n.type NOT IN ('Document', 'Chunk', 'Section')
+                    {compliance_sql}
+                    ORDER BY degree DESC, n.name COLLATE NOCASE ASC
+                    LIMIT ?""",
+                (limit,),
+            )
+            for r in await cur.fetchall():
+                deg = int(r["degree"] or 0)
+                items.append(
+                    {
+                        "id": r["id"],
+                        "title": (r["name"] or "(unnamed)").strip(),
+                        "subtitle": r["type"] or "Concept",
+                        "detail": f"Degree {deg}",
+                        "agent_name": r["agent_name"] or "",
+                        "workspace_id": r["workspace_id"] or "",
+                        "meta": {"degree": deg, "type": r["type"] or ""},
+                    }
+                )
+            if kind == "concepts":
+                map_hint = "Sorted by graph degree — highest connectivity first. Open Maps to explore neighbors."
+            else:
+                map_hint = "These nodes matched compliance / obligation / policy / rule signals. Open Maps to verify."
+
+        elif kind == "relationships":
+            where = """e.status = 'active'
+                 AND (e.edge_class IN ('documentary', 'derived')
+                      OR EXISTS (
+                        SELECT 1 FROM kg_edge_evidence ev
+                        WHERE ev.edge_id = e.id AND ev.status = 'active'
+                      ))"""
+            cur = await self.conn.execute(
+                f"SELECT COUNT(*) AS c FROM kg_edges e WHERE {where}"
+            )
+            total = int((await cur.fetchone())["c"] or 0)
+            cur = await self.conn.execute(
+                f"""SELECT e.id, e.rel_type, e.edge_class, e.workspace_id,
+                           ns.name AS src_name, nd.name AS dst_name,
+                           COALESCE(a.name, '') AS agent_name,
+                           (SELECT quote FROM kg_edge_evidence ev
+                             WHERE ev.edge_id = e.id AND ev.status = 'active'
+                             ORDER BY ev.confidence DESC LIMIT 1) AS quote,
+                           (SELECT source_span_start FROM kg_edge_evidence ev
+                             WHERE ev.edge_id = e.id AND ev.status = 'active'
+                             ORDER BY ev.confidence DESC LIMIT 1) AS span_start,
+                           (SELECT source_span_end FROM kg_edge_evidence ev
+                             WHERE ev.edge_id = e.id AND ev.status = 'active'
+                             ORDER BY ev.confidence DESC LIMIT 1) AS span_end
+                    FROM kg_edges e
+                    JOIN kg_nodes ns ON ns.id = e.src
+                    JOIN kg_nodes nd ON nd.id = e.dst
+                    LEFT JOIN assistants a ON a.workspace_id = e.workspace_id
+                    WHERE {where}
+                    ORDER BY
+                      CASE WHEN EXISTS (
+                        SELECT 1 FROM kg_edge_evidence ev
+                        WHERE ev.edge_id = e.id AND ev.status = 'active'
+                          AND TRIM(COALESCE(ev.quote, '')) != ''
+                      ) THEN 0 ELSE 1 END,
+                      e.id DESC
+                    LIMIT ?""",
+                (limit,),
+            )
+            for r in await cur.fetchall():
+                quote = (r["quote"] or "").strip()
+                span_s = r["span_start"]
+                span_e = r["span_end"]
+                span = ""
+                if span_s is not None and span_e is not None:
+                    span = f" chars {span_s}–{span_e}"
+                items.append(
+                    {
+                        "id": r["id"],
+                        "title": f"{r['src_name'] or '?'} —{r['rel_type'] or 'related'}→ {r['dst_name'] or '?'}",
+                        "subtitle": (r["edge_class"] or "edge") + span,
+                        "detail": quote,
+                        "agent_name": r["agent_name"] or "",
+                        "workspace_id": r["workspace_id"] or "",
+                        "meta": {
+                            "rel_type": r["rel_type"] or "",
+                            "edge_class": r["edge_class"] or "",
+                            "src": r["src_name"] or "",
+                            "dst": r["dst_name"] or "",
+                            "span_start": span_s,
+                            "span_end": span_e,
+                        },
+                    }
+                )
+            map_hint = "Sample of evidence-bearing edges with quote spans. Open Maps to walk the full path."
+
+        elif kind == "conflicts":
+            where = """e.status = 'active'
+                 AND (lower(e.rel_type) LIKE '%conflict%'
+                      OR lower(e.rel_type) = 'conflicts_with')"""
+            cur = await self.conn.execute(
+                f"SELECT COUNT(*) AS c FROM kg_edges e WHERE {where}"
+            )
+            total = int((await cur.fetchone())["c"] or 0)
+            cur = await self.conn.execute(
+                f"""SELECT e.id, e.rel_type, e.edge_class, e.workspace_id,
+                           e.src AS src_id, e.dst AS dst_id,
+                           ns.name AS src_name, nd.name AS dst_name,
+                           COALESCE(a.name, '') AS agent_name,
+                           (SELECT quote FROM kg_edge_evidence ev
+                             WHERE ev.edge_id = e.id AND ev.status = 'active'
+                             ORDER BY ev.confidence DESC LIMIT 1) AS quote,
+                           (SELECT GROUP_CONCAT(DISTINCT COALESCE(d.title, d.id))
+                              FROM kg_edge_evidence ev
+                              LEFT JOIN chunks ch ON ch.id = ev.source_chunk_id
+                              LEFT JOIN canonical_documents d
+                                ON d.id = ch.canonical_document_id
+                             WHERE ev.edge_id = e.id AND ev.status = 'active'
+                           ) AS sources
+                    FROM kg_edges e
+                    JOIN kg_nodes ns ON ns.id = e.src
+                    JOIN kg_nodes nd ON nd.id = e.dst
+                    LEFT JOIN assistants a ON a.workspace_id = e.workspace_id
+                    WHERE {where}
+                    ORDER BY e.id DESC
+                    LIMIT ?""",
+                (limit,),
+            )
+            for r in await cur.fetchall():
+                quote = (r["quote"] or "").strip()
+                sources = (r["sources"] or "").strip()
+                src_name = (r["src_name"] or "?").strip()
+                dst_name = (r["dst_name"] or "?").strip()
+                detail_parts = [
+                    f"Side A: {src_name}",
+                    f"Side B: {dst_name}",
+                ]
+                if quote:
+                    detail_parts.append(f"Evidence: {quote}")
+                if sources:
+                    detail_parts.append(f"Sources: {sources}")
+                items.append(
+                    {
+                        "id": r["id"],
+                        "title": f"{src_name} vs {dst_name}",
+                        "subtitle": f"{r['rel_type'] or 'conflicts_with'} · both sides",
+                        "detail": "\n".join(detail_parts),
+                        "agent_name": r["agent_name"] or "",
+                        "workspace_id": r["workspace_id"] or "",
+                        "meta": {
+                            "src": src_name,
+                            "dst": dst_name,
+                            "src_id": r["src_id"] or "",
+                            "dst_id": r["dst_id"] or "",
+                            "rel_type": r["rel_type"] or "",
+                            "sources": sources,
+                            "quote": quote,
+                        },
+                    }
+                )
+            map_hint = "Each row is a conflict edge with both node sides and source quotes when available."
+
+        else:  # unsupported
+            where = """lower(c.support_status) IN ('unsupported','refuted','contradicted')"""
+            cur = await self.conn.execute(
+                f"SELECT COUNT(*) AS c FROM answer_claims c WHERE {where}"
+            )
+            total = int((await cur.fetchone())["c"] or 0)
+            cur = await self.conn.execute(
+                f"""SELECT c.id, c.claim_text, c.support_status, c.trust_score,
+                           c.workspace_id, COALESCE(a.name, '') AS agent_name
+                    FROM answer_claims c
+                    LEFT JOIN assistants a ON a.workspace_id = c.workspace_id
+                    WHERE {where}
+                    ORDER BY c.rowid DESC
+                    LIMIT ?""",
+                (limit,),
+            )
+            for r in await cur.fetchall():
+                items.append(
+                    {
+                        "id": r["id"],
+                        "title": (r["claim_text"] or "(empty claim)").strip()[:240],
+                        "subtitle": r["support_status"] or "unsupported",
+                        "detail": f"Trust score {float(r['trust_score'] or 0):.2f}",
+                        "agent_name": r["agent_name"] or "",
+                        "workspace_id": r["workspace_id"] or "",
+                        "meta": {
+                            "support_status": r["support_status"] or "",
+                            "trust_score": float(r["trust_score"] or 0),
+                        },
+                    }
+                )
+            map_hint = "Claims from recent answers that lacked supporting evidence. Re-Ask or review Maps."
+
+        return {
+            "kind": kind,
+            "title": titles[kind],
+            "total": total,
+            "showing": len(items),
+            "items": items,
+            "map_hint": map_hint,
         }
 
     async def purge_knowledge(self, workspace_id: str) -> dict[str, Any]:

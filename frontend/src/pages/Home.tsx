@@ -1,8 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { api, formatApiError, type StudioDashboard } from "../api/client";
+import {
+  api,
+  formatApiError,
+  type FindingProof,
+  type FindingProofKind,
+  type StudioDashboard,
+} from "../api/client";
 import EditableText from "../components/EditableText";
 import { useWorkspace } from "../state";
+
+const PROOF_KINDS = new Set<string>([
+  "compliance",
+  "concepts",
+  "relationships",
+  "conflicts",
+  "unsupported",
+]);
 
 export default function Home() {
   const { selectAgent, createAgent, renameAgent, currentAgent, agentId } = useWorkspace();
@@ -12,6 +26,10 @@ export default function Home() {
   const [copied, setCopied] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
   const [showCreate, setShowCreate] = useState(false);
+  const [proofKind, setProofKind] = useState<FindingProofKind | null>(null);
+  const [proof, setProof] = useState<FindingProof | null>(null);
+  const [proofBusy, setProofBusy] = useState(false);
+  const [proofErr, setProofErr] = useState<string | null>(null);
 
   async function load() {
     try {
@@ -47,6 +65,30 @@ export default function Home() {
     setTimeout(() => setCopied(null), 1400);
   }
 
+  async function openProof(kind: string) {
+    if (!PROOF_KINDS.has(kind)) return;
+    const k = kind as FindingProofKind;
+    setProofKind(k);
+    setProof(null);
+    setProofErr(null);
+    setProofBusy(true);
+    try {
+      const limit = k === "concepts" || k === "relationships" ? 40 : 80;
+      setProof(await api.findingProof(k, limit));
+    } catch (e) {
+      setProofErr(formatApiError(e));
+    } finally {
+      setProofBusy(false);
+    }
+  }
+
+  function closeProof() {
+    setProofKind(null);
+    setProof(null);
+    setProofErr(null);
+    setProofBusy(false);
+  }
+
   const t = dash?.totals || {};
   const agents = dash?.agents || [];
   const intel = dash?.intelligence;
@@ -57,6 +99,13 @@ export default function Home() {
     () => agents.find((a) => a.id === agentId) || agents[0] || null,
     [agents, agentId]
   );
+
+  const proofAgentLink = useMemo(() => {
+    if (!proof?.items?.length) return active;
+    const wid = proof.items.find((i) => i.workspace_id)?.workspace_id;
+    if (!wid) return active;
+    return agents.find((a) => a.workspace_id === wid) || active;
+  }, [proof, agents, active]);
   const live = agents.filter((a) => a.readiness === "live").length;
   const ready = agents.filter((a) => a.readiness === "ready").length;
   const trustStatus = trust?.status || "building";
@@ -350,14 +399,26 @@ export default function Home() {
               <span>Evidence coverage</span>
               <strong>{`${trust?.evidence_coverage_pct ?? 0}%`}</strong>
             </div>
-            <div>
+            <button
+              type="button"
+              className={`intel-metric-btn ${(trust?.conflicts ?? 0) > 0 ? "is-clickable" : ""}`}
+              disabled={!trust?.conflicts}
+              onClick={() => void openProof("conflicts")}
+              title={trust?.conflicts ? "Prove conflicts" : undefined}
+            >
               <span>Conflicts</span>
               <strong>{trust?.conflicts ?? 0}</strong>
-            </div>
-            <div>
+            </button>
+            <button
+              type="button"
+              className={`intel-metric-btn ${(trust?.unsupported_claims ?? 0) > 0 ? "is-clickable" : ""}`}
+              disabled={!trust?.unsupported_claims}
+              onClick={() => void openProof("unsupported")}
+              title={trust?.unsupported_claims ? "Prove unsupported claims" : undefined}
+            >
               <span>Unsupported</span>
               <strong>{trust?.unsupported_claims ?? 0}</strong>
-            </div>
+            </button>
           </div>
           <div className={`intel-status is-${trustStatus}`}>
             Status: {trustLabel}
@@ -367,12 +428,29 @@ export default function Home() {
         <article className="intel-card intel-findings">
           <div className="intel-kicker">AI Findings</div>
           <ul>
-            {findings.map((f, i) => (
-              <li key={i} className={`is-${f.kind}`}>
-                <i aria-hidden>{f.kind === "warn" ? "!" : f.kind === "ok" ? "✓" : "·"}</i>
-                <span>{f.text}</span>
-              </li>
-            ))}
+            {findings.map((f, i) => {
+              const drillable = Boolean(f.drillable && f.id && PROOF_KINDS.has(f.id));
+              const body = (
+                <>
+                  <i aria-hidden>{f.kind === "warn" ? "!" : f.kind === "ok" ? "✓" : "·"}</i>
+                  <span>
+                    {f.text}
+                    {drillable ? <em className="finding-prove">Prove it</em> : null}
+                  </span>
+                </>
+              );
+              return (
+                <li key={f.id || i} className={`is-${f.kind}${drillable ? " is-drillable" : ""}`}>
+                  {drillable ? (
+                    <button type="button" className="finding-btn" onClick={() => void openProof(f.id!)}>
+                      {body}
+                    </button>
+                  ) : (
+                    body
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </article>
 
@@ -410,6 +488,83 @@ export default function Home() {
           )}
         </article>
       </section>
+
+      {proofKind && (
+        <div className="proof-drawer-root" role="presentation" onClick={closeProof}>
+          <aside
+            className="proof-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label={proof?.title || "Finding proof"}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <header className="proof-drawer-head">
+              <div>
+                <div className="intel-kicker">Prove it</div>
+                <h2>{proof?.title || (proofBusy ? "Loading…" : "Finding")}</h2>
+                {proof && (
+                  <p className="muted">
+                    Showing {proof.showing} of {proof.total}
+                    {proof.map_hint ? ` · ${proof.map_hint}` : ""}
+                  </p>
+                )}
+              </div>
+              <button type="button" className="btn btn-ghost" onClick={closeProof}>
+                Close
+              </button>
+            </header>
+
+            {proofErr && <div className="banner error">{proofErr}</div>}
+            {proofBusy && !proof && <p className="muted">Loading evidence…</p>}
+
+            {proof && (
+              <ol className="proof-list">
+                {proof.items.map((item) => (
+                  <li key={item.id}>
+                    <div className="proof-item-title">{item.title}</div>
+                    {(item.subtitle || item.agent_name) && (
+                      <div className="proof-item-meta">
+                        {[item.subtitle, item.agent_name].filter(Boolean).join(" · ")}
+                      </div>
+                    )}
+                    {item.detail && <blockquote className="proof-quote">{item.detail}</blockquote>}
+                  </li>
+                ))}
+                {!proof.items.length && (
+                  <li className="muted">No rows for this finding yet.</li>
+                )}
+              </ol>
+            )}
+
+            <footer className="proof-drawer-foot">
+              {proofAgentLink && (
+                <>
+                  <Link
+                    className="btn btn-primary"
+                    to="/map"
+                    onClick={() => {
+                      void selectAgent(proofAgentLink.id);
+                      closeProof();
+                    }}
+                  >
+                    Open Maps
+                  </Link>
+                  <Link
+                    className="btn btn-ghost"
+                    to="/ask"
+                    onClick={() => {
+                      void selectAgent(proofAgentLink.id);
+                      closeProof();
+                    }}
+                  >
+                    Ask
+                  </Link>
+                </>
+              )}
+            </footer>
+          </aside>
+        </div>
+      )}
     </div>
   );
 }

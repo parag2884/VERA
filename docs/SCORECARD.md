@@ -20,7 +20,13 @@ Invoke-RestMethod -Method POST `
 
 # Ask smoke eval (in API container)
 docker exec -e PYTHONPATH=/app vera-api python /app/scripts/eval_ask_smoke.py
+
+# Trust Forge — climb golden fitness for one agent (isolated heal loop)
+docker exec -e PYTHONPATH=/app vera-api `
+  python -m app.trust_forge.cli --agent "PlayReady" --threshold 95 --poll
 ```
+
+See [trust_forge/](trust_forge/README.md).
 
 ## Still to climb further
 
@@ -29,3 +35,5 @@ docker exec -e PYTHONPATH=/app vera-api python /app/scripts/eval_ask_smoke.py
 | Answer → 9 | More asserted trails (`graph_primary` %) after re-weave |
 | Graph → 9 | Human curation UI; unique aliases; split over-merged Products |
 | Prod → 8 | AuthN for Studio, durable rate-limit store, billing meter, CI eval gate |
+
+**Knowledge OS** (Insights): coverage by domain, numeric conflict scan, Ask 👍/👎, production weak-answer mining, source reliability in retrieval.

@@ -280,6 +280,27 @@ class EvidenceSufficiencyJudgeAgent:
         if name_mode and len(claim_text) < 40:
             claim_text = _synthesize_name_answer(payload.question, quotes)
 
+        if await _should_verify(ctx, trust.overall):
+            verified = await _verify_answer(ctx, payload.question, claim_text, quotes)
+            if not verified:
+                reason_codes.append("VERIFIER_REJECT")
+                reason_codes.append("UNSUPPORTED_BY_EVIDENCE")
+                ctx.emit(self.id, "judge.refuse", "Verifier rejected groundedness", progress=1.0)
+                return AgentResult(
+                    ok=True,
+                    data=EvidenceJudgeOutput(
+                        decision="refuse",
+                        answer=(
+                            "The retrieved evidence does not clearly support a reliable answer. "
+                            "Connect a more specific source, or rephrase using terms from your documents."
+                        ),
+                        reason_codes=reason_codes,
+                        trust_score=trust,
+                        trust_trail=trail.hops if trail else [],
+                        retrieval_mode=payload.retrieval_mode,
+                    ),
+                )
+
         # Refresh coverage after successful answer
         trust.evidence_coverage = round(
             max(trust.evidence_coverage, contract_coverage(contract, quotes, payload.question)),
@@ -337,15 +358,70 @@ class EvidenceSufficiencyJudgeAgent:
         )
 
 
+async def _should_verify(ctx: AgentContext, overall: float) -> bool:
+    if overall < 0.55:
+        return True
+    label = str((ctx.config or {}).get("domain_label") or "").lower()
+    return any(
+        k in label
+        for k in ("health", "bank", "insur", "legal", "pharma", "financ", "bfsi", "clinic")
+    )
+
+
+async def _verify_answer(
+    ctx: AgentContext, question: str, answer: str, quotes: list[QuoteHit]
+) -> bool:
+    """Independent check: does quoted evidence support the answer? Fail-open if no LLM."""
+    if ctx.llm is None or not answer.strip() or not quotes:
+        return True
+    blob = "\n---\n".join((q.quote or "")[:500] for q in quotes[:4])
+    try:
+        raw = await ctx.llm.chat(
+            [
+                {
+                    "role": "system",
+                    "content": (
+                        "You verify groundedness. Return JSON {supported: boolean}. "
+                        "supported=true only if the quotes contain the answer's key facts. "
+                        "Do not use outside knowledge."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": f"Question: {question}\nAnswer: {answer[:1200]}\nQuotes:\n{blob[:4000]}",
+                },
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.0,
+        )
+        import json
+
+        parsed = json.loads(raw or "{}")
+        return bool(parsed.get("supported", True))
+    except Exception:  # noqa: BLE001
+        return True
+
+
 def _source_quality_from_quotes(quotes: list[QuoteHit]) -> float:
     if not quotes:
         return 0.2
+    from app.knowledge.sources.web.site_graph import trust_weight
+
     scores: list[float] = []
     for q in quotes[:5]:
         sig = compute_passage_signals(q.document_title or "", q.quote or "")
         prose = float(sig.get("prose_score") or 0.0)
         chrome = float(sig.get("chrome_score") or 0.0)
-        scores.append(max(0.0, min(1.0, 0.65 * prose + 0.35 * (1.0 - chrome))))
+        reliability = trust_weight(q.document_title or "")
+        scores.append(
+            max(
+                0.0,
+                min(
+                    1.0,
+                    0.45 * prose + 0.25 * (1.0 - chrome) + 0.30 * reliability,
+                ),
+            )
+        )
     return sum(scores) / len(scores)
 
 

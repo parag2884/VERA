@@ -76,6 +76,16 @@ class ChatResponse(BaseModel):
     session_id: str | None = None
     message_id: str | None = None
     events: list[dict[str, Any]] = Field(default_factory=list)
+    conflicts: list[dict[str, Any]] = Field(default_factory=list)
+    reasoning_path: list[str] = Field(default_factory=list)
+    knowledge_gaps: list[dict[str, str]] = Field(default_factory=list)
+
+
+class ChatFeedbackRequest(BaseModel):
+    workspace_id: str
+    message_id: str
+    rating: Literal["up", "down"]
+    note: str = ""
 
 
 class WorkspaceCreate(BaseModel):

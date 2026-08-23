@@ -586,6 +586,164 @@ class WorkspaceStore:
         )
         return nid
 
+    async def patch_node_props(
+        self, workspace_id: str, node_id: str, extra: dict[str, Any]
+    ) -> None:
+        cur = await self.conn.execute(
+            "SELECT props_json FROM kg_nodes WHERE id = ? AND workspace_id = ?",
+            (node_id, workspace_id),
+        )
+        row = await cur.fetchone()
+        if not row:
+            return
+        props = json.loads(row["props_json"] or "{}")
+        if not isinstance(props, dict):
+            props = {}
+        props.update(extra or {})
+        await self.conn.execute(
+            "UPDATE kg_nodes SET props_json = ? WHERE id = ? AND workspace_id = ?",
+            (json.dumps(props), node_id, workspace_id),
+        )
+
+    async def bump_edge_weights(
+        self,
+        workspace_id: str,
+        edge_ids: list[str],
+        delta: float,
+        *,
+        reason: str = "learning",
+        apply: bool = True,
+    ) -> None:
+        from app.knowledge_os.governance import write_audit
+
+        for eid in edge_ids:
+            if not eid:
+                continue
+            cur = await self.conn.execute(
+                """SELECT weight, rel_type FROM kg_edges
+                   WHERE id = ? AND workspace_id = ? AND status = 'active'""",
+                (eid, workspace_id),
+            )
+            row = await cur.fetchone()
+            if not row:
+                continue
+            old = float(row["weight"] or 1.0)
+            new = max(0.12, min(2.8, old + float(delta)))
+            if apply and abs(new - old) > 1e-9:
+                await self.conn.execute(
+                    """UPDATE kg_edges SET weight = ?
+                       WHERE id = ? AND workspace_id = ? AND status = 'active'""",
+                    (new, eid, workspace_id),
+                )
+            await write_audit(
+                workspace_id,
+                entity_type="edge",
+                entity_id=eid,
+                field="weight",
+                old_value=f"{old:.3f}",
+                new_value=f"{new:.3f}",
+                reason=reason,
+                applied=1 if apply else 0,
+            )
+
+    async def record_path_outcome(
+        self, workspace_id: str, key: str, *, won: bool
+    ) -> None:
+        if not key:
+            return
+        from datetime import datetime, timezone
+
+        now = datetime.now(timezone.utc).isoformat()
+        await self.conn.execute(
+            """INSERT INTO kg_path_stats (path_key, workspace_id, wins, losses, updated_at)
+               VALUES (?, ?, ?, ?, ?)
+               ON CONFLICT(workspace_id, path_key) DO UPDATE SET
+                 wins = wins + excluded.wins,
+                 losses = losses + excluded.losses,
+                 updated_at = excluded.updated_at""",
+            (key, workspace_id, 1 if won else 0, 0 if won else 1, now),
+        )
+
+    async def path_stats_map(self, workspace_id: str) -> dict[str, tuple[int, int]]:
+        try:
+            cur = await self.conn.execute(
+                "SELECT path_key, wins, losses FROM kg_path_stats WHERE workspace_id = ?",
+                (workspace_id,),
+            )
+        except Exception:  # noqa: BLE001
+            return {}
+        return {
+            str(r["path_key"]): (int(r["wins"] or 0), int(r["losses"] or 0))
+            for r in await cur.fetchall()
+        }
+
+    async def upsert_draft_golden(self, workspace_id: str, **fields: Any) -> str:
+        from app.knowledge_os.learn import new_id, norm_q, now
+
+        q = (fields.get("question") or "").strip()
+        qn = norm_q(q)
+        cur = await self.conn.execute(
+            """SELECT id FROM draft_goldens
+               WHERE workspace_id = ? AND question_norm = ? LIMIT 1""",
+            (workspace_id, qn),
+        )
+        row = await cur.fetchone()
+        if row:
+            return str(row["id"])
+        did = new_id()
+        rok = fields.get("retrieval_ok")
+        await self.conn.execute(
+            """INSERT INTO draft_goldens (
+                id, workspace_id, question, question_norm, answer_preview,
+                source_url, retrieval_ok, fail_kind, origin, must_any, status, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '', 'draft', ?)""",
+            (
+                did,
+                workspace_id,
+                q[:500],
+                qn,
+                (fields.get("answer_preview") or "")[:400],
+                fields.get("source_url"),
+                None if rok is None else (1 if rok else 0),
+                (fields.get("fail_kind") or "")[:80],
+                (fields.get("origin") or "ask")[:40],
+                now(),
+            ),
+        )
+        return did
+
+    async def list_draft_goldens(
+        self, workspace_id: str, *, status: str | None = None
+    ) -> list[dict[str, Any]]:
+        if status:
+            cur = await self.conn.execute(
+                """SELECT * FROM draft_goldens WHERE workspace_id = ? AND status = ?
+                   ORDER BY created_at DESC LIMIT 80""",
+                (workspace_id, status),
+            )
+        else:
+            cur = await self.conn.execute(
+                """SELECT * FROM draft_goldens WHERE workspace_id = ?
+                   ORDER BY created_at DESC LIMIT 80""",
+                (workspace_id,),
+            )
+        return [dict(r) for r in await cur.fetchall()]
+
+    async def set_draft_golden(
+        self,
+        workspace_id: str,
+        draft_id: str,
+        *,
+        status: str,
+        must_any: str = "",
+    ) -> None:
+        await self.conn.execute(
+            """UPDATE draft_goldens SET status = ?, must_any = ?
+               WHERE id = ? AND workspace_id = ? AND status = 'draft'""",
+            (status, must_any, draft_id, workspace_id),
+        )
+        await self.commit()
+
     async def insert_alias(
         self, workspace_id: str, alias: str, normalized_alias: str, node_id: str
     ) -> None:
@@ -1507,6 +1665,13 @@ class WorkspaceStore:
         tables = [
             "answer_citations",
             "answer_claims",
+            "answer_feedback",
+            "draft_goldens",
+            "graph_versions",
+            "kg_audit",
+            "knowledge_metric_snapshots",
+            "kg_policies",
+            "kg_path_stats",
             "chat_messages",
             "chat_sessions",
             "kg_edge_evidence",

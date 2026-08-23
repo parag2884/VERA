@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { formatApiError } from "../api/client";
+import { formatApiError, api } from "../api/client";
 import AgentMoreMenu from "../components/AgentMoreMenu";
 import EditableText from "../components/EditableText";
 import { useWorkspace } from "../state";
@@ -8,11 +8,12 @@ import { useWorkspace } from "../state";
 function statusLabel(a: {
   disabled?: boolean;
   published: boolean;
-  counts?: { documents?: number; chunks?: number };
+  counts?: { documents?: number; chunks?: number; nodes?: number };
 }) {
   if (a.disabled) return "disabled";
   if (a.published) return "live";
-  if ((a.counts?.documents ?? 0) > 0 || (a.counts?.chunks ?? 0) > 0) return "ready";
+  if ((a.counts?.documents ?? 0) > 0 || (a.counts?.chunks ?? 0) > 0 || (a.counts?.nodes ?? 0) > 0)
+    return "ready";
   return "draft";
 }
 
@@ -32,9 +33,16 @@ export default function Fleet() {
   const [newName, setNewName] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [health, setHealth] = useState<
+    Awaited<ReturnType<typeof api.knowledgeOsFleet>>["workspaces"]
+  >([]);
 
   useEffect(() => {
     void refreshAgents().catch((e) => setErr(formatApiError(e)));
+    void api
+      .knowledgeOsFleet()
+      .then((r) => setHealth(r.workspaces || []))
+      .catch(() => setHealth([]));
   }, [refreshAgents]);
 
   async function onCreate() {
@@ -44,6 +52,34 @@ export default function Fleet() {
       await createAgent(name, "Dedicated knowledge graph for this domain");
       setNewName("");
       setShowCreate(false);
+      setErr(null);
+    } catch (e) {
+      setErr(formatApiError(e));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function onPublish(id: string) {
+    setBusyId(id);
+    setOpenMenu(null);
+    try {
+      await api.publishAgent(id);
+      await refreshAgents();
+      setErr(null);
+    } catch (e) {
+      setErr(formatApiError(e));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function onUnpublish(id: string) {
+    setBusyId(id);
+    setOpenMenu(null);
+    try {
+      await api.unpublishAgent(id);
+      await refreshAgents();
       setErr(null);
     } catch (e) {
       setErr(formatApiError(e));
@@ -89,7 +125,7 @@ export default function Fleet() {
         <div>
           <h2 className="section-title">Agent Fleet</h2>
           <p className="section-sub">
-            Click a row to work on that agent in Studio. Ask opens chat; More covers connect,
+            Click a row to work on that agent. Ask opens chat. More includes publish, connect,
             enable/disable, and delete.
           </p>
         </div>
@@ -122,6 +158,47 @@ export default function Fleet() {
 
       {err && <div className="demo-banner">{err}</div>}
 
+      {health.length > 0 && (
+        <section className="bento-table-wrap" style={{ marginBottom: "1.15rem" }}>
+          <div className="bento-table-head">
+            <h2>Workspace health</h2>
+            <span>Coverage · debt · risk · SLA across agents</span>
+          </div>
+          <table className="agent-table agent-table-auto">
+            <thead>
+              <tr>
+                <th className="fill">Workspace</th>
+                <th>Risk</th>
+                <th className="num">Debt</th>
+                <th className="num">Coverage</th>
+                <th className="num">Trust</th>
+                <th className="num">Fitness</th>
+                <th>SLA</th>
+              </tr>
+            </thead>
+            <tbody>
+              {health.map((h) => (
+                <tr key={h.agent_id || h.workspace_id}>
+                  <td className="fill">{h.name}</td>
+                  <td>{h.risk || "—"}</td>
+                  <td className="num">{h.debt ?? "—"}</td>
+                  <td className="num">{h.coverage ?? "—"}</td>
+                  <td className="num">{h.trust ?? "—"}</td>
+                  <td className="num">{h.fitness != null ? Number(h.fitness).toFixed(0) : "—"}</td>
+                  <td>
+                    {h.sla_ok
+                      ? "pass"
+                      : (h.sla_miss || []).length
+                        ? `fail (${(h.sla_miss || []).join(", ")})`
+                        : "fail"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
       <section className="bento-table-wrap">
         <div className="bento-table-head">
           <h2>All agents</h2>
@@ -141,7 +218,7 @@ export default function Fleet() {
             </button>
           </div>
         ) : (
-          <table className="agent-table">
+          <table className="agent-table agent-table-wide col-2-status">
             <thead>
               <tr>
                 <th>Agent</th>
@@ -253,6 +330,25 @@ export default function Fleet() {
                           >
                             Open map
                           </Link>
+                          {a.published ? (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              disabled={busy}
+                              onClick={() => void onUnpublish(a.id)}
+                            >
+                              Unpublish
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              disabled={busy}
+                              onClick={() => void onPublish(a.id)}
+                            >
+                              Publish agent
+                            </button>
+                          )}
                           {a.disabled ? (
                             <button
                               type="button"

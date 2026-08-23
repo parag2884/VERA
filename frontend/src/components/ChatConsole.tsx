@@ -49,6 +49,7 @@ export default function ChatConsole({
       return true;
     }
   });
+  const [voted, setVoted] = useState<Record<number, "up" | "down">>({});
   const [streamStatus, setStreamStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -286,10 +287,23 @@ export default function ChatConsole({
               </div>
             )}
 
-            {settings.showTrustTrail && m.data?.trust_trail?.length ? (
+            {m.data?.reasoning_path?.length ? (
+              <div className="trail">
+                Reasoning path · {m.data.reasoning_path.join(" → ")}
+              </div>
+            ) : settings.showTrustTrail && m.data?.trust_trail?.length ? (
               <div className="trail">
                 Trust Trail ·{" "}
                 {m.data.trust_trail.map((h) => `${h.from} —${h.rel}→ ${h.to}`).join(" · ")}
+              </div>
+            ) : null}
+
+            {m.data?.conflicts?.length ? (
+              <div className="kos-conflict">
+                Conflict found ·{" "}
+                {m.data.conflicts
+                  .map((c) => `${c.entity || "entity"}: ${(c.values || []).join(" vs ")}`)
+                  .join("; ")}
               </div>
             ) : null}
 
@@ -317,6 +331,53 @@ export default function ChatConsole({
                     {o.label}
                   </button>
                 ))}
+              </div>
+            ) : null}
+
+            {m.data?.knowledge_gaps?.length ? (
+              <div className="kos-gap">
+                Missing knowledge
+                <ul>
+                  {m.data.knowledge_gaps.map((g, gi) => (
+                    <li key={gi}>
+                      <strong>{g.kind}</strong> · {g.title}
+                      {g.detail ? <span className="muted"> — {g.detail}</span> : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {m.data?.message_id ? (
+              <div className="kos-vote">
+                <button
+                  type="button"
+                  className={`chip ${voted[i] === "up" ? "on" : ""}`}
+                  disabled={Boolean(voted[i])}
+                  onClick={() => {
+                    void (async () => {
+                      const ws = await ensureWorkspace();
+                      await api.chatFeedback(ws, m.data!.message_id!, "up");
+                      setVoted((v) => ({ ...v, [i]: "up" }));
+                    })();
+                  }}
+                >
+                  👍 Correct
+                </button>
+                <button
+                  type="button"
+                  className={`chip ${voted[i] === "down" ? "on" : ""}`}
+                  disabled={Boolean(voted[i])}
+                  onClick={() => {
+                    void (async () => {
+                      const ws = await ensureWorkspace();
+                      await api.chatFeedback(ws, m.data!.message_id!, "down");
+                      setVoted((v) => ({ ...v, [i]: "down" }));
+                    })();
+                  }}
+                >
+                  👎 Incorrect
+                </button>
               </div>
             ) : null}
 

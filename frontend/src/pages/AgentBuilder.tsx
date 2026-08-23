@@ -4,6 +4,7 @@ import {
   ACCENT_OPTIONS,
   TONE_OPTIONS,
   VERBOSITY_OPTIONS,
+  type AgentSettings,
 } from "../agentSettings";
 import ChatConsole from "../components/ChatConsole";
 import EditableText from "../components/EditableText";
@@ -225,6 +226,20 @@ export default function AgentBuilder() {
                   <span>chunks</span>
                 </div>
               </div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={busy}
+                onClick={() => {
+                  if (currentAgent.published) {
+                    setTab("publish");
+                    return;
+                  }
+                  void onPublish();
+                }}
+              >
+                {currentAgent.published ? "Published · manage" : "Publish agent"}
+              </button>
             </div>
 
             <nav className="builder-tabs" aria-label="Agent editor">
@@ -394,6 +409,26 @@ export default function AgentBuilder() {
                         ))}
                       </div>
                     </div>
+                  </div>
+
+                  <div className="builder-block">
+                    <h4>Knowledge learning</h4>
+                    <label className="field">
+                      <span>How Ask traffic may change edge weights (this agent only)</span>
+                      <select
+                        value={s.learningMode || "live"}
+                        onChange={(e) =>
+                          updateAgentSettings({
+                            learningMode: e.target.value as AgentSettings["learningMode"],
+                          })
+                        }
+                      >
+                        <option value="live">Live — apply learning immediately</option>
+                        <option value="shadow">Shadow — audit only, no weight change</option>
+                        <option value="gated">Gated — same as shadow (promote/rollback on Insights)</option>
+                        <option value="off">Off — freeze learning</option>
+                      </select>
+                    </label>
                   </div>
 
                   <div className="builder-block">

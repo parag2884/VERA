@@ -233,6 +233,157 @@ CREATE TABLE IF NOT EXISTS knowledge_health (
     updated_at TEXT NOT NULL,
     FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
 );
+
+CREATE TABLE IF NOT EXISTS trust_forge_runs (
+    id TEXT PRIMARY KEY,
+    workspace_id TEXT NOT NULL,
+    agent_id TEXT NOT NULL,
+    suite_path TEXT NOT NULL,
+    threshold REAL NOT NULL DEFAULT 95,
+    max_generations INTEGER NOT NULL DEFAULT 8,
+    stall_generations INTEGER NOT NULL DEFAULT 3,
+    status TEXT NOT NULL,
+    best_fitness REAL NOT NULL DEFAULT 0,
+    generation INTEGER NOT NULL DEFAULT 0,
+    stop_reason TEXT,
+    error TEXT,
+    progress_json TEXT DEFAULT '{}',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id),
+    FOREIGN KEY (agent_id) REFERENCES assistants(id)
+);
+CREATE INDEX IF NOT EXISTS idx_trust_forge_ws ON trust_forge_runs(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_trust_forge_status ON trust_forge_runs(workspace_id, status);
+
+CREATE TABLE IF NOT EXISTS trust_forge_generations (
+    id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL,
+    workspace_id TEXT NOT NULL,
+    gen INTEGER NOT NULL,
+    fitness REAL NOT NULL,
+    passed INTEGER NOT NULL,
+    failed INTEGER NOT NULL,
+    total INTEGER NOT NULL,
+    hygiene_report_json TEXT DEFAULT '{}',
+    case_results_json TEXT DEFAULT '[]',
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (run_id) REFERENCES trust_forge_runs(id),
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
+);
+CREATE INDEX IF NOT EXISTS idx_trust_forge_gens ON trust_forge_generations(run_id);
+
+CREATE TABLE IF NOT EXISTS answer_feedback (
+    id TEXT PRIMARY KEY,
+    workspace_id TEXT NOT NULL,
+    message_id TEXT NOT NULL,
+    rating TEXT NOT NULL,
+    note TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
+);
+CREATE INDEX IF NOT EXISTS idx_feedback_ws ON answer_feedback(workspace_id);
+
+CREATE TABLE IF NOT EXISTS kg_path_stats (
+    path_key TEXT NOT NULL,
+    workspace_id TEXT NOT NULL,
+    wins INTEGER NOT NULL DEFAULT 0,
+    losses INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (workspace_id, path_key)
+);
+
+CREATE TABLE IF NOT EXISTS draft_goldens (
+    id TEXT PRIMARY KEY,
+    workspace_id TEXT NOT NULL,
+    question TEXT NOT NULL,
+    question_norm TEXT NOT NULL,
+    answer_preview TEXT DEFAULT '',
+    source_url TEXT,
+    retrieval_ok INTEGER,
+    fail_kind TEXT DEFAULT '',
+    origin TEXT DEFAULT 'ask',
+    must_any TEXT DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'draft',
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
+);
+CREATE INDEX IF NOT EXISTS idx_drafts_ws ON draft_goldens(workspace_id, status);
+
+CREATE TABLE IF NOT EXISTS graph_versions (
+    id TEXT PRIMARY KEY,
+    workspace_id TEXT NOT NULL,
+    label TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'snapshot',
+    metrics_json TEXT DEFAULT '{}',
+    payload_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
+);
+CREATE INDEX IF NOT EXISTS idx_gver_ws ON graph_versions(workspace_id, created_at);
+
+CREATE TABLE IF NOT EXISTS kg_audit (
+    id TEXT PRIMARY KEY,
+    workspace_id TEXT NOT NULL,
+    entity_type TEXT NOT NULL,
+    entity_id TEXT NOT NULL,
+    field TEXT NOT NULL,
+    old_value TEXT DEFAULT '',
+    new_value TEXT DEFAULT '',
+    reason TEXT DEFAULT '',
+    applied INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
+);
+CREATE INDEX IF NOT EXISTS idx_audit_ws ON kg_audit(workspace_id, created_at);
+
+CREATE TABLE IF NOT EXISTS knowledge_metric_snapshots (
+    id TEXT PRIMARY KEY,
+    workspace_id TEXT NOT NULL,
+    metrics_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
+);
+CREATE INDEX IF NOT EXISTS idx_kms_ws ON knowledge_metric_snapshots(workspace_id, created_at);
+
+CREATE TABLE IF NOT EXISTS knowledge_ops_actions (
+    id TEXT PRIMARY KEY,
+    workspace_id TEXT NOT NULL,
+    driver TEXT NOT NULL,
+    label TEXT DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'open',
+    debt_at TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
+    completed_at TEXT DEFAULT '',
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
+);
+CREATE INDEX IF NOT EXISTS idx_kact_ws ON knowledge_ops_actions(workspace_id, status);
+
+CREATE TABLE IF NOT EXISTS knowledge_source_gov (
+    workspace_id TEXT NOT NULL,
+    document_id TEXT NOT NULL,
+    owner TEXT DEFAULT '',
+    reviewer TEXT DEFAULT '',
+    reviewed_at TEXT,
+    PRIMARY KEY (workspace_id, document_id)
+);
+
+CREATE TABLE IF NOT EXISTS knowledge_goals (
+    workspace_id TEXT PRIMARY KEY,
+    target_debt REAL NOT NULL DEFAULT 10,
+    target_coverage REAL NOT NULL DEFAULT 90,
+    updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS kg_policies (
+    id TEXT PRIMARY KEY,
+    workspace_id TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    target TEXT NOT NULL,
+    note TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
+);
 """
 
 
@@ -303,11 +454,130 @@ async def _migrate_assistants(conn: aiosqlite.Connection) -> None:
             )
 
 
+async def _migrate_trust_forge(conn: aiosqlite.Connection) -> None:
+    cur = await conn.execute("PRAGMA table_info(trust_forge_runs)")
+    cols = {row[1] for row in await cur.fetchall()}
+    if cols and "progress_json" not in cols:
+        await conn.execute(
+            "ALTER TABLE trust_forge_runs ADD COLUMN progress_json TEXT DEFAULT '{}'"
+        )
+
+
 async def init_db() -> None:
     conn = await get_connection()
     try:
         await conn.executescript(SCHEMA_SQL)
         await _migrate_assistants(conn)
+        await _migrate_trust_forge(conn)
+        await conn.execute(
+            """CREATE TABLE IF NOT EXISTS answer_feedback (
+                id TEXT PRIMARY KEY,
+                workspace_id TEXT NOT NULL,
+                message_id TEXT NOT NULL,
+                rating TEXT NOT NULL,
+                note TEXT DEFAULT '',
+                created_at TEXT NOT NULL
+            )"""
+        )
+        await conn.execute(
+            """CREATE TABLE IF NOT EXISTS kg_path_stats (
+                path_key TEXT NOT NULL,
+                workspace_id TEXT NOT NULL,
+                wins INTEGER NOT NULL DEFAULT 0,
+                losses INTEGER NOT NULL DEFAULT 0,
+                updated_at TEXT NOT NULL,
+                PRIMARY KEY (workspace_id, path_key)
+            )"""
+        )
+        await conn.execute(
+            """CREATE TABLE IF NOT EXISTS draft_goldens (
+                id TEXT PRIMARY KEY,
+                workspace_id TEXT NOT NULL,
+                question TEXT NOT NULL,
+                question_norm TEXT NOT NULL,
+                answer_preview TEXT DEFAULT '',
+                source_url TEXT,
+                retrieval_ok INTEGER,
+                fail_kind TEXT DEFAULT '',
+                origin TEXT DEFAULT 'ask',
+                must_any TEXT DEFAULT '',
+                status TEXT NOT NULL DEFAULT 'draft',
+                created_at TEXT NOT NULL
+            )"""
+        )
+        await conn.execute(
+            """CREATE TABLE IF NOT EXISTS graph_versions (
+                id TEXT PRIMARY KEY,
+                workspace_id TEXT NOT NULL,
+                label TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'snapshot',
+                metrics_json TEXT DEFAULT '{}',
+                payload_json TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )"""
+        )
+        await conn.execute(
+            """CREATE TABLE IF NOT EXISTS kg_audit (
+                id TEXT PRIMARY KEY,
+                workspace_id TEXT NOT NULL,
+                entity_type TEXT NOT NULL,
+                entity_id TEXT NOT NULL,
+                field TEXT NOT NULL,
+                old_value TEXT DEFAULT '',
+                new_value TEXT DEFAULT '',
+                reason TEXT DEFAULT '',
+                applied INTEGER NOT NULL DEFAULT 1,
+                created_at TEXT NOT NULL
+            )"""
+        )
+        await conn.execute(
+            """CREATE TABLE IF NOT EXISTS knowledge_metric_snapshots (
+                id TEXT PRIMARY KEY,
+                workspace_id TEXT NOT NULL,
+                metrics_json TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )"""
+        )
+        await conn.execute(
+            """CREATE TABLE IF NOT EXISTS knowledge_ops_actions (
+                id TEXT PRIMARY KEY,
+                workspace_id TEXT NOT NULL,
+                driver TEXT NOT NULL,
+                label TEXT DEFAULT '',
+                status TEXT NOT NULL DEFAULT 'open',
+                debt_at TEXT DEFAULT '',
+                created_at TEXT NOT NULL,
+                completed_at TEXT DEFAULT ''
+            )"""
+        )
+        await conn.execute(
+            """CREATE TABLE IF NOT EXISTS knowledge_source_gov (
+                workspace_id TEXT NOT NULL,
+                document_id TEXT NOT NULL,
+                owner TEXT DEFAULT '',
+                reviewer TEXT DEFAULT '',
+                reviewed_at TEXT,
+                PRIMARY KEY (workspace_id, document_id)
+            )"""
+        )
+        await conn.execute(
+            """CREATE TABLE IF NOT EXISTS knowledge_goals (
+                workspace_id TEXT PRIMARY KEY,
+                target_debt REAL NOT NULL DEFAULT 10,
+                target_coverage REAL NOT NULL DEFAULT 90,
+                updated_at TEXT NOT NULL
+            )"""
+        )
+        await conn.execute(
+            """CREATE TABLE IF NOT EXISTS kg_policies (
+                id TEXT PRIMARY KEY,
+                workspace_id TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                target TEXT NOT NULL,
+                note TEXT DEFAULT '',
+                created_at TEXT NOT NULL
+            )"""
+        )
         await conn.commit()
     finally:
         await conn.close()

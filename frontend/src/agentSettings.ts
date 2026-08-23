@@ -23,6 +23,8 @@ export type AgentSettings = {
   placeholder: string;
   /** Suggested chips in chat — leave empty to auto-pick from agent name */
   sampleQuestions: string[];
+  /** live = apply weights; shadow/gated = audit only (no drift); off = freeze */
+  learningMode: "live" | "shadow" | "gated" | "off";
 };
 
 export const DEFAULT_AGENT_SETTINGS: AgentSettings = {
@@ -37,6 +39,7 @@ export const DEFAULT_AGENT_SETTINGS: AgentSettings = {
   embedStreaming: true,
   placeholder: "Ask about your connected knowledge…",
   sampleQuestions: [],
+  learningMode: "live",
 };
 
 export const TONE_OPTIONS: Array<{ id: AnswerTone; label: string; hint: string }> = [

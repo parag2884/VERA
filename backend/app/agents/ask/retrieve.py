@@ -33,6 +33,7 @@ from app.agents.ask.page_signals import (
     triad_span_pos,
 )
 from app.knowledge.sources.web.path_policy import filename_term_bonus, path_rank_bonus
+from app.knowledge.sources.web.site_graph import trust_weight
 from app.agents.ask.relevance import (
     boilerplate_penalty,
     graph_quote_base,
@@ -337,6 +338,7 @@ def _score_chunk(
     if question:
         score += path_rank_bonus(question, title)
         score += filename_term_bonus(question, title, terms)
+        score += 8.0 * (trust_weight(title) - 0.55)
 
     # Generic quality: demote chrome, prefer dated materials when present
     chrome = float(sig.get("chrome_score") or 0.0)

@@ -10,6 +10,13 @@ from app.agents.base import AgentContext, AgentError, AgentResult
 from app.agents.ingest.contracts import WeaverInput, WeaverOutput
 from app.identity import alnum_key as _alnum_key
 from app.identity import normalize_entity_name
+from app.knowledge.sources.web.site_graph import (
+    looks_like_web_title,
+    page_path,
+    parent_path,
+    trust_weight,
+)
+from app.knowledge_os.learn import as_of_iso, heading_topic
 
 logger = logging.getLogger(__name__)
 
@@ -147,10 +154,18 @@ class GraphWeaverAgent:
                 type="Document",
                 name=title,
                 normalized_name=_norm(title),
-                props={"canonical_document_id": doc_id},
+                props={
+                    "canonical_document_id": doc_id,
+                    "trust": trust_weight(title),
+                    "web_path": page_path(title) if looks_like_web_title(title) else "",
+                },
             )
             doc_node_ids[doc_id] = nid
             nodes_created += 1
+
+        hier = await _weave_web_hierarchy(store, ctx.workspace_id, doc_node_ids)
+        nodes_created += hier["nodes"]
+        edges_created += hier["edges"]
 
         total_chunks = max(len(payload.chunks), 1)
         for idx, chunk in enumerate(payload.chunks):
@@ -242,6 +257,7 @@ class GraphWeaverAgent:
                         quote=chunk.text[span[0] : span[1]],
                         extractor="rule",
                         confidence=0.9,
+                        valid_from=as_of_iso(chunk.text),
                     )
                     evidence_bound += 1
 
@@ -525,6 +541,103 @@ def _select_llm_chunks(ranked: list[Any], budget: int) -> set[str]:
             break
 
     return {c.id for c in chosen if c.id}
+
+
+async def _weave_web_hierarchy(
+    store: Any, workspace_id: str, doc_node_ids: dict[str, str]
+) -> dict[str, int]:
+    """PART_OF edges: child page → parent page when both were crawled.
+
+    Preserves website hierarchy that chunk flattening would otherwise lose.
+    Safe to re-run (insert_edge de-dupes).
+    """
+    if not doc_node_ids:
+        return {"nodes": 0, "edges": 0}
+    docs = await store.list_canonical_documents(workspace_id)
+    by_id = {d["id"]: d.get("title") or "" for d in docs}
+    path_to_nid: dict[str, str] = {}
+    for doc_id, nid in doc_node_ids.items():
+        title = by_id.get(doc_id) or ""
+        if not looks_like_web_title(title):
+            continue
+        path_to_nid[page_path(title)] = nid
+
+    edges = 0
+    for path, nid in path_to_nid.items():
+        parent = parent_path(path)
+        while parent:
+            parent_nid = path_to_nid.get(parent)
+            if parent_nid and parent_nid != nid:
+                eid = await store.insert_edge(
+                    workspace_id,
+                    src=nid,
+                    dst=parent_nid,
+                    rel_type="PART_OF",
+                    edge_class="documentary",
+                    weight=trust_weight(path),
+                    props={"extractor": "web_hierarchy"},
+                )
+                if eid:
+                    edges += 1
+                break
+            parent = parent_path(parent)
+
+    # Topic layer: Section (URL stem) → Topic (H1) → Page
+    all_chunks = await store.list_chunks(workspace_id)
+    first_by_doc: dict[str, str] = {}
+    for c in all_chunks:
+        did = c.get("canonical_document_id")
+        if did and did not in first_by_doc:
+            first_by_doc[did] = c.get("text") or ""
+
+    nodes = 0
+    for doc_id, page_nid in doc_node_ids.items():
+        title = by_id.get(doc_id) or ""
+        if not looks_like_web_title(title):
+            continue
+        path = page_path(title)
+        parts = [p for p in path.strip("/").split("/") if p]
+        sec_label = (parts[0].replace("-", " ").replace("_", " ").title() if parts else "Site")
+        sec_nid = await store.upsert_node(
+            workspace_id,
+            type="Section",
+            name=sec_label,
+            normalized_name=_norm(f"section:{sec_label}"),
+            props={"web_path": "/" + (parts[0] if parts else "")},
+        )
+        nodes += 1
+        topic_name = sec_label
+        ht = heading_topic(first_by_doc.get(doc_id) or "")
+        if ht:
+            topic_name = ht
+        topic_nid = await store.upsert_node(
+            workspace_id,
+            type="Topic",
+            name=topic_name[:80],
+            normalized_name=_norm(f"topic:{topic_name}"),
+            props={"section": sec_label},
+        )
+        nodes += 1
+        await store.insert_edge(
+            workspace_id,
+            src=page_nid,
+            dst=topic_nid,
+            rel_type="PART_OF",
+            edge_class="documentary",
+            document_id=doc_id,
+            props={"extractor": "web_topic"},
+        )
+        edges += 1
+        await store.insert_edge(
+            workspace_id,
+            src=topic_nid,
+            dst=sec_nid,
+            rel_type="PART_OF",
+            edge_class="documentary",
+            props={"extractor": "web_topic"},
+        )
+        edges += 1
+    return {"nodes": nodes, "edges": edges}
 
 
 async def _document_titles(

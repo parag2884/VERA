@@ -137,3 +137,4 @@ class EvidenceJudgeOutput(BaseModel):
     claims: list[dict[str, Any]] = Field(default_factory=list)
     citations: list[dict[str, Any]] = Field(default_factory=list)
     retrieval_mode: str = "graph_primary"
+    knowledge_gaps: list[dict[str, str]] = Field(default_factory=list)

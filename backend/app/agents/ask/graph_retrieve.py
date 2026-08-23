@@ -56,6 +56,7 @@ class GraphRetrieveAgent:
 
         graph = await store.get_graph(ctx.workspace_id)
         nodes = {n["id"]: n for n in graph["nodes"]}
+        path_stats = await store.path_stats_map(ctx.workspace_id)
         # Only asserted fact edges WITH evidence qualify for answer paths
         edges = [
             e
@@ -114,8 +115,22 @@ class GraphRetrieveAgent:
 
             # Prefer short, well-evidenced paths over long meandering ones
             hop_pen = 0.1 * max(0, len(edge_ids) - 1)
+            avg_w = 1.0
+            if oriented:
+                avg_w = sum(float(e.get("weight") or 1.0) for _, _, e in oriented) / len(
+                    oriented
+                )
+            stats = path_stats.get("|".join(edge_ids[:12]), (0, 0))
+            trials = stats[0] + stats[1]
+            path_fit = (stats[0] / trials - 0.5) if trials >= 2 else 0.0
             strength = min(
-                1.0, 0.72 + 0.06 * len(chunk_ids) + pair_bonus - hop_pen
+                1.0,
+                0.72
+                + 0.06 * len(chunk_ids)
+                + pair_bonus
+                - hop_pen
+                + 0.08 * (avg_w - 1.0)
+                + 0.22 * path_fit,
             )
             if conflict:
                 strength *= 0.7

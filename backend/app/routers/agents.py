@@ -76,7 +76,7 @@ def _readiness(agent: dict) -> str:
     chunks = int(counts.get("chunks") or 0)
     if agent.get("published"):
         return "live"
-    if docs > 0 or chunks > 0:
+    if docs > 0 or chunks > 0 or int(counts.get("nodes") or 0) > 0:
         return "ready"
     return "draft"
 
@@ -147,7 +147,7 @@ async def studio_dashboard() -> StudioDashboard:
         PricingTier(
             id="builder",
             name="Builder",
-            price_label="$0",
+            price_label="Custom",
             blurb="Studio + isolated agents for internal proof.",
             features=[
                 "Unlimited draft agents",
@@ -158,7 +158,7 @@ async def studio_dashboard() -> StudioDashboard:
         PricingTier(
             id="growth",
             name="Growth",
-            price_label="$149/mo",
+            price_label="Custom",
             blurb="Ship branded agents on customer sites.",
             features=[
                 "Publish & embed widget",

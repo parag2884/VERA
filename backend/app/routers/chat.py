@@ -3,11 +3,12 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
-from app.schemas import ChatRequest, ChatResponse
+from app.schemas import ChatFeedbackRequest, ChatRequest, ChatResponse
 from app.services.agent_guard import agent_is_disabled, disabled_chat_response
 from app.services.ask_chat import run_ask_chat
 from app.services.ask_stream import iter_ask_sse
 from app.stores.sql import WorkspaceStore
+from app.knowledge_os.service import record_feedback
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
@@ -82,4 +83,18 @@ async def chat_stream(body: ChatRequest) -> StreamingResponse:
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no",
         },
+    )
+
+
+@router.post("/feedback")
+async def chat_feedback(body: ChatFeedbackRequest) -> dict:
+    async with WorkspaceStore() as store:
+        ws = await store.get_workspace(body.workspace_id)
+        if not ws:
+            raise HTTPException(404, "Workspace not found")
+    return await record_feedback(
+        body.workspace_id,
+        message_id=body.message_id,
+        rating=body.rating,
+        note=body.note,
     )

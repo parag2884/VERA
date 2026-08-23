@@ -118,7 +118,15 @@ async def run_ask_chat(
         demo_mode=runtime.demo_mode,
         stores=store,
         llm=runtime.llm,
-        config={"vector_store": runtime.vector_store},
+        config={
+            "vector_store": runtime.vector_store,
+            "domain_label": str(
+                ((settings.get("domainProfile") or {}) if isinstance(settings.get("domainProfile"), dict) else {}).get(
+                    "label"
+                )
+                or ""
+            ),
+        },
     )
     result = await runtime.orchestrator.run(
         "ask_pipeline",
@@ -217,6 +225,51 @@ async def run_ask_chat(
             )
     await store.commit()
 
+    conflicts: list[dict[str, Any]] = []
+    try:
+        from app.knowledge_os.service import conflicts_for_citations
+
+        conflicts = await conflicts_for_citations(store, workspace_id, citations)
+        if conflicts:
+            trust.conflict_penalty = min(0.35, trust.conflict_penalty + 0.12 * len(conflicts))
+            trust.overall = round(max(0.0, trust.overall - trust.conflict_penalty * 0.25), 3)
+    except Exception:  # noqa: BLE001
+        conflicts = []
+
+    reasoning_path = []
+    for h in trail[:8]:
+        frm = getattr(h, "from_name", None) or getattr(h, "from", "")
+        to = getattr(h, "to_name", None) or getattr(h, "to", "")
+        if frm and to:
+            reasoning_path.append(f"{frm} —{h.rel}→ {to}")
+
+    gaps: list[dict[str, str]] = []
+    try:
+        from app.knowledge_os.learn import credit_outcome, missing_hints, propose_draft
+
+        edge_ids = [h.edge_id for h in trail if getattr(h, "edge_id", None)]
+        won = decision == "answer" and float(trust.overall or 0) >= 0.55
+        if edge_ids:
+            await credit_outcome(store, workspace_id, edge_ids=edge_ids, won=won)
+        if decision == "refuse":
+            docs = await store.list_canonical_documents(workspace_id)
+            gaps = missing_hints(
+                question,
+                docs,
+                cited_titles=[c.document for c in citations],
+            )
+            await propose_draft(
+                store,
+                workspace_id,
+                question=question,
+                answer_preview=(answer_text or "")[:400],
+                fail_kind="refuse",
+                origin="ask",
+                retrieval_ok=False,
+            )
+    except Exception:  # noqa: BLE001
+        gaps = []
+
     return ChatResponse(
         decision=decision,
         answer=bag.get("answer"),
@@ -233,6 +286,9 @@ async def run_ask_chat(
         session_id=session_id,
         message_id=mid,
         events=[e.model_dump(mode="json") for e in result.events],
+        conflicts=conflicts,
+        reasoning_path=reasoning_path,
+        knowledge_gaps=gaps,
     )
 
 

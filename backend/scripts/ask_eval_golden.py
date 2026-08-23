@@ -15,149 +15,16 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-import re
-import time
 from pathlib import Path
 
-from app.agents.base import AgentContext
-from app.runtime import get_runtime
-from app.stores.sql import WorkspaceStore
-
-REPO_GOLDEN_ROOTS = [
-    Path("/app/tests/golden"),
-    # /app/scripts → /app/tests/golden; backend/scripts → backend/tests/golden
-    Path(__file__).resolve().parents[1] / "tests" / "golden",
-    # backend/scripts → repo tests/golden
-    Path(__file__).resolve().parents[2] / "tests" / "golden",
-]
-
-
-def _norm(s: str) -> str:
-    return re.sub(r"\s+", " ", (s or "").lower()).strip()
-
-
-def _golden_roots() -> list[Path]:
-    return [p for p in REPO_GOLDEN_ROOTS if p.is_dir()]
-
-
-def _load_suite(path: Path) -> dict:
-    data = json.loads(path.read_text(encoding="utf-8"))
-    data["_suite_path"] = str(path)
-    return data
-
-
-def _find_suite_for_agent(agent_name: str) -> Path | None:
-    key = agent_name.strip().lower()
-    for root in _golden_roots():
-        for path in sorted(root.rglob("*.json")):
-            if path.name.startswith("_"):
-                continue
-            try:
-                data = json.loads(path.read_text(encoding="utf-8"))
-            except Exception:  # noqa: BLE001
-                continue
-            name = (data.get("agent_name") or "").strip().lower()
-            if name and name == key:
-                return path
-    return None
-
-
-async def _resolve_workspace(agent_name: str) -> tuple[str, str]:
-    async with WorkspaceStore() as store:
-        agents = await store.list_agents()
-        for a in agents:
-            if (a.get("name") or "").strip().lower() == agent_name.strip().lower():
-                return a["id"], a["workspace_id"]
-        names = [a.get("name") for a in agents]
-        raise RuntimeError(f"Agent {agent_name!r} not found. Present: {names}")
-
-
-async def run_case(workspace_id: str, case: dict) -> dict:
-    runtime = get_runtime()
-    t0 = time.perf_counter()
-    async with WorkspaceStore() as store:
-        ctx = AgentContext(
-            workspace_id=workspace_id,
-            demo_mode=runtime.demo_mode,
-            stores=store,
-            llm=runtime.llm,
-            config={"vector_store": runtime.vector_store},
-        )
-        result = await runtime.orchestrator.run(
-            "ask_pipeline", ctx, {"question": case["question"]}
-        )
-    bag = result.bag or {}
-    elapsed = round(time.perf_counter() - t0, 2)
-    decision = (bag.get("decision") or "").lower()
-    answer = bag.get("answer") or bag.get("clarification_prompt") or ""
-    ans_n = _norm(answer)
-    expect = (case.get("expect_decision") or "answer").lower()
-
-    ok = True
-    notes: list[str] = []
-    fail_kind = ""
-    if expect == "either":
-        if decision not in {"answer", "refuse", "clarify"}:
-            ok = False
-            notes.append(f"decision={decision}")
-            fail_kind = "bad_decision"
-    elif decision != expect:
-        ok = False
-        notes.append(f"decision={decision} expected={expect}")
-        if expect == "answer" and decision == "refuse":
-            fail_kind = "refuse_wrong"
-        elif expect == "answer" and decision == "clarify":
-            fail_kind = "clarify_wrong"
-        elif expect == "refuse" and decision == "answer":
-            fail_kind = "should_refuse"
-        else:
-            fail_kind = "decision_mismatch"
-
-    must_any = case.get("must_any") or []
-    if must_any and expect == "answer" and decision == "answer":
-        if not any(_norm(p) in ans_n for p in must_any):
-            ok = False
-            notes.append("missing must_any")
-            fail_kind = fail_kind or "must_any_miss"
-
-    for phrase in case.get("forbid_any") or []:
-        if _norm(phrase) and _norm(phrase) in ans_n:
-            ok = False
-            notes.append(f"forbid:{phrase}")
-            fail_kind = fail_kind or "forbid_hit"
-            break
-
-    cites = bag.get("citations") or bag.get("quote_citations") or []
-    cite_blob = _norm(
-        " ".join(
-            str(c.get("document_title") or c.get("title") or c.get("doc_id") or "")
-            for c in cites
-            if isinstance(c, dict)
-        )
-    )
-    citation_any = case.get("citation_any") or []
-    if citation_any and decision == "answer" and cites:
-        if not any(_norm(p) in cite_blob for p in citation_any):
-            notes.append("citation_soft_miss")
-
-    if ok:
-        fail_kind = ""
-
-    return {
-        "id": case["id"],
-        "pass": ok,
-        "decision": decision,
-        "fail_kind": fail_kind,
-        "elapsed_s": elapsed,
-        "question": case["question"],
-        "expected_answer": case.get("expected_answer"),
-        "source_url": case.get("source_url"),
-        "source_document": case.get("source_document"),
-        "kb_quote_hint": case.get("kb_quote_hint"),
-        "answer_preview": answer[:280],
-        "notes": notes,
-        "must_any": must_any,
-    }
+from app.trust_forge.eval import (
+    eval_suite,
+    find_suite_for_agent,
+    golden_roots,
+    load_suite,
+    resolve_agent,
+    resolve_suite_path,
+)
 
 
 async def main() -> int:
@@ -169,18 +36,9 @@ async def main() -> int:
 
     suite_path: Path | None = None
     if args.suite.strip():
-        suite_path = Path(args.suite.strip())
-        if not suite_path.is_file():
-            # try under golden roots
-            for root in _golden_roots():
-                cand = root / args.suite.strip()
-                if cand.is_file():
-                    suite_path = cand
-                    break
-        if not suite_path or not suite_path.is_file():
-            raise FileNotFoundError(f"Suite not found: {args.suite}")
+        suite_path = resolve_suite_path(args.suite.strip())
     elif args.agent:
-        suite_path = _find_suite_for_agent(args.agent)
+        suite_path = find_suite_for_agent(args.agent)
         if not suite_path:
             raise FileNotFoundError(
                 f"No suite with agent_name={args.agent!r} under tests/golden/"
@@ -188,86 +46,72 @@ async def main() -> int:
     else:
         raise SystemExit("Provide --suite and/or --agent")
 
-    golden = _load_suite(suite_path)
+    golden = load_suite(suite_path)
     agent_name = args.agent or golden.get("agent_name")
     if not agent_name:
         raise SystemExit("Suite has no agent_name; pass --agent")
 
-    agent_id, workspace_id = await _resolve_workspace(agent_name)
-    cases = list(golden.get("cases") or [])
+    agent_id, workspace_id = await resolve_agent(agent_name)
+    case_ids = None
     if args.ids.strip():
-        want = {x.strip() for x in args.ids.split(",") if x.strip()}
-        cases = [c for c in cases if c.get("id") in want]
+        case_ids = {x.strip() for x in args.ids.split(",") if x.strip()}
 
     print(
         f"suite={golden.get('suite_id')} kind={golden.get('source_kind')} "
         f"file={suite_path}\n"
-        f"Running {len(cases)} cases on agent={agent_name!r} "
+        f"Running cases on agent={agent_name!r} "
         f"id={agent_id} workspace={workspace_id}",
         flush=True,
     )
-    rows = []
-    for case in cases:
-        print(f"running {case['id']}...", flush=True)
-        row = await run_case(workspace_id, case)
+    summary = await eval_suite(workspace_id, golden, case_ids=case_ids)
+    for row in summary.get("results") or []:
         status = "PASS" if row["pass"] else "FAIL"
         src = row.get("source_url") or row.get("source_document") or ""
         print(
-            f"  {status} decision={row['decision']} {row['elapsed_s']}s | "
+            f"  {status} {row['id']} decision={row['decision']} {row['elapsed_s']}s | "
             f"{(row.get('answer_preview') or '')[:90]}",
             flush=True,
         )
         if src:
             print(f"    verify↔ {src}", flush=True)
-        rows.append(row)
 
-    passed = sum(1 for r in rows if r["pass"])
-    suite_id = golden.get("suite_id") or suite_path.stem
-    fail_taxonomy: dict[str, int] = {}
-    for r in rows:
-        kind = (r.get("fail_kind") or "").strip()
-        if not kind:
-            continue
-        fail_taxonomy[kind] = fail_taxonomy.get(kind, 0) + 1
-    summary = {
-        "suite_id": suite_id,
-        "source_kind": golden.get("source_kind"),
-        "suite_path": str(suite_path),
+    suite_id = summary.get("suite_id") or suite_path.stem
+    out_payload = {
+        **summary,
         "agent_name": agent_name,
         "agent_id": agent_id,
-        "workspace_id": workspace_id,
-        "passed": passed,
-        "total": len(rows),
-        "pass_rate": round(passed / max(len(rows), 1), 4),
-        "fail_ids": [r["id"] for r in rows if not r["pass"]],
-        "fail_taxonomy": fail_taxonomy,
-        "results": rows,
+        "pass_rate": summary["pass_rate"],
     }
     out_candidates = [
         Path(f"/app/data/ask_eval_{suite_id}_results.json"),
         Path(__file__).resolve().parent / f"ask_eval_{suite_id}_results.json",
     ]
     out = next((p for p in out_candidates if p.parent.exists()), out_candidates[-1])
-    out.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    out.write_text(json.dumps(out_payload, indent=2), encoding="utf-8")
     print(
         json.dumps(
             {
-                k: summary[k]
+                k: out_payload[k]
                 for k in (
                     "passed",
                     "total",
+                    "fitness",
                     "pass_rate",
                     "fail_taxonomy",
                     "fail_ids",
                     "suite_id",
                     "source_kind",
                 )
+                if k in out_payload
             },
             indent=2,
         )
     )
     print(f"wrote {out}", flush=True)
-    return 0 if passed == len(rows) else 1
+    roots = golden_roots()
+    if not roots:
+        print("warning: no golden roots found on disk", flush=True)
+    return 0 if summary["passed"] == summary["total"] else 1
 
 
 if __name__ == "__main__":

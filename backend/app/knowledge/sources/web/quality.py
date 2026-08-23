@@ -83,6 +83,10 @@ def unique_prose(text: str) -> str:
         line = raw.strip()
         if not line:
             continue
+        # Keep markdown headings promoted from HTML <h1>–<h4>
+        if line.startswith("#") or line.startswith("- "):
+            lines.append(line)
+            continue
         low = line.lower()
         if _NAV_LINE.match(line):
             continue

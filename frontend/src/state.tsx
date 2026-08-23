@@ -73,6 +73,10 @@ function settingsFromAgent(agent: Agent): AgentSettings {
           (s.domainProfile as { label?: string; focus?: string; entityTypes?: string[] } | undefined) ||
             null
         ),
+    learningMode:
+      s.learningMode === "shadow" || s.learningMode === "gated" || s.learningMode === "off"
+        ? s.learningMode
+        : "live",
   };
 }
 

@@ -64,6 +64,10 @@ class Settings(BaseSettings):
     vera_intent_llm: bool = True
     vera_intent_llm_timeout_ms: int = 900
     vera_log_level: str = "INFO"
+    # Background graph hygiene. 0 disables the loop. Never starts Evaluate or ingest.
+    vera_care_interval_sec: int = 600
+    vera_care_window_utc_hour: int = 2
+    vera_care_window_hours: int = 3
 
     allowed_mime_types: list[str] = Field(
         default_factory=lambda: [

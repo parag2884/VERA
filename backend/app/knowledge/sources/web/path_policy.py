@@ -193,11 +193,11 @@ def question_wants_chronicle(question: str) -> bool:
 def path_rank_bonus(question: str, title: str) -> float:
     """Ask re-rank: boost people/core pages; demote chronicle unless question asks for it."""
     if is_people_path(title):
-        return 6.0
+        return 8.0
     if is_core_path(title):
-        return 4.0
+        return 5.0
     if is_chronicle_path(title) and not question_wants_chronicle(question):
-        return -5.0
+        return -8.0
     return 0.0
 
 

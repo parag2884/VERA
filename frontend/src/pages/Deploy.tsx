@@ -97,11 +97,11 @@ export default function Deploy() {
   return (
     <div className="deploy">
       <div className="builder-intro">
-        <div className="page-kicker">Deploy & monetize</div>
+        <div className="page-kicker">Deploy & embed</div>
         <h2 className="section-title">Dedicated endpoints for every agent</h2>
         <p className="section-sub">
           Each published agent gets an embeddable widget and a public chat API bound only to its
-          knowledge graph — ready to sell as a site hook, partner integration, or domain pack.
+          knowledge graph — ready for a site hook, partner integration, or domain pack.
         </p>
       </div>
 
@@ -112,7 +112,7 @@ export default function Deploy() {
           <div key={tier.id} className={`price-card ${tier.highlighted ? "highlight" : ""}`}>
             <div className="price-card-top">
               <h3>{tier.name}</h3>
-              <strong>{tier.price_label}</strong>
+              <strong>Custom</strong>
             </div>
             <p>{tier.blurb}</p>
             <ul>
@@ -120,7 +120,7 @@ export default function Deploy() {
                 <li key={f}>{f}</li>
               ))}
             </ul>
-            {tier.highlighted && <span className="pill live">Best for selling embeds</span>}
+            {tier.highlighted && <span className="pill live">Best for embeds</span>}
           </div>
         ))}
       </section>
@@ -215,10 +215,10 @@ export default function Deploy() {
                     <button
                       className="btn btn-primary"
                       type="button"
-                      disabled={busyId === a.id || a.readiness === "draft"}
+                      disabled={busyId === a.id}
                       onClick={() => void publish(a.id)}
                     >
-                      {busyId === a.id ? "Publishing…" : a.readiness === "draft" ? "Connect KB first" : "Publish endpoints"}
+                      {busyId === a.id ? "Publishing…" : "Publish agent"}
                     </button>
                     <Link className="btn btn-ghost" to="/connect" onClick={() => void selectAgent(a.id)}>
                       Connect knowledge

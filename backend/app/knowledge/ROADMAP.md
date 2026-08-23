@@ -12,6 +12,9 @@ VERA keeps **one agent · one graph**. New sources plug in as `SourceConnector.a
 | blob | `sources/blob` (needs Azure config) |
 | sample | `sources/documents/sample` |
 
+- Hybrid retrieval (lexical + vector + graph) + page trust ranking (core/people vs news)
+- Website crawl: chrome strip, heading/list structure, page PART_OF hierarchy
+
 ## Knowledge next (realistic)
 
 | Kind | Why | Typical auth |

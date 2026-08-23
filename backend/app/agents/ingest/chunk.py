@@ -161,7 +161,10 @@ def _chunk_text(text: str, size: int, overlap: int) -> list[tuple[int, int, str]
         if end < n:
             window = text[start:end]
             br = window.rfind("\n\n")
-            if br > size // 3:
+            heading = max(window.rfind("\n## "), window.rfind("\n# "))
+            if heading > size // 3:
+                end = start + heading
+            elif br > size // 3:
                 end = start + br
         piece = text[start:end].strip()
         if piece:

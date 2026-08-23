@@ -11,6 +11,128 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 
 export type Workspace = { id: string; name: string; created_at: string };
 
+export type TrustForgeCaseDelta = {
+  id: string;
+  fail_kind?: string;
+  was_fail_kind?: string;
+};
+
+export type TrustForgeDelta = {
+  vs_gen?: boolean | null;
+  fitness_before?: number | null;
+  fitness_after?: number;
+  fitness_delta?: number | null;
+  newly_passed?: TrustForgeCaseDelta[];
+  newly_failed?: TrustForgeCaseDelta[];
+  still_failed?: TrustForgeCaseDelta[];
+  heal?: Record<string, unknown>;
+  summary?: string;
+};
+
+export type TrustForgeGeneration = {
+  gen: number;
+  fitness: number;
+  passed: number;
+  failed: number;
+  total: number;
+  hygiene_report?: Record<string, unknown>;
+  fail_ids?: string[];
+  case_results?: Array<{ id: string; pass: boolean; fail_kind?: string }>;
+  delta?: TrustForgeDelta;
+  created_at?: string;
+};
+
+export type TrustForgeCaseMatrix = {
+  generations: number[];
+  rows: Array<{
+    id: string;
+    trend: "improved" | "regressed" | "still_fail" | "still_pass" | "same" | string;
+    cells: Array<{
+      status: "pass" | "fail" | "unknown" | string;
+      fail_kind?: string;
+      decision?: string;
+      answer_preview?: string;
+    }>;
+    question?: string;
+    expected_answer?: string;
+    got_answer?: string;
+    decision?: string;
+    fail_kind?: string;
+    must_any?: string[];
+    kb_quote_hint?: string;
+    source?: string;
+    notes?: string[];
+  }>;
+  summary?: {
+    improved: number;
+    regressed: number;
+    still_fail: number;
+    total: number;
+  };
+};
+
+export type TrustForgeGraphChanges = {
+  steps: Array<{
+    gen: number;
+    aliases_removed: number;
+    junk_persons_retyped: number;
+    alias_count?: number | null;
+    entity_count?: number | null;
+    code_or_level_nodes?: number | null;
+    had_heal?: boolean;
+  }>;
+  totals: {
+    aliases_removed: number;
+    junk_persons_retyped: number;
+  };
+};
+
+export type TrustForgeProgress = {
+  phase?: string;
+  message?: string;
+  generation?: number;
+  max_generations?: number;
+  case_index?: number;
+  case_total?: number;
+  case_id?: string;
+  question?: string;
+  expected_answer?: string;
+  got_answer?: string;
+  decision?: string;
+  case_pass?: boolean;
+  fail_kind?: string;
+  passed_so_far?: number;
+  failed_so_far?: number;
+  fitness?: number;
+  best_fitness?: number;
+  threshold?: number;
+  improvement?: TrustForgeDelta;
+  log?: string[];
+};
+
+export type TrustForgeRun = {
+  id: string;
+  workspace_id: string;
+  agent_id: string;
+  suite_path: string;
+  threshold: number;
+  max_generations: number;
+  stall_generations: number;
+  status: "queued" | "running" | "completed" | "failed" | "stopped" | string;
+  best_fitness: number;
+  generation: number;
+  stop_reason?: string | null;
+  error?: string | null;
+  progress?: TrustForgeProgress | null;
+  latest_improvement?: TrustForgeDelta | null;
+  case_matrix?: TrustForgeCaseMatrix | null;
+  graph_changes?: TrustForgeGraphChanges | null;
+  created_at: string;
+  updated_at: string;
+  generations?: TrustForgeGeneration[];
+  fitness_curve?: number[];
+};
+
 export type AskReadiness = {
   status: "unknown" | "ready" | "needs_attention";
   pass_rate?: number | null;
@@ -181,7 +303,11 @@ export type ChatResponse = {
   provider_mode: "azure" | "mock";
   demo_mode: boolean;
   session_id?: string;
+  message_id?: string;
   events?: Array<Record<string, unknown>>;
+  conflicts?: Array<{ entity?: string; values?: string[]; amounts?: number[] }>;
+  reasoning_path?: string[];
+  knowledge_gaps?: Array<{ kind?: string; title?: string; detail?: string }>;
 };
 
 type StreamHandlers = {
@@ -244,8 +370,16 @@ export type GraphData = {
   }>;
 };
 
-export function formatApiError(err: unknown): string {
+export function formatApiError(err: unknown, surface?: "ingest" | "forge"): string {
   const raw = err instanceof Error ? err.message : String(err);
+  try {
+    const parsed = JSON.parse(raw) as { detail?: unknown };
+    if (parsed?.detail != null) {
+      return typeof parsed.detail === "string" ? parsed.detail : JSON.stringify(parsed.detail);
+    }
+  } catch {
+    /* not JSON */
+  }
   if (/502\s*Bad Gateway/i.test(raw) || /<\/html>/i.test(raw)) {
     return "API temporarily unavailable (502). The backend may still be starting — wait a few seconds and retry.";
   }
@@ -253,24 +387,19 @@ export function formatApiError(err: unknown): string {
     return "Request timed out (504). Try again — large PDFs or Azure calls can take a minute.";
   }
   if (/500\s*Internal Server Error/i.test(raw) || /^Internal Server Error$/i.test(raw.trim())) {
-    return "Server busy (often while weaving knowledge). Wait for the current ingest to finish, then retry.";
+    if (surface === "forge") {
+      return "Evaluation did not start (server error). The graph was not rebuilt. Retry once; if it repeats, another run may still be marked active — Stop, then Start again.";
+    }
+    if (surface === "ingest") {
+      return "Ingest hit an error. Wait for any running weave to finish, then retry.";
+    }
+    return "The API returned an error. Retry in a moment.";
   }
   if (/409\b/.test(raw) || /already running/i.test(raw)) {
-    try {
-      const parsed = JSON.parse(raw) as { detail?: string };
-      if (parsed?.detail) return parsed.detail;
-    } catch {
-      /* fall through */
-    }
-    return "An ingest is already running for this agent. Wait for it to finish, then retry.";
+    return raw.includes("Trust Forge")
+      ? raw
+      : "An ingest is already running for this agent. Wait for it to finish, then retry.";
   }
-  try {
-    const parsed = JSON.parse(raw) as { detail?: string };
-    if (parsed?.detail) return parsed.detail;
-  } catch {
-    /* not JSON */
-  }
-  // Strip accidental HTML dumps
   if (raw.includes("<html")) {
     const m = raw.match(/<title>([^<]+)<\/title>/i) || raw.match(/>(\d{3}\s[^<]+)</);
     return m?.[1]?.trim() || "Request failed";
@@ -292,6 +421,31 @@ export const api = {
       `/api/workspaces/${workspaceId}/purge`,
       { method: "POST" }
     ),
+  startTrustForge: (
+    workspaceId: string,
+    body: {
+      agent_id?: string;
+      suite_path?: string;
+      threshold?: number;
+      max_generations?: number;
+      stall_generations?: number;
+    } = {}
+  ) =>
+    req<TrustForgeRun>(`/api/workspaces/${workspaceId}/trust-forge/runs`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }),
+  getTrustForgeRun: (workspaceId: string, runId: string) =>
+    req<TrustForgeRun>(`/api/workspaces/${workspaceId}/trust-forge/runs/${runId}`),
+  listTrustForgeRuns: (workspaceId: string) =>
+    req<{ workspace_id: string; runs: TrustForgeRun[] }>(
+      `/api/workspaces/${workspaceId}/trust-forge/runs`
+    ),
+  stopTrustForgeRun: (workspaceId: string, runId: string) =>
+    req<TrustForgeRun>(`/api/workspaces/${workspaceId}/trust-forge/runs/${runId}/stop`, {
+      method: "POST",
+    }),
   loadSample: (workspaceId: string) => {
     const fd = new FormData();
     fd.append("workspace_id", workspaceId);
@@ -409,6 +563,378 @@ export const api = {
     req<{ score: number; components: Record<string, unknown>; demo_mode: boolean }>(
       `/api/health/knowledge?workspace_id=${workspaceId}`
     ),
+  knowledgeOs: (workspaceId: string) =>
+    req<{
+      fitness: number;
+      coverage: {
+        overall_pct: number;
+        domains: Array<{
+          section: string;
+          pages: number;
+          linked_pages: number;
+          entities: number;
+          coverage_pct: number;
+        }>;
+        gap_sections: string[];
+      };
+      conflicts: {
+        graph_edges: number;
+        count: number;
+        detected: Array<{ entity?: string; values?: string[]; amounts?: number[] }>;
+      };
+      temporal: { supersedes_edges: number };
+      source_reliability_avg: number;
+      debt?: {
+        score: number;
+        status: string;
+        coverage_pct: number;
+        trust_pct: number;
+        weak_edges: number;
+        unanswered: number;
+        risk?: { level?: string; score?: number; causes?: string[] };
+        playbook?: {
+          current_debt?: number;
+          expected_debt_after_fix?: number;
+          actions?: Array<{
+            step?: number;
+            driver?: string;
+            cause?: string;
+            do?: string;
+            clears_points?: number;
+            expected_debt_after_this?: number;
+          }>;
+        };
+        drivers: Array<{
+          id: string;
+          label: string;
+          points: number;
+          pct?: number;
+          action?: string;
+        }>;
+        drilldown?: {
+          weak_edges?: Array<{
+            id?: string;
+            from?: string;
+            to?: string;
+            rel?: string;
+            weight?: number;
+            success_rate?: number | null;
+            asks?: number;
+          }>;
+          topics?: Array<{
+            section?: string;
+            coverage_pct?: number;
+            unlinked_pages?: number;
+            expected_coverage_gain?: number;
+          }>;
+          trust?: Array<{ title?: string; trust_pct?: number; reason?: string }>;
+          conflicts?: Array<{ entity?: string; detail?: string }>;
+          unanswered?: Array<{
+            id?: string | null;
+            question?: string;
+            fail_kind?: string;
+          }>;
+          coverage?: Array<{
+            section?: string;
+            coverage_pct?: number;
+            expected_coverage_gain?: number;
+          }>;
+        };
+      };
+      proof?: {
+        title?: string;
+        has_history?: boolean;
+        before?: {
+          debt?: number | null;
+          coverage?: number | null;
+          trust?: number | null;
+          risk?: string | null;
+        };
+        after?: {
+          debt?: number | null;
+          coverage?: number | null;
+          trust?: number | null;
+          risk?: string | null;
+        };
+        adoption?: {
+          suggested?: number;
+          completed?: number;
+          rate?: number | null;
+          by_driver?: Array<{ driver: string; actions_completed: number }>;
+        };
+        improvements?: string[];
+        remaining?: string[];
+      };
+      ops?: {
+        explain?: string;
+        recommendations?: Array<{
+          kind?: string;
+          section?: string;
+          suggested?: string;
+          expected_coverage_gain?: number;
+          criticality?: string;
+          impact?: { pages?: number; apis?: number; applications?: number; teams?: number };
+        }>;
+        sources?: Array<{
+          id?: string;
+          title?: string;
+          trust_pct?: number;
+          owner?: string;
+          reviewed_at?: string | null;
+          age_days?: number | null;
+          freshness?: string;
+          criticality?: string;
+        }>;
+        sla?: {
+          passing?: boolean;
+          cta?: string;
+          next?: string;
+          failed_ids?: string[];
+          checks?: Array<{
+            id?: string;
+            title?: string;
+            ok?: boolean;
+            current?: number;
+            target?: string;
+            next?: string;
+            cta?: string;
+          }>;
+        };
+        care?: {
+          mode?: string;
+          headline?: string;
+          human?: boolean;
+          cta?: string | null;
+        };
+        operate?: {
+          status?: string;
+          risk?: string;
+          debt?: number;
+          coverage?: number;
+          trust?: number;
+          quiet?: boolean;
+          week?: { lines?: string[]; risk?: string; text?: string } | null;
+          principle?: {
+            rule?: string;
+            observe?: { label?: string };
+            maintain?: { label?: string };
+            govern?: { label?: string };
+          };
+          changes?: string[];
+          drift?: Array<{ metric?: string; from?: number; to?: number; note?: string }>;
+          recommended?: Array<{
+            title?: string;
+            expected_debt_delta?: number | null;
+            coverage_gain?: number;
+            driver?: string;
+            policy?: boolean;
+          }>;
+          hygiene?: Record<string, number>;
+          sources?: { disappeared_count?: number; added_count?: number };
+          guardrail?: string;
+          actions_needed?: number;
+          human_needed?: boolean;
+          maintenance_window?: boolean;
+          busy?: string | null;
+        };
+        hygiene?: Record<string, number>;
+        principle?: {
+          rule?: string;
+          observe?: { label?: string; may?: string[] };
+          maintain?: { label?: string; may?: string[] };
+          govern?: { label?: string; may?: string[]; human_only?: boolean };
+        };
+        goals?: {
+          debt?: { current?: number; target?: number; gap?: number };
+          coverage?: { current?: number; target?: number; gap?: number };
+        };
+        evidence_quality?: {
+          score?: number;
+          coverage?: number;
+          authority?: number;
+          freshness?: number;
+          consistency?: number;
+        };
+        simulation?: {
+          if_playbook_done?: { debt?: number; debt_now?: number };
+          if_top_gaps_linked?: { expected_coverage_gain?: number; sections?: string[] };
+        };
+        feed?: Array<{ at?: string; kind?: string; title?: string; detail?: string }>;
+        attribution?: Array<{ source?: string; detail?: string }>;
+        domains?: Array<{
+          domain?: string;
+          confidence?: number;
+          criticality?: string;
+        }>;
+        impact_debt?: { high_impact?: number; low_impact?: number; total?: number };
+        benchmarks?: Array<{ id?: string; name?: string; cases?: number; protected?: boolean }>;
+        learning_efficiency?: { accepted_drafts?: number; fitness_delta?: number | null };
+        scale?: { nodes?: number; edges?: number; documents?: number; snapshot_ms?: number };
+        stability?: {
+          improved?: number;
+          degraded?: number;
+          still_fail?: number;
+          total?: number;
+        } | null;
+        roles?: Record<string, string>;
+      };
+      feedback: { up: number; down: number; total: number; accept_rate: number | null };
+      production: {
+        asks_sampled: number;
+        frequent: Array<{ question: string; count: number }>;
+        weak: Array<{ question: string; decision: string; trust: number }>;
+      };
+      learning?: {
+        paths_tracked: number;
+        drafts_open: number;
+        drafts: Array<{
+          id: string;
+          question: string;
+          fail_kind?: string;
+          origin?: string;
+          status?: string;
+          source_url?: string | null;
+        }>;
+      };
+      governance?: {
+        learning_mode?: string;
+        slos?: {
+          asks?: number;
+          refusal_rate?: number | null;
+          answer_rate?: number | null;
+          avg_trust?: number | null;
+        };
+        versions?: Array<{
+          id: string;
+          label: string;
+          status: string;
+          created_at: string;
+          metrics?: Record<string, unknown>;
+          vs_previous?: {
+            summary?: string;
+            vs_label?: string;
+            coverage_delta?: number | null;
+            debt_delta?: number | null;
+            edges_strengthened?: number;
+            edges_weakened?: number;
+          } | null;
+        }>;
+        audit?: Array<{
+          id?: string;
+          entity_id?: string;
+          field?: string;
+          old_value?: string;
+          new_value?: string;
+          reason?: string;
+          applied?: number;
+          created_at?: string;
+        }>;
+        trends?: Array<Record<string, unknown>>;
+        debt_trend?: {
+          current?: number | null;
+          prior?: number | null;
+          delta?: number | null;
+          label?: string;
+          prior_at?: string | null;
+          current_at?: string | null;
+        };
+        policies?: Array<{ kind?: string; target?: string; note?: string }>;
+      };
+    }>(`/api/workspaces/${workspaceId}/knowledge-os`),
+  acceptDraft: (workspaceId: string, draftId: string, mustAny: string[] = []) =>
+    req<{ ok: boolean }>(
+      `/api/workspaces/${workspaceId}/knowledge-os/drafts/${draftId}/accept`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ must_any: mustAny }),
+      }
+    ),
+  rejectDraft: (workspaceId: string, draftId: string) =>
+    req<{ ok: boolean }>(
+      `/api/workspaces/${workspaceId}/knowledge-os/drafts/${draftId}/reject`,
+      { method: "POST" }
+    ),
+  snapshotGraph: (workspaceId: string) =>
+    req<{ id: string; label: string; status: string }>(
+      `/api/workspaces/${workspaceId}/knowledge-os/versions`,
+      { method: "POST" }
+    ),
+  rollbackGraph: (workspaceId: string, versionId: string) =>
+    req<{ ok: boolean }>(
+      `/api/workspaces/${workspaceId}/knowledge-os/versions/${versionId}/rollback`,
+      { method: "POST" }
+    ),
+  promoteGraph: (workspaceId: string, versionId: string) =>
+    req<{ ok: boolean }>(
+      `/api/workspaces/${workspaceId}/knowledge-os/versions/${versionId}/promote`,
+      { method: "POST" }
+    ),
+  enrichKnowledgeOs: (workspaceId: string) =>
+    req<Record<string, unknown>>(`/api/workspaces/${workspaceId}/knowledge-os/enrich`, {
+      method: "POST",
+    }),
+  completeKnowledgeAction: (workspaceId: string, driver: string) =>
+    req<{ ok: boolean; driver?: string }>(
+      `/api/workspaces/${workspaceId}/knowledge-os/actions/complete`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ driver }),
+      }
+    ),
+  reviewKnowledgeSource: (
+    workspaceId: string,
+    documentId: string,
+    owner: string,
+    reviewer = ""
+  ) =>
+    req<{ ok: boolean }>(`/api/workspaces/${workspaceId}/knowledge-os/sources`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ document_id: documentId, owner, reviewer }),
+    }),
+  setKnowledgeGoals: (workspaceId: string, targetDebt: number, targetCoverage: number) =>
+    req<{ target_debt: number; target_coverage: number }>(
+      `/api/workspaces/${workspaceId}/knowledge-os/goals`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target_debt: targetDebt, target_coverage: targetCoverage }),
+      }
+    ),
+  knowledgeOsFleet: () =>
+    req<{
+      workspaces: Array<{
+        agent_id?: string;
+        name?: string;
+        workspace_id?: string;
+        risk?: string;
+        debt?: number;
+        coverage?: number;
+        trust?: number;
+        fitness?: number;
+        refusal_rate?: number | null;
+        sla_ok?: boolean;
+        sla_miss?: string[];
+      }>;
+    }>("/api/knowledge-os/fleet"),
+  chatFeedback: (
+    workspaceId: string,
+    messageId: string,
+    rating: "up" | "down",
+    note = ""
+  ) =>
+    req<{ ok: boolean; rating: string }>("/api/chat/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        workspace_id: workspaceId,
+        message_id: messageId,
+        rating,
+        note,
+      }),
+    }),
   latestCleanStack: (workspaceId: string) =>
     req<{ ok: boolean; report: Record<string, unknown> | null }>(
       `/api/sources/cleanstack/${workspaceId}`

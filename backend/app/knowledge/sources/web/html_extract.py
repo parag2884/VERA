@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from urllib.parse import unquote, urlparse
 
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, NavigableString, Tag
 
 from app.knowledge.sources.web.quality import unique_prose
 
@@ -125,6 +125,27 @@ def _harvest_people_lines(soup: BeautifulSoup) -> list[str]:
     return lines
 
 
+def _promote_headings_and_lists(root: Tag) -> None:
+    """Keep page hierarchy in the text we embed and weave (not a flat blob)."""
+    for h in list(root.find_all(["h1", "h2", "h3", "h4"])):
+        if not isinstance(h, Tag):
+            continue
+        level = min(3, int(h.name[1]))
+        text = h.get_text(" ", strip=True)
+        if text:
+            h.replace_with(NavigableString(f"\n{'#' * level} {text}\n"))
+        else:
+            h.decompose()
+    for li in list(root.find_all("li")):
+        if not isinstance(li, Tag):
+            continue
+        text = li.get_text(" ", strip=True)
+        if text:
+            li.replace_with(NavigableString(f"\n- {text}"))
+        else:
+            li.decompose()
+
+
 def extract_html_text(html: str, url: str) -> str:
     """Extract page body text with site chrome removed (nav/header/footer/cookies)."""
     soup = BeautifulSoup(html, "html.parser")
@@ -161,6 +182,8 @@ def extract_html_text(html: str, url: str) -> str:
             el.decompose()
     title = (soup.title.string or "").strip() if soup.title else ""
     root = soup.find("main") or soup.find("article") or soup.body or soup
+    if isinstance(root, Tag):
+        _promote_headings_and_lists(root)
     body = root.get_text("\n", strip=True)
     body = unique_prose(body)
     body = re.sub(r"\n{3,}", "\n\n", body)

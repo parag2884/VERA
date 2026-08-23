@@ -6,31 +6,33 @@ import Connect from "./pages/Connect";
 import Ask from "./pages/Ask";
 import KnowledgeMap from "./pages/KnowledgeMap";
 import Insights from "./pages/Insights";
+import TrustForgePage from "./pages/TrustForge";
 import AgentBuilder from "./pages/AgentBuilder";
 import Deploy from "./pages/Deploy";
 import Embed from "./pages/Embed";
 import Fleet from "./pages/Fleet";
 
-const NAV = [
-  { to: "/", label: "Home", end: true },
-  { to: "/fleet", label: "Fleet", end: false },
-  { to: "/agent", label: "Agents", end: false },
-  { to: "/deploy", label: "Deploy", end: false },
-  { to: "/connect", label: "Connect", end: false },
-  { to: "/ask", label: "Ask", end: false },
-  { to: "/map", label: "Maps", end: false },
-  { to: "/insights", label: "Insights", end: false },
+const NAV: Array<{ to: string; label: string; end?: boolean }> = [
+  { to: "/insights", label: "Operate" },
+  { to: "/ask", label: "Ask" },
+  { to: "/connect", label: "Connect" },
+  { to: "/fleet", label: "Fleet" },
+  { to: "/agent", label: "Agents" },
+  { to: "/deploy", label: "Deploy" },
+  { to: "/trust-forge", label: "Evaluate" },
+  { to: "/map", label: "Maps" },
 ];
 
 const TITLES: Record<string, { title: string; sub: string }> = {
-  "/": { title: "Studio", sub: "Your agent fleet" },
-  "/fleet": { title: "Fleet", sub: "Active · Disable · Delete" },
+  "/": { title: "Studio", sub: "Operate the fleet — not the graph" },
+  "/fleet": { title: "Fleet", sub: "Agents in this studio" },
   "/agent": { title: "Agents", sub: "Identity · voice · publish" },
-  "/deploy": { title: "Deploy", sub: "Endpoints · pricing · embeds" },
-  "/connect": { title: "Connect", sub: "Feed the active agent’s knowledge" },
+  "/deploy": { title: "Deploy", sub: "Endpoints · embeds" },
+  "/connect": { title: "Connect", sub: "Add knowledge (governed ingest)" },
   "/ask": { title: "Ask", sub: "Evidence-bound answers" },
-  "/map": { title: "Knowledge maps", sub: "One graph per agent" },
-  "/insights": { title: "Insights", sub: "Health per agent" },
+  "/map": { title: "Maps", sub: "Engineering view of the graph" },
+  "/trust-forge": { title: "Evaluate", sub: "Golden-suite proof" },
+  "/insights": { title: "Operate", sub: "Health · actions · this week" },
 };
 
 function Shell() {
@@ -55,8 +57,10 @@ function Shell() {
         </div>
 
         <div className="sidebar-nav-block">
-          <div className="nav-label">Studio</div>
           <nav className="nav">
+            <NavLink to="/" end>
+              <span>Home</span>
+            </NavLink>
             {NAV.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end}>
                 <span>{item.label}</span>
@@ -81,13 +85,24 @@ function Shell() {
                   ? "disabled"
                   : currentAgent.published
                     ? "live"
-                    : (currentAgent.counts?.documents ?? 0) > 0
+                    : (currentAgent.counts?.documents ?? 0) > 0 ||
+                        (currentAgent.counts?.nodes ?? 0) > 0
                       ? "ready"
                       : "draft"}
               </span>
             </div>
           ) : (
             <p className="sidebar-fleet-empty">No agent selected</p>
+          )}
+          {currentAgent && !currentAgent.published && !currentAgent.disabled && (
+            <NavLink className="sidebar-fleet-link" to="/agent">
+              Publish this agent
+            </NavLink>
+          )}
+          {currentAgent?.published && (
+            <NavLink className="sidebar-fleet-link" to="/deploy">
+              Live · manage publish
+            </NavLink>
           )}
           {agents.length > 1 && (
             <label className="sidebar-switch">
@@ -178,6 +193,7 @@ function Shell() {
             <Route path="/connect" element={<Connect />} />
             <Route path="/ask" element={<Ask />} />
             <Route path="/map" element={<KnowledgeMap />} />
+            <Route path="/trust-forge" element={<TrustForgePage />} />
             <Route path="/insights" element={<Insights />} />
           </Routes>
         </main>

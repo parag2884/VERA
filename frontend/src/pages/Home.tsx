@@ -117,37 +117,29 @@ export default function Home() {
       <header className="bento-top">
         <div className="bento-top-copy">
           <div className="page-kicker">Studio</div>
-          <h1>Agent fleet</h1>
+          <h1>Knowledge operations</h1>
           <p>
-            {agents.length} agents · {ready} ready · {live} live — click a name to rename
+            {live} live · {ready} ready · {agents.length} agents. Operate outcomes, not the graph.
           </p>
         </div>
         <div className="bento-kpis">
-          <div>
-            <span>Agents</span>
-            <strong>{t.agents ?? 0}</strong>
-          </div>
           <div>
             <span>Live</span>
             <strong>{t.published ?? 0}</strong>
           </div>
           <div>
-            <span>Docs</span>
-            <strong>{t.documents ?? 0}</strong>
-          </div>
-          <div>
-            <span>Nodes</span>
-            <strong>{t.nodes ?? 0}</strong>
-          </div>
-          <div>
             <span>Asks</span>
             <strong>{t.asks ?? 0}</strong>
           </div>
+          <div>
+            <span>Docs</span>
+            <strong>{t.documents ?? 0}</strong>
+          </div>
         </div>
         <div className="bento-top-actions">
-          <Link className="btn btn-accent" to="/deploy">
-            Deploy
-          </Link>
+            <Link className="btn btn-accent" to="/insights">
+              Operate
+            </Link>
           <button className="btn btn-primary" type="button" onClick={() => setShowCreate((v) => !v)}>
             New agent
           </button>
@@ -176,7 +168,7 @@ export default function Home() {
       {active && (
         <section className="bento-spotlight">
           <div className="spotlight-main">
-            <div className="spotlight-label">Active · ship next</div>
+            <div className="spotlight-label">Active agent</div>
             <EditableText
               as="h2"
               value={active.name}
@@ -212,20 +204,18 @@ export default function Home() {
                 </span>
               )}
               <span>{active.counts.documents ?? 0} docs</span>
-              <span>{active.counts.nodes ?? 0} nodes</span>
-              <span>{active.counts.chunks ?? 0} chunks</span>
               <span>{active.counts.asks ?? 0} asks</span>
             </div>
           </div>
           <div className="spotlight-path">
-            <Link to="/connect" onClick={() => void selectAgent(active.id)}>
-              <em>01</em> Connect KB
-            </Link>
-            <Link to="/map" onClick={() => void selectAgent(active.id)}>
-              <em>02</em> View map
+            <Link to="/insights" onClick={() => void selectAgent(active.id)}>
+              <em>01</em> Operate
             </Link>
             <Link to="/ask" onClick={() => void selectAgent(active.id)}>
-              <em>03</em> Ask
+              <em>02</em> Ask
+            </Link>
+            <Link to="/connect" onClick={() => void selectAgent(active.id)}>
+              <em>03</em> Connect
             </Link>
             <Link to="/agent" onClick={() => void selectAgent(active.id)}>
               <em>04</em> {active.published ? "Manage" : "Publish"}
@@ -260,7 +250,7 @@ export default function Home() {
         <div className="bento-table-head">
           <h2>All agents</h2>
           <span>
-            Each row = isolated graph + vector store
+          <span>Each agent is a governed knowledge pack</span>
           </span>
         </div>
 
@@ -272,7 +262,7 @@ export default function Home() {
             </button>
           </div>
         ) : (
-          <table className="agent-table has-endpoint">
+          <table className="agent-table has-endpoint col-2-status">
             <thead>
               <tr>
                 <th>Agent</th>
@@ -387,7 +377,11 @@ export default function Home() {
         )}
       </section>
 
-      <section className="bento-intel" aria-label="VERA platform intelligence">
+      <details className="panel" style={{ marginBottom: "1.15rem" }}>
+        <summary className="care-internals-summary">
+          Engineering internals (graph, findings) — not the daily operate view
+        </summary>
+      <section className="bento-intel" aria-label="Platform internals" style={{ marginTop: "0.85rem" }}>
         <article className={`intel-card intel-trust is-${trustStatus}`}>
           <div className="intel-kicker">Trust Center</div>
           <div className="intel-trust-grid">
@@ -488,6 +482,7 @@ export default function Home() {
           )}
         </article>
       </section>
+      </details>
 
       {proofKind && (
         <div className="proof-drawer-root" role="presentation" onClick={closeProof}>
